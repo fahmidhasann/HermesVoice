@@ -73,10 +73,37 @@ final class ConversationFileStore {
         atomicWrite(Data(text.utf8), to: transcriptURL(for: id))
     }
 
+    // MARK: - Partial (crash-recovery side-file)
+
+    private func partialURL(for id: String) -> URL {
+        transcriptsURL.appendingPathComponent("\(id).partial")
+    }
+
+    /// Write the in-flight assistant text to a `.partial` side-file so a crash
+    /// (⌘Q) mid-stream can be recovered on relaunch. Atomic so a crash during
+    /// the write itself never leaves a torn file.
+    func writePartial(id: String, content: String, ts: Double) {
+        let record = PartialRecord(content: content, ts: ts)
+        guard let data = try? ConversationStore.encodePartial(record) else { return }
+        atomicWrite(data, to: partialURL(for: id))
+    }
+
+    /// Read a leftover `.partial`, or `nil` if none exists / it's unreadable.
+    func readPartial(id: String) -> PartialRecord? {
+        guard let data = try? Data(contentsOf: partialURL(for: id)) else { return nil }
+        return ConversationStore.decodePartial(data)
+    }
+
+    /// Remove the `.partial` side-file (a no-op if it's already gone).
+    func clearPartial(id: String) {
+        try? fileManager.removeItem(at: partialURL(for: id))
+    }
+
     // MARK: - Deletion
 
     func deleteConversation(id: String) {
         try? fileManager.removeItem(at: transcriptURL(for: id))
+        try? fileManager.removeItem(at: partialURL(for: id))
         var sessions = loadIndex()
         sessions.removeAll { $0.id == id }
         saveIndex(sessions)

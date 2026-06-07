@@ -147,14 +147,13 @@ class OverlayViewModel: ObservableObject {
         let sessions = store.loadIndex()
         let initial: ChatSession
         if let recent = ConversationStore.mostRecent(in: sessions) {
-            let records = store.loadTranscript(id: recent.id)
             initial = ChatSession(conversationId: recent.id,
                                   startedAt: Date(timeIntervalSince1970: recent.startedAt),
                                   model: recent.model,
                                   store: store,
                                   apiClient: apiClient,
                                   indexWriter: indexWriter,
-                                  initialMessages: ChatSession.mapRecords(records))
+                                  initialMessages: OverlayViewModel.loadMessages(id: recent.id, store: store))
         } else {
             initial = ChatSession(conversationId: UUID().uuidString,
                                   startedAt: Date(),
@@ -231,6 +230,36 @@ class OverlayViewModel: ObservableObject {
                                   initialMessages: initialMessages)
         manager.register(session)
         return session
+    }
+
+    /// Load a conversation's messages from disk, folding any leftover `.partial`
+    /// crash-recovery side-file into a trailing **incomplete** (retryable)
+    /// assistant message per the deterministic rule (§4.7), and clearing the
+    /// side-file once reconciled. Static so it can run during `init` before all
+    /// stored properties are set. Every load path goes through here so a ⌘Q
+    /// mid-stream is recovered identically on relaunch and on reopen.
+    private static func loadMessages(id: String, store: ConversationFileStore) -> [ChatMessage] {
+        let records = store.loadTranscript(id: id)
+        var messages = ChatSession.mapRecords(records)
+        guard let partial = store.readPartial(id: id) else { return messages }
+
+        let lastRole = records.last?.role
+        let trailingAssistant = lastRole == "assistant" ? records.last?.content : nil
+        switch PartialReconciler.decide(lastJSONLRole: lastRole,
+                                        partialContent: partial.content,
+                                        trailingAssistantContent: trailingAssistant) {
+        case .fold:
+            messages.append(ChatMessage(role: .assistant,
+                                        content: partial.content,
+                                        isIncomplete: true,
+                                        timestamp: Date(timeIntervalSince1970: partial.ts)))
+            store.clearPartial(id: id)
+        case .deleteOnly:
+            store.clearPartial(id: id)
+        case .ignore:
+            break
+        }
+        return messages
     }
 
     /// Before switching the foreground away, drop the outgoing session from the
@@ -487,11 +516,10 @@ class OverlayViewModel: ObservableObject {
             guard let meta = historyEntries.first(where: { $0.id == id })?.meta
                     ?? store.loadIndex().first(where: { $0.id == id }) else { return }
             releaseForegroundIfDisposable()
-            let records = store.loadTranscript(id: meta.id)
             target = makeSession(id: meta.id,
                                  startedAt: Date(timeIntervalSince1970: meta.startedAt),
                                  model: meta.model,
-                                 initialMessages: ChatSession.mapRecords(records))
+                                 initialMessages: Self.loadMessages(id: meta.id, store: store))
         }
 
         voiceEngine?.stopRecording()
@@ -506,14 +534,16 @@ class OverlayViewModel: ObservableObject {
         pulseInputFocus()
     }
 
-    /// Delete a stored conversation (index entry + transcript file). If a live
-    /// session exists for it, cancel and evict that session **before** deleting
-    /// disk so a late chunk can't resurrect the files (ordering per §4.5; the
-    /// in-flight-chunk race is fully hardened in Phase 4). If it's the one
-    /// currently open, fall back to a fresh blank conversation.
+    /// Delete a stored conversation (index entry + transcript + `.partial`). If
+    /// a live session exists for it: (1) `markDeleted()` — set `isDeleted` and
+    /// cancel its stream so no late chunk can write disk, (2) remove it from the
+    /// manager, (3) **then** delete disk (§4.5). A chunk arriving after cancel
+    /// but before the Task observes it is now blocked by the `isDeleted` guard,
+    /// so the just-deleted files can't be resurrected. If it's the one currently
+    /// open, fall back to a fresh blank conversation.
     func deleteConversation(id: String) {
         if let live = manager.session(for: id) {
-            live.teardown()
+            live.markDeleted()
             manager.remove(id: id)
         }
         store.deleteConversation(id: id)

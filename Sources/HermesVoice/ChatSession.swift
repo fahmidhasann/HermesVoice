@@ -64,6 +64,19 @@ final class ChatSession: ObservableObject {
 
     private let maxAttempts = 3
 
+    /// Set once this conversation is being deleted. Every disk write guards on
+    /// it so a late chunk arriving after `cancel()` but before the Task observes
+    /// cancellation can't resurrect a just-deleted transcript / index entry
+    /// (§4.5). Race-free because everything here runs on the main actor.
+    private(set) var isDeleted = false
+
+    /// Leading-edge debounce so streamed chunks flush to the `.partial`
+    /// side-file at most a few times per second instead of on every token. The
+    /// write is synchronous and inline in the `.text` case, so there is no async
+    /// timer to invalidate on delete — stopping the stream + the `isDeleted`
+    /// guard fully cover §4.5.
+    private var partialDebouncer = Debouncer(interval: 0.5)
+
     /// Called when a stream reveals gateway reachability. Global connection
     /// state lives on the facade, so the session reports up rather than owning it.
     var onConnectionState: ((ConnectionState) -> Void)?
@@ -154,6 +167,9 @@ final class ChatSession: ObservableObject {
             chatMessages.remove(at: lastIndex)
             rewritePersistedTranscript()
         }
+        // Drop any stale `.partial` so the upcoming stream starts clean and a
+        // crash can't mis-fold a superseded partial (§4.7).
+        store.clearPartial(id: conversationId)
         errorMessage = ""
         guard chatMessages.contains(where: { $0.role == .user }) else { return }
         generateResponse()
@@ -169,6 +185,12 @@ final class ChatSession: ObservableObject {
             .map { OutgoingMessage(role: $0.role.rawValue,
                                    text: $0.content,
                                    imageDataURLs: $0.imageDataURLs) }
+
+        // Start from a clean slate: drop any leftover `.partial` before the new
+        // placeholder, and reset the debounce window so the first chunk flushes
+        // promptly (§4.7).
+        store.clearPartial(id: conversationId)
+        partialDebouncer = Debouncer(interval: 0.5)
 
         let placeholder = ChatMessage(role: .assistant, content: "", isStreaming: true)
         chatMessages.append(placeholder)
@@ -217,6 +239,12 @@ final class ChatSession: ObservableObject {
                         receivedContent = true
                         if let index = streamingIndex() {
                             chatMessages[index].content += chunk
+                            // Best-effort durability: flush the growing text to
+                            // the `.partial` side-file at most ~2×/s (§4.7).
+                            if partialDebouncer.shouldFire() {
+                                writePartial(chatMessages[index].content,
+                                             ts: chatMessages[index].timestamp)
+                            }
                         }
                     case .tool(let activity):
                         applyToolActivity(activity)
@@ -251,6 +279,9 @@ final class ChatSession: ObservableObject {
     /// it, or drop an empty placeholder if nothing arrived.
     private func finishAssistant() {
         activeTools = []
+        // The final record goes to `.jsonl` below; the crash-recovery side-file
+        // is no longer needed (§4.7).
+        store.clearPartial(id: conversationId)
         defer { streamingMessageId = nil }
         guard let index = streamingIndex() else { return }
         chatMessages[index].isStreaming = false
@@ -264,6 +295,9 @@ final class ChatSession: ObservableObject {
 
     private func handleStreamFailure(_ error: HermesAPIError, hadContent: Bool) {
         activeTools = []
+        // Whatever survived is committed to `.jsonl` below (kept incomplete) or
+        // dropped — either way the side-file is now stale (§4.7).
+        store.clearPartial(id: conversationId)
         if error.kind == .offline { onConnectionState?(.offline) }
 
         if let index = streamingIndex() {
@@ -304,6 +338,9 @@ final class ChatSession: ObservableObject {
         streamTask?.cancel()
         streamTask = nil
         activeTools = []
+        // The kept partial (if any) is committed to `.jsonl` below; drop the
+        // side-file (§4.7).
+        store.clearPartial(id: conversationId)
         if let index = streamingIndex(), chatMessages[index].isStreaming {
             chatMessages[index].isStreaming = false
             if chatMessages[index].content.isEmpty {
@@ -326,10 +363,29 @@ final class ChatSession: ObservableObject {
         streamTask = nil
     }
 
+    /// Mark this session deleted and stop its stream so no further disk write
+    /// can resurrect the conversation. The caller deletes disk **after** this
+    /// returns and after removing the session from the manager (ordering §4.5).
+    func markDeleted() {
+        isDeleted = true
+        streamTask?.cancel()
+        streamTask = nil
+    }
+
+    /// Flush the in-flight assistant text to the `.partial` side-file, unless
+    /// the conversation is being deleted (§4.5).
+    private func writePartial(_ content: String, ts: Date) {
+        guard !isDeleted else { return }
+        store.writePartial(id: conversationId,
+                           content: content,
+                           ts: ts.timeIntervalSince1970)
+    }
+
     // MARK: - Persistence
 
     /// Register a brand-new conversation in the index on its first message.
     private func registerConversationIfNeeded(firstUserText: String) {
+        guard !isDeleted else { return }
         indexWriter.update(id: conversationId) { [startedAt, model] existing in
             guard existing == nil else { return nil }
             return SessionMeta(id: conversationId,
@@ -343,6 +399,7 @@ final class ChatSession: ObservableObject {
 
     /// Append one message to the transcript and refresh the index metadata.
     private func persist(_ message: ChatMessage) {
+        guard !isDeleted else { return }
         guard message.role == .user || message.role == .assistant else { return }
         let record = TranscriptRecord(role: message.role.rawValue,
                                       content: message.content,
@@ -353,6 +410,7 @@ final class ChatSession: ObservableObject {
     }
 
     private func updateIndexMeta() {
+        guard !isDeleted else { return }
         let count = persistedMessages.count
         let firstUserText = chatMessages.first(where: { $0.role == .user })?.content ?? ""
         indexWriter.update(id: conversationId) { [startedAt, model] existing in
@@ -375,6 +433,7 @@ final class ChatSession: ObservableObject {
     /// Rewrite the whole transcript from the current in-memory thread (used after
     /// dropping a retried partial so the persisted copy stays consistent).
     private func rewritePersistedTranscript() {
+        guard !isDeleted else { return }
         let records = persistedMessages.map {
             TranscriptRecord(role: $0.role.rawValue,
                              content: $0.content,
