@@ -65,7 +65,7 @@ committed (`63861e9`).
 |---|---|
 | **1 — Quick-win bug fixes** | ✅ **Done (2026-06-07)** — commit `63861e9` |
 | **2 — Data & API foundation** | ✅ **Done (2026-06-07)** |
-| 3 — Conversation features | ⬜ Not started |
+| **3 — Conversation features** | ✅ **Done (2026-06-07)** |
 | 4 — Rich content | ⬜ Not started |
 | 5 — Settings + keyboard control | ⬜ Not started |
 | 6 — Voice flow change | ⬜ Not started |
@@ -273,9 +273,47 @@ added to all requests.
 
 </details>
 
-### Phase 3 — Conversation features (history, new chat, copy)
+### Phase 3 — Conversation features (history, new chat, copy)  ✅ DONE (2026-06-07)
 **Goal:** Manage multiple conversations.
-**Tasks:**
+
+**What shipped:**
+- **3a. New Chat** — header **square.and.pencil** button (always present),
+  Chat ▸ New Chat **⌘N**, and a menu-bar **New Chat** item. `OverlayViewModel.newChat()`
+  resets to a fresh, unregistered conversation via `startBlankConversation()` (the old one
+  stays persisted; the new id is written to the index only on first send) and refocuses
+  the input. The menu-bar variant (`menuBarNewChat`) shows the panel first if hidden so it
+  works when the app isn't already active. Replaced the old `clearConversation()`.
+- **3b. In-panel history browser** — new `HistoryView.swift`. A header
+  **clock.arrow.circlepath** button (and ⌘F) flips the panel to a searchable list
+  (title, last-message preview, relative time, message count). `viewModel.openHistory()`
+  loads the index + previews; `filteredHistory` filters live via
+  `ConversationStore.matchesQuery`. Click (or Enter) opens via `openConversation(id:)`
+  which loads that transcript into the thread; back chevron / Esc returns. Trash on row
+  hover calls `deleteConversation(id:)` → `ConversationFileStore.deleteConversation`
+  (removes index entry + `transcripts/<id>.jsonl`; if the open chat is deleted it falls
+  back to a blank one). Keyboard: ⌘F focus search, ↑/↓ move selection (scrolls into view),
+  Enter open, Esc back.
+- **3c. Copy buttons** — the per-bubble copy button is now **always visible** (subtle at
+  rest, full-strength on hover) on **both** user and assistant bubbles, with the existing
+  "Copied" checkmark feedback. Copies the full message text.
+
+**New pure logic (HermesVoiceKit, tested):** `ConversationStore.previewText(from:)`
+(collapse + truncate), `matchesQuery(title:preview:query:)` (case-insensitive),
+`relativeTime(from:now:)` ("just now"/m/h/d/w → "MMM d"). `ConversationFileStore` gained
+`loadPreview(id:)`.
+
+**Files added/changed:** new `Sources/HermesVoice/HistoryView.swift`;
+`OverlayView.swift`, `OverlayViewModel.swift`, `App.swift`, `AppDelegate.swift`,
+`ConversationFileStore.swift`, `HermesVoiceKit/ConversationStore.swift`,
+`Tests/HermesVoiceTests/ConversationStoreTests.swift`.
+
+**Verification:** `swift build -c release` ✅ · `swift run HermesVoiceTests` → 101 checks,
+0 failures ✅ · launch smoke test via `open` (launches, runs, clean quit + lock released) ✅.
+⚠️ **Still needs a manual on-device pass:** open history → search/↑↓/Enter/Esc; delete a
+conversation (incl. the open one); ⌘N + menu-bar New Chat; copy on both roles.
+
+<details><summary>Original task list</summary>
+
 - **3a. New Chat** — header button + ⌘N + menu-bar item: save current, start fresh
   conversation, focus input.
 - **3b. In-panel history browser** — a history button flips the panel to a **searchable
@@ -289,6 +327,8 @@ added to all requests.
 `App.swift` (menu).
 **Acceptance:** browse/search/open/delete past chats; ⌘N starts fresh and saves the old;
 copy works on both roles.
+
+</details>
 
 ### Phase 4 — Rich content (markdown, images, tool activity)
 **Goal:** Render agent output well; richer I/O.

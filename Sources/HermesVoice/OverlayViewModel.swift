@@ -64,6 +64,34 @@ class OverlayViewModel: ObservableObject {
     /// Reachability of the gateway (drives the offline indicator).
     @Published var connectionState: ConnectionState = .unknown
 
+    // MARK: - History browser state
+
+    /// One row in the in-panel history list: session metadata + a preview of the
+    /// most recent message.
+    struct HistoryEntry: Identifiable, Equatable {
+        let meta: SessionMeta
+        let preview: String
+        var id: String { meta.id }
+    }
+
+    /// True while the panel is flipped to the searchable history list.
+    @Published var showingHistory = false
+    /// Live search text for the history list.
+    @Published var historyQuery = ""
+    /// All stored conversations, loaded when the history view opens.
+    @Published var historyEntries: [HistoryEntry] = []
+    /// Pulses true to ask the history view to focus its search field.
+    @Published var historySearchShouldFocus = false
+
+    /// Entries matching the current search text (or all, when the box is empty).
+    var filteredHistory: [HistoryEntry] {
+        historyEntries.filter {
+            ConversationStore.matchesQuery(title: $0.meta.title,
+                                           preview: $0.preview,
+                                           query: historyQuery)
+        }
+    }
+
     private var voiceEngine: VoiceEngine?
     private let apiClient = HermesAPIClient()
     private let store = ConversationFileStore()
@@ -432,9 +460,24 @@ class OverlayViewModel: ObservableObject {
         // Refresh the reachability indicator each time the panel opens.
         checkConnection()
         // Trigger focus on next render
+        pulseInputFocus()
+    }
+
+    /// Briefly raises `panelShouldFocus` so the input field grabs focus on the
+    /// next render, then lowers it.
+    private func pulseInputFocus() {
         panelShouldFocus = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
             self?.panelShouldFocus = false
+        }
+    }
+
+    /// Briefly raises `historySearchShouldFocus` so the history search field
+    /// grabs focus on the next render.
+    private func pulseHistorySearchFocus() {
+        historySearchShouldFocus = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            self?.historySearchShouldFocus = false
         }
     }
 
@@ -449,7 +492,15 @@ class OverlayViewModel: ObservableObject {
 
     /// Start a fresh, empty conversation. The previous one stays persisted; the
     /// new one is written to the index only once the user sends a message.
-    func clearConversation() {
+    func newChat() {
+        startBlankConversation()
+        showingHistory = false
+        pulseInputFocus()
+    }
+
+    /// Reset all in-memory conversation state to a fresh, unregistered
+    /// conversation. Shared by New Chat and "deleted the open conversation".
+    private func startBlankConversation() {
         streamTask?.cancel()
         voiceEngine?.stopRecording()
         chatMessages.removeAll()
@@ -462,6 +513,62 @@ class OverlayViewModel: ObservableObject {
         conversationId = UUID().uuidString
         conversationStartedAt = Date()
         conversationModel = nil
+    }
+
+    // MARK: - History browser
+
+    /// Flip the panel to the history list, loading the current index + previews.
+    func openHistory(focusSearch: Bool = false) {
+        reloadHistory()
+        showingHistory = true
+        if focusSearch { pulseHistorySearchFocus() }
+    }
+
+    /// Return from the history list to the conversation, refocusing the input.
+    func closeHistory() {
+        showingHistory = false
+        historyQuery = ""
+        pulseInputFocus()
+    }
+
+    /// Re-read the on-disk index and build preview snippets for each row.
+    func reloadHistory() {
+        historyEntries = store.loadIndex().map { meta in
+            HistoryEntry(meta: meta, preview: store.loadPreview(id: meta.id))
+        }
+    }
+
+    /// Load a stored conversation into the thread and return to the chat view.
+    func openConversation(id: String) {
+        // Re-opening the conversation already shown is a no-op beyond closing.
+        guard id != conversationId else { closeHistory(); return }
+        guard let meta = historyEntries.first(where: { $0.id == id })?.meta
+                ?? store.loadIndex().first(where: { $0.id == id }) else { return }
+
+        startBlankConversation()
+        conversationId = meta.id
+        conversationStartedAt = Date(timeIntervalSince1970: meta.startedAt)
+        conversationModel = meta.model
+
+        chatMessages = store.loadTranscript(id: meta.id).map { record in
+            ChatMessage(role: ChatMessage.Role(rawValue: record.role) ?? .assistant,
+                        content: record.content,
+                        timestamp: Date(timeIntervalSince1970: record.ts))
+        }
+
+        showingHistory = false
+        historyQuery = ""
+        pulseInputFocus()
+    }
+
+    /// Delete a stored conversation (index entry + transcript file). If it's the
+    /// one currently open, fall back to a fresh blank conversation.
+    func deleteConversation(id: String) {
+        store.deleteConversation(id: id)
+        reloadHistory()
+        if id == conversationId {
+            startBlankConversation()
+        }
     }
 
     func cleanup() {

@@ -166,6 +166,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    // MARK: - Menu actions
+
+    /// ⌘N / Chat ▸ New Chat. Acts only while the panel is the key surface.
+    @objc func newChat() {
+        guard overlayPanel?.phase == .visible else { return }
+        viewModel.newChat()
+    }
+
+    /// ⌘F / Chat ▸ Search History. Opens the history list and focuses search.
+    @objc func searchHistory() {
+        guard overlayPanel?.phase == .visible else { return }
+        viewModel.openHistory(focusSearch: true)
+    }
+
+    /// Menu-bar ▸ New Chat. Shows the panel first if it's hidden, so it works
+    /// even when the app isn't already active.
+    @objc func menuBarNewChat() {
+        if overlayPanel?.phase != .visible { showPanel() }
+        viewModel.newChat()
+    }
+
     private func showPanel() {
         guard let panel = overlayPanel, panel.beginShow() else { return }
 

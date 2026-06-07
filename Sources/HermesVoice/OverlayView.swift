@@ -21,25 +21,12 @@ struct OverlayView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Recording accent line
-            if viewModel.isRecording {
-                Rectangle()
-                    .fill(Theme.Colors.recordingRed)
-                    .frame(height: 2)
-                    .transition(.opacity)
+        Group {
+            if viewModel.showingHistory {
+                HistoryView(viewModel: viewModel)
+            } else {
+                chatContent
             }
-
-            // Header
-            headerView
-
-            // Conversation thread
-            conversationView
-
-            Divider().background(Theme.Colors.divider)
-
-            // Input area
-            inputView
         }
         .frame(width: Theme.Layout.panelWidth)
         // Take the content's *natural* height rather than being forced into the
@@ -62,6 +49,33 @@ struct OverlayView: View {
         }
     }
 
+    // MARK: - Chat content
+
+    /// The normal conversation surface (header, thread, input). Swapped out for
+    /// the history list when `viewModel.showingHistory` is true.
+    private var chatContent: some View {
+        VStack(spacing: 0) {
+            // Recording accent line
+            if viewModel.isRecording {
+                Rectangle()
+                    .fill(Theme.Colors.recordingRed)
+                    .frame(height: 2)
+                    .transition(.opacity)
+            }
+
+            // Header
+            headerView
+
+            // Conversation thread
+            conversationView
+
+            Divider().background(Theme.Colors.divider)
+
+            // Input area
+            inputView
+        }
+    }
+
     // MARK: - Header
 
     private var headerView: some View {
@@ -69,16 +83,24 @@ struct OverlayView: View {
             HStack(spacing: Theme.Spacing.md) {
                 statusView
                 Spacer()
-                if !viewModel.chatMessages.isEmpty {
-                    Button(action: viewModel.clearConversation) {
-                        Image(systemName: "trash")
-                            .font(.system(size: 12, weight: .regular))
-                            .foregroundColor(Theme.Colors.textSecondary)
-                    }
-                    .buttonStyle(IconButtonStyle())
-                    .help("Clear conversation")
-                    .accessibilityLabel("Clear conversation")
+                Button(action: viewModel.newChat) {
+                    Image(systemName: "square.and.pencil")
+                        .font(.system(size: 12.5, weight: .regular))
+                        .foregroundColor(Theme.Colors.textSecondary)
                 }
+                .buttonStyle(IconButtonStyle())
+                .help("New chat (⌘N)")
+                .accessibilityLabel("New chat")
+
+                Button(action: { viewModel.openHistory() }) {
+                    Image(systemName: "clock.arrow.circlepath")
+                        .font(.system(size: 12.5, weight: .regular))
+                        .foregroundColor(Theme.Colors.textSecondary)
+                }
+                .buttonStyle(IconButtonStyle())
+                .help("History (⌘F)")
+                .accessibilityLabel("Conversation history")
+
                 Button(action: {
                     NotificationCenter.default.post(name: .hermesAutoHide, object: nil)
                 }) {
@@ -416,7 +438,10 @@ struct MessageBubble: View {
                         .frame(width: 12, height: 12)
                 }
 
-                if isHovered && !message.isStreaming && !message.content.isEmpty {
+                // Copy is always present (discoverable) on both user and
+                // assistant bubbles — subtle at rest, full-strength on hover,
+                // with a "Copied" checkmark confirmation.
+                if !message.isStreaming && !message.content.isEmpty {
                     Button(action: copyMessage) {
                         Image(systemName: showCopied ? "checkmark" : "doc.on.doc")
                             .font(.system(size: 10.5, weight: .medium))
@@ -426,7 +451,9 @@ struct MessageBubble: View {
                             .clipShape(Circle())
                     }
                     .buttonStyle(.plain)
-                    .transition(.scale.combined(with: .opacity))
+                    .opacity(showCopied || isHovered ? 1 : 0.4)
+                    .help(showCopied ? "Copied" : "Copy message")
+                    .accessibilityLabel("Copy message")
                 }
             }
             .padding(.horizontal, Theme.Spacing.md + 2)

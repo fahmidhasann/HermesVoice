@@ -86,5 +86,53 @@ enum ConversationStoreTests {
             checkEqual(try! ConversationStore.encodeTranscript([]), "")
             checkEqual(ConversationStore.decodeTranscript(""), [])
         },
+
+        // MARK: - Preview
+
+        TestCase(name: "previewText collapses whitespace") {
+            checkEqual(ConversationStore.previewText(from: "  hello\n\n  world  "), "hello world")
+            checkEqual(ConversationStore.previewText(from: "   \n  "), "")
+        },
+        TestCase(name: "previewText truncates long content") {
+            let long = String(repeating: "b", count: 200)
+            let preview = ConversationStore.previewText(from: long)
+            check(preview.hasSuffix("…"), "expected ellipsis, got \(preview)")
+            check(preview.count <= ConversationStore.previewMaxLength + 1,
+                  "preview too long: \(preview.count)")
+        },
+
+        // MARK: - Search
+
+        TestCase(name: "matchesQuery is case-insensitive over title and preview") {
+            check(ConversationStore.matchesQuery(title: "Hello World", preview: "x", query: "world"),
+                  "title should match")
+            check(ConversationStore.matchesQuery(title: "x", preview: "Swift Code", query: "swift"),
+                  "preview should match")
+            check(!ConversationStore.matchesQuery(title: "abc", preview: "def", query: "zzz"),
+                  "no match expected")
+        },
+        TestCase(name: "matchesQuery empty query matches everything") {
+            check(ConversationStore.matchesQuery(title: "a", preview: "b", query: ""),
+                  "empty query should match")
+            check(ConversationStore.matchesQuery(title: "a", preview: "b", query: "   "),
+                  "whitespace query should match")
+        },
+
+        // MARK: - Relative time
+
+        TestCase(name: "relativeTime buckets") {
+            let now = 1_000_000.0
+            checkEqual(ConversationStore.relativeTime(from: now - 10, now: now), "just now")
+            checkEqual(ConversationStore.relativeTime(from: now - 120, now: now), "2m ago")
+            checkEqual(ConversationStore.relativeTime(from: now - 3 * 3600, now: now), "3h ago")
+            checkEqual(ConversationStore.relativeTime(from: now - 2 * 86400, now: now), "2d ago")
+            checkEqual(ConversationStore.relativeTime(from: now - 2 * 604_800, now: now), "2w ago")
+        },
+        TestCase(name: "relativeTime falls back to a date for old entries") {
+            let now = 2_000_000.0
+            let label = ConversationStore.relativeTime(from: now - 60 * 86400, now: now)
+            check(!label.hasSuffix("ago"), "old entry should be a date, got \(label)")
+            check(!label.isEmpty, "date label should be non-empty")
+        },
     ]
 }

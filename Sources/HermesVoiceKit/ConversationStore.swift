@@ -54,6 +54,10 @@ public enum ConversationStore {
     /// history list compact.
     public static let titleMaxLength = 60
 
+    /// Previews (last-message snippet shown in the history list) are truncated
+    /// so each row stays a single compact line.
+    public static let previewMaxLength = 80
+
     /// On-disk envelope for the index file. Wrapping the array in an object keeps
     /// room for future top-level fields (schema version, etc.).
     private struct IndexFile: Codable {
@@ -71,6 +75,51 @@ public enum ConversationStore {
         if trimmed.count <= titleMaxLength { return trimmed }
         let cutoff = trimmed.index(trimmed.startIndex, offsetBy: titleMaxLength)
         return String(trimmed[..<cutoff]).trimmingCharacters(in: .whitespaces) + "…"
+    }
+
+    /// Collapse a message into a single compact line for the history preview.
+    public static func previewText(from content: String) -> String {
+        let collapsed = content
+            .split(whereSeparator: { $0.isWhitespace })
+            .joined(separator: " ")
+        guard !collapsed.isEmpty else { return "" }
+        if collapsed.count <= previewMaxLength { return collapsed }
+        let cutoff = collapsed.index(collapsed.startIndex, offsetBy: previewMaxLength)
+        return String(collapsed[..<cutoff]).trimmingCharacters(in: .whitespaces) + "…"
+    }
+
+    // MARK: - Search
+
+    /// Case-insensitive match of a query against a conversation's title or
+    /// preview, used to filter the in-panel history list as the user types. An
+    /// empty query matches everything.
+    public static func matchesQuery(title: String, preview: String, query: String) -> Bool {
+        let q = query.trimmingCharacters(in: .whitespaces).lowercased()
+        guard !q.isEmpty else { return true }
+        return title.lowercased().contains(q) || preview.lowercased().contains(q)
+    }
+
+    // MARK: - Relative time
+
+    /// Compact relative-time label for the history list ("just now", "5m ago",
+    /// "3h ago", "2d ago", "2w ago"), falling back to a short "MMM d" date for
+    /// anything older than a few weeks. `now` is injectable for tests.
+    public static func relativeTime(from epoch: Double,
+                                    now: Double = Date().timeIntervalSince1970) -> String {
+        let delta = now - epoch
+        if delta < 60 { return "just now" }
+        let minutes = Int(delta / 60)
+        if minutes < 60 { return "\(minutes)m ago" }
+        let hours = Int(delta / 3600)
+        if hours < 24 { return "\(hours)h ago" }
+        let days = Int(delta / 86400)
+        if days < 7 { return "\(days)d ago" }
+        let weeks = Int(delta / 604_800)
+        if weeks < 5 { return "\(weeks)w ago" }
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "MMM d"
+        return formatter.string(from: Date(timeIntervalSince1970: epoch))
     }
 
     // MARK: - Index

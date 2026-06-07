@@ -46,6 +46,13 @@ final class ConversationFileStore {
         return ConversationStore.decodeTranscript(text)
     }
 
+    /// A single-line snippet of the conversation's most recent message, used for
+    /// the history list. Returns an empty string when there's nothing to show.
+    func loadPreview(id: String) -> String {
+        guard let last = loadTranscript(id: id).last else { return "" }
+        return ConversationStore.previewText(from: last.content)
+    }
+
     /// Append one record to the conversation's transcript, creating it if needed.
     func appendRecord(_ record: TranscriptRecord, to id: String) {
         guard let line = try? ConversationStore.encodeRecordLine(record) else { return }
