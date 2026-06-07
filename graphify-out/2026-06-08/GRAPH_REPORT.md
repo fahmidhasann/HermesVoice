@@ -1,16 +1,16 @@
-# Graph Report - HermesVoice  (2026-06-08)
+# Graph Report - HermesVoice  (2026-06-07)
 
 ## Corpus Check
-- 129 files · ~239,190 words
+- 130 files · ~242,415 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2822 nodes · 5654 edges · 151 communities (143 shown, 8 thin omitted)
+- 2832 nodes · 5663 edges · 158 communities (150 shown, 8 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 58 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ae86b198`
+- Built from commit: `326bca7f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -37,9 +37,11 @@
 - [[_COMMUNITY_Project Docs|Project Docs]]
 - [[_COMMUNITY_Panel Transition Guard|Panel Transition Guard]]
 - [[_COMMUNITY_Community 23|Community 23]]
+- [[_COMMUNITY_Community 24|Community 24]]
 - [[_COMMUNITY_Community 25|Community 25]]
 - [[_COMMUNITY_Community 26|Community 26]]
 - [[_COMMUNITY_Community 27|Community 27]]
+- [[_COMMUNITY_Community 28|Community 28]]
 - [[_COMMUNITY_Community 29|Community 29]]
 - [[_COMMUNITY_Community 30|Community 30]]
 - [[_COMMUNITY_Community 31|Community 31]]
@@ -105,6 +107,7 @@
 - [[_COMMUNITY_Community 91|Community 91]]
 - [[_COMMUNITY_Community 92|Community 92]]
 - [[_COMMUNITY_Community 93|Community 93]]
+- [[_COMMUNITY_Community 94|Community 94]]
 - [[_COMMUNITY_Community 95|Community 95]]
 - [[_COMMUNITY_Community 96|Community 96]]
 - [[_COMMUNITY_Community 97|Community 97]]
@@ -113,6 +116,7 @@
 - [[_COMMUNITY_Community 100|Community 100]]
 - [[_COMMUNITY_Community 101|Community 101]]
 - [[_COMMUNITY_Community 102|Community 102]]
+- [[_COMMUNITY_Community 103|Community 103]]
 - [[_COMMUNITY_Community 104|Community 104]]
 - [[_COMMUNITY_Community 105|Community 105]]
 - [[_COMMUNITY_Community 106|Community 106]]
@@ -128,6 +132,7 @@
 - [[_COMMUNITY_Community 116|Community 116]]
 - [[_COMMUNITY_Community 117|Community 117]]
 - [[_COMMUNITY_Community 118|Community 118]]
+- [[_COMMUNITY_Community 119|Community 119]]
 - [[_COMMUNITY_Community 120|Community 120]]
 - [[_COMMUNITY_Community 121|Community 121]]
 - [[_COMMUNITY_Community 122|Community 122]]
@@ -163,6 +168,8 @@
 - [[_COMMUNITY_Community 153|Community 153]]
 - [[_COMMUNITY_Community 154|Community 154]]
 - [[_COMMUNITY_Community 155|Community 155]]
+- [[_COMMUNITY_Community 156|Community 156]]
+- [[_COMMUNITY_Community 157|Community 157]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `_()` - 55 edges
@@ -196,15 +203,15 @@
 - **In-panel history browser feature** — hermesvoice_historyview_historyview, hermesvoice_overlayviewmodel_filteredhistory, hermesvoice_overlayviewmodel_openconversation, hermesvoicekit_conversationstore_conversationstore [INFERRED 0.75]
 - **Persisted local data model (SessionMeta + TranscriptRecord)** — hermesvoicekit_conversationstore_sessionmeta, hermesvoicekit_conversationstore_transcriptrecord, hermesvoice_conversationfilestore_conversationfilestore, hermesvoice_overlayviewmodel_overlayviewmodel [INFERRED 0.75]
 
-## Communities (151 total, 8 thin omitted)
+## Communities (158 total, 8 thin omitted)
 
 ### Community 0 - "App Lifecycle & Hotkeys"
 Cohesion: 0.05
 Nodes (28): Any, AnyCancellable, AppDelegate, AppearanceMode, EventHandlerRef, EventHotKeyRef, HermesVoiceApp, AppDelegate (+20 more)
 
 ### Community 1 - "Conversation View Model"
-Cohesion: 0.06
-Nodes (41): Date, HermesAPIError, ChatMessage, ConnectionState, offline, online, unknown, HistoryEntry (+33 more)
+Cohesion: 0.12
+Nodes (12): HistoryEntry, OverlayViewModel, ImageAttachment, Never, CGFloat, Never, NSImage, ToolActivity (+4 more)
 
 ### Community 2 - "API Client & Streaming"
 Cohesion: 0.08
@@ -227,16 +234,16 @@ Cohesion: 0.16
 Nodes (15): Decodable, Choice, Chunk, Delta, SSEParser.parse(line:), SSEParser.parseContent(payload:), SSEEvent, content (+7 more)
 
 ### Community 7 - "Overhaul Plan & Design Decisions"
-Cohesion: 0.10
-Nodes (19): 0. The goal (read first), 10. Provenance, 1. Orientation — the app & how to build it, 2. Why the current architecture fights us — the 3 root blockers, 3. Target architecture, 4. Critical implementation details (the traps — read before coding), 5. Phased implementation, 6. Edge-case behavior matrix (condensed; full analysis in design notes) (+11 more)
+Cohesion: 0.11
+Nodes (18): 0. Orientation (read first), 1. Confirmed decisions (the spec), 2. Hermes server API reference (verified from `~/.hermes/hermes-agent/gateway/platforms/api_server.py`), 3. Known bugs / gaps (root causes), 4. Phased implementation plan, 5. Cross-cutting rules ("don't break the app"), 6. Open items to verify during implementation, HermesVoice Overhaul Plan (+10 more)
 
 ### Community 8 - "Panel State Machine"
 Cohesion: 0.06
-Nodes (25): OverlayPanel, Debouncer, PanelStateMachine.beginHide, PanelStateMachine.beginShow, PanelPhase, hidden, hiding, showing (+17 more)
+Nodes (23): OverlayPanel, Debouncer, PanelStateMachine.beginHide, PanelStateMachine.beginShow, PanelPhase, hidden, hiding, showing (+15 more)
 
 ### Community 9 - "Button Styles & Visuals"
-Cohesion: 0.28
-Nodes (9): broadcast(), clearManualApplyTransaction(), manualApplyTransactionPath(), normalizeProjectFile(), readManualApplyTransaction(), recordManualEditActivity(), rollbackManualApplyTransaction(), summarizeManualDiagnostics() (+1 more)
+Cohesion: 0.13
+Nodes (17): ConnectionState, offline, online, unknown, OverlayState, done, error, idle (+9 more)
 
 ### Community 10 - "Overlay Panel Transitions"
 Cohesion: 0.13
@@ -270,6 +277,10 @@ Nodes (9): ImageAttachment, ImageEncoder, Identifiable, Bool, CGFloat, Data, NSI
 Cohesion: 0.18
 Nodes (10): CodeBlockConfiguration, CodeSyntaxHighlighter, HermesCodeBlockView, HermesCodeSyntaxHighlighter, HighlightrEngine, MarkdownUI.Theme, MarkdownUI, NSAttributedString (+2 more)
 
+### Community 24 - "Community 24"
+Cohesion: 0.26
+Nodes (14): applySvelteKitLiveAdapter(), buildSvelteLiveRootComponent(), defaultSvelteLayout(), detectSvelteKitProject(), ensureSvelteLiveRootComponent(), escapeRegExp(), fileIncludes(), findSvelteKitAppHtml() (+6 more)
+
 ### Community 25 - "Community 25"
 Cohesion: 0.15
 Nodes (20): AppSettings, AVAuthorizationStatus, Binding, MarkdownMessageView, OnboardingView, ConnectionSettingsTab, GeneralSettingsTab, SettingsView (+12 more)
@@ -277,6 +288,10 @@ Nodes (20): AppSettings, AVAuthorizationStatus, Binding, MarkdownMessageView, On
 ### Community 26 - "Community 26"
 Cohesion: 0.17
 Nodes (11): checkTypography(), BORDER_SAFE_TAGS, BRAND_FONT_DOMAINS, GENERIC_FONTS, GITHUB_DOMAINS, GOOGLE_DOMAINS, isBrandFontOnOwnDomain(), KNOWN_SERIF_FONTS (+3 more)
+
+### Community 28 - "Community 28"
+Cohesion: 0.29
+Nodes (8): Date, ChatMessage, Bool, Date, String, UUID, UUID, VoiceEngine
 
 ### Community 29 - "Community 29"
 Cohesion: 0.23
@@ -292,7 +307,7 @@ Nodes (10): checkColors(), checkElementAIPaletteDOM(), checkElementGlow(), check
 
 ### Community 32 - "Community 32"
 Cohesion: 0.05
-Nodes (54): addOpToManualApplyChunk(), annotRoot, APPLY_EVENT_HARD_TIMEOUT_MS, APPLY_EVENT_SOFT_DEADLINE_MS, args, buildManualApplyAgentAction(), cancelPendingManualApplyEvents(), cleanupSvelteComponentSessionsBeforeExit() (+46 more)
+Nodes (46): addOpToManualApplyChunk(), annotRoot, APPLY_EVENT_HARD_TIMEOUT_MS, APPLY_EVENT_SOFT_DEADLINE_MS, args, broadcast(), buildManualApplyAgentAction(), cleanupSvelteComponentSessionsBeforeExit() (+38 more)
 
 ### Community 33 - "Community 33"
 Cohesion: 0.07
@@ -347,8 +362,8 @@ Cohesion: 0.08
 Nodes (23): FORBIDDEN_MANUAL_EDIT_TEXT_CHARS, INSERT_POSITIONS, isValidId(), isValidVariantId(), validateAnnotationFields(), validateEvent(), validateInsertGenerate(), validateManualEditEvent() (+15 more)
 
 ### Community 46 - "Community 46"
-Cohesion: 0.10
-Nodes (33): appendOriginToDirective(), buildTagBlock(), commentClose(), commentOpen(), CONFIG_PATH, __dirname, ensureLiveGitIgnores(), escapeRegExp() (+25 more)
+Cohesion: 0.15
+Nodes (19): appendOriginToDirective(), buildTagBlock(), commentClose(), commentOpen(), CONFIG_PATH, __dirname, ensureLiveGitIgnores(), escapeRegExp() (+11 more)
 
 ### Community 47 - "Community 47"
 Cohesion: 0.15
@@ -534,6 +549,10 @@ Nodes (11): Assess Current State, Code Simplification, Content Simplification, D
 Cohesion: 0.17
 Nodes (11): Accessibility Resilience, Assess Hardening Needs, Edge Cases & Boundary Conditions, Error Handling, Hardening Dimensions, Input Validation & Sanitization, Internationalization (i18n), Performance Resilience (+3 more)
 
+### Community 94 - "Community 94"
+Cohesion: 0.21
+Nodes (4): HermesAPIError, OutgoingMessage, Int, SessionMeta
+
 ### Community 95 - "Community 95"
 Cohesion: 0.30
 Nodes (11): buildTargetNames(), cleanSkillsLock(), cleanup(), DEPRECATED_NAMES, findProjectRoot(), findSkillsDirs(), HARNESS_DIRS, isImpeccableSkill() (+3 more)
@@ -543,8 +562,8 @@ Cohesion: 0.25
 Nodes (9): addBrowserFindings(), addVisualContrastFindings(), addVisualContrastResult(), clearOverlays(), detachOverlay(), disconnectLazyVisualContrastObserver(), scheduleLazyVisualContrast(), shouldRunVisualContrast() (+1 more)
 
 ### Community 97 - "Community 97"
-Cohesion: 0.29
-Nodes (6): HotKeyRecorder, Set, Any, NSEvent, UInt32, UInt16
+Cohesion: 0.21
+Nodes (8): HotKeyRecorder, NSEvent, Set, Any, NSEvent, UInt32, NSEvent, UInt16
 
 ### Community 98 - "Community 98"
 Cohesion: 0.18
@@ -563,8 +582,12 @@ Cohesion: 0.18
 Nodes (10): Assess Current State, Color Refinement, Composition Refinement, Motion Reduction, Plan Refinement, Refine the Design, Register, Simplification (+2 more)
 
 ### Community 102 - "Community 102"
-Cohesion: 0.14
-Nodes (21): cli(), COMMON_DEV_PORTS, devServerSignals(), gatherSignals(), gitSignals(), hasCode(), latestCritique(), SCANNABLE_EXT (+13 more)
+Cohesion: 0.24
+Nodes (10): cli(), COMMON_DEV_PORTS, devServerSignals(), gatherSignals(), gitSignals(), hasCode(), latestCritique(), SCANNABLE_EXT (+2 more)
+
+### Community 103 - "Community 103"
+Cohesion: 0.31
+Nodes (11): kebab(), listSnapshotsForSlug(), main(), nowFilenameStamp(), parseFrontmatter(), readLatestSnapshot(), readTrend(), serializeFrontmatter() (+3 more)
 
 ### Community 104 - "Community 104"
 Cohesion: 0.50
@@ -621,6 +644,10 @@ Nodes (8): bindEditBadgeProxy(), editBadgeProxyTargets(), initEditBadgeHitProxie
 ### Community 118 - "Community 118"
 Cohesion: 0.29
 Nodes (7): Cognitive Load Assessment, Cognitive Load Checklist, Extraneous Load: Bad Design, Germane Load: Learning Effort, Intrinsic Load: The Task Itself, The Working Memory Rule, Three Types of Cognitive Load
+
+### Community 119 - "Community 119"
+Cohesion: 0.17
+Nodes (12): cancelPendingManualApplyEvents(), manualApplyEvidenceDir(), normalizeManualApplyEvidencePath(), pruneStaleManualApplyEvidence(), referencedManualApplyEvidencePaths(), rejectApplyDeferred(), removeManualApplyEvidence(), resolveApplyDeferred() (+4 more)
 
 ### Community 120 - "Community 120"
 Cohesion: 0.40
@@ -758,8 +785,16 @@ Nodes (11): Codable, Equatable, TranscriptOutcome, fill, ignore, send, Status, c
 Cohesion: 0.31
 Nodes (11): acknowledgePendingEvent(), agentPollingConnected(), broadcastAgentPollingIfChanged(), cancelQueuedAnonymousExitEvents(), enqueueEvent(), findAvailablePendingEvent(), flushPendingPolls(), handlePollGet() (+3 more)
 
+### Community 156 - "Community 156"
+Cohesion: 0.18
+Nodes (10): Cross-cutting regression pass, HermesVoice — Manual Verification Checklist, Phase 1 — Editing, dismissal, focus, resize, Phase 2 — Persistence, continuity, reliability, Phase 3 — History, new chat, copy, Phase 4 — Rich content, Phase 5 — Settings + keyboard control, Phase 6 — Voice flow (+2 more)
+
+### Community 157 - "Community 157"
+Cohesion: 0.40
+Nodes (5): compactManualApplyContext(), compactManualApplyEntry(), compactManualApplyOp(), compactNearbyManualEditTexts(), truncateManualApplyText()
+
 ## Knowledge Gaps
-- **749 isolated node(s):** `0. The goal (read first)`, `1. Orientation — the app & how to build it`, `2. Why the current architecture fights us — the 3 root blockers`, `Per-session vs global state split`, `4. Critical implementation details (the traps — read before coding)` (+744 more)
+- **758 isolated node(s):** `TestCase`, `TestCase`, `TestCase`, `Phase 1 — Editing, dismissal, focus, resize`, `Phase 2 — Persistence, continuity, reliability` (+753 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -769,14 +804,14 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `confirm()` connect `Community 62` to `Community 55`?**
   _High betweenness centrality (0.112) - this node is a cross-community bridge._
 - **Why does `pickVariantContent()` connect `Community 70` to `Community 45`, `Community 43`, `History & Overlay UI`?**
-  _High betweenness centrality (0.100) - this node is a cross-community bridge._
+  _High betweenness centrality (0.103) - this node is a cross-community bridge._
 - **Why does `resolveInsertSessionAnchor()` connect `Community 45` to `Community 70`?**
-  _High betweenness centrality (0.100) - this node is a cross-community bridge._
-- **What connects `0. The goal (read first)`, `1. Orientation — the app & how to build it`, `2. Why the current architecture fights us — the 3 root blockers` to the rest of the system?**
-  _749 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _High betweenness centrality (0.103) - this node is a cross-community bridge._
+- **What connects `TestCase`, `TestCase`, `TestCase` to the rest of the system?**
+  _758 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `App Lifecycle & Hotkeys` be split into smaller, more focused modules?**
   _Cohesion score 0.05179982440737489 - nodes in this community are weakly interconnected._
 - **Should `Conversation View Model` be split into smaller, more focused modules?**
-  _Cohesion score 0.06060606060606061 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.11827956989247312 - nodes in this community are weakly interconnected._
 - **Should `API Client & Streaming` be split into smaller, more focused modules?**
   _Cohesion score 0.08163265306122448 - nodes in this community are weakly interconnected._

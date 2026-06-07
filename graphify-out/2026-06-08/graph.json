@@ -48,292 +48,382 @@
   },
   "nodes": [
     {
-      "label": "background-sessions-plan.md",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L1",
-      "id": "tasks_background_sessions_plan",
-      "community": 7,
-      "norm_label": "background-sessions-plan.md"
-    },
-    {
-      "label": "Background & Concurrent Sessions \u2014 Implementation Plan",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L1",
-      "id": "tasks_background_sessions_plan_background_concurrent_sessions_implementation_plan",
-      "community": 7,
-      "norm_label": "background & concurrent sessions \u2014 implementation plan"
-    },
-    {
-      "label": "0. The goal (read first)",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L14",
-      "id": "tasks_background_sessions_plan_0_the_goal_read_first",
-      "community": 7,
-      "norm_label": "0. the goal (read first)"
-    },
-    {
-      "label": "1. Orientation \u2014 the app & how to build it",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L48",
-      "id": "tasks_background_sessions_plan_1_orientation_the_app_how_to_build_it",
-      "community": 7,
-      "norm_label": "1. orientation \u2014 the app & how to build it"
-    },
-    {
-      "label": "2. Why the current architecture fights us \u2014 the 3 root blockers",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L94",
-      "id": "tasks_background_sessions_plan_2_why_the_current_architecture_fights_us_the_3_root_blockers",
-      "community": 7,
-      "norm_label": "2. why the current architecture fights us \u2014 the 3 root blockers"
-    },
-    {
-      "label": "3. Target architecture",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L126",
-      "id": "tasks_background_sessions_plan_3_target_architecture",
-      "community": 7,
-      "norm_label": "3. target architecture"
-    },
-    {
-      "label": "Per-session vs global state split",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L167",
-      "id": "tasks_background_sessions_plan_per_session_vs_global_state_split",
-      "community": 7,
-      "norm_label": "per-session vs global state split"
-    },
-    {
-      "label": "4. Critical implementation details (the traps \u2014 read before coding)",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L190",
-      "id": "tasks_background_sessions_plan_4_critical_implementation_details_the_traps_read_before_coding",
-      "community": 7,
-      "norm_label": "4. critical implementation details (the traps \u2014 read before coding)"
-    },
-    {
-      "label": "5. Phased implementation",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L289",
-      "id": "tasks_background_sessions_plan_5_phased_implementation",
-      "community": 7,
-      "norm_label": "5. phased implementation"
-    },
-    {
-      "label": "Phase 0 \u2014 Pure, testable algorithms (no wiring, no behavior change)",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L294",
-      "id": "tasks_background_sessions_plan_phase_0_pure_testable_algorithms_no_wiring_no_behavior_change",
-      "community": 7,
-      "norm_label": "phase 0 \u2014 pure, testable algorithms (no wiring, no behavior change)"
-    },
-    {
-      "label": "Phase 1 \u2014 id-based streaming target (still single VM, behavior-preserving)",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L305",
-      "id": "tasks_background_sessions_plan_phase_1_id_based_streaming_target_still_single_vm_behavior_preserving",
-      "community": 7,
-      "norm_label": "phase 1 \u2014 id-based streaming target (still single vm, behavior-preserving)"
-    },
-    {
-      "label": "Phase 2 \u2014 Extract `ChatSession`; VM becomes a facade over ONE session",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L314",
-      "id": "tasks_background_sessions_plan_phase_2_extract_chatsession_vm_becomes_a_facade_over_one_session",
-      "community": 7,
-      "norm_label": "phase 2 \u2014 extract `chatsession`; vm becomes a facade over one session"
-    },
-    {
-      "label": "Phase 3 \u2014 `SessionManager` + non-destructive hide/switch (THE behavior change)",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L324",
-      "id": "tasks_background_sessions_plan_phase_3_sessionmanager_non_destructive_hide_switch_the_behavior_change",
-      "community": 7,
-      "norm_label": "phase 3 \u2014 `sessionmanager` + non-destructive hide/switch (the behavior change)"
-    },
-    {
-      "label": "Phase 4 \u2014 Durability + delete/evict safety",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L341",
-      "id": "tasks_background_sessions_plan_phase_4_durability_delete_evict_safety",
-      "community": 7,
-      "norm_label": "phase 4 \u2014 durability + delete/evict safety"
-    },
-    {
-      "label": "Phase 5 \u2014 UX surfacing of background activity (no correctness risk)",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L356",
-      "id": "tasks_background_sessions_plan_phase_5_ux_surfacing_of_background_activity_no_correctness_risk",
-      "community": 7,
-      "norm_label": "phase 5 \u2014 ux surfacing of background activity (no correctness risk)"
-    },
-    {
-      "label": "6. Edge-case behavior matrix (condensed; full analysis in design notes)",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L369",
-      "id": "tasks_background_sessions_plan_6_edge_case_behavior_matrix_condensed_full_analysis_in_design_notes",
-      "community": 7,
-      "norm_label": "6. edge-case behavior matrix (condensed; full analysis in design notes)"
-    },
-    {
-      "label": "7. Open decisions (pick before/while implementing)",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L388",
-      "id": "tasks_background_sessions_plan_7_open_decisions_pick_before_while_implementing",
-      "community": 7,
-      "norm_label": "7. open decisions (pick before/while implementing)"
-    },
-    {
-      "label": "8. Testing strategy",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L403",
-      "id": "tasks_background_sessions_plan_8_testing_strategy",
-      "community": 7,
-      "norm_label": "8. testing strategy"
-    },
-    {
-      "label": "9. Risk register (top items)",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L417",
-      "id": "tasks_background_sessions_plan_9_risk_register_top_items",
-      "community": 7,
-      "norm_label": "9. risk register (top items)"
-    },
-    {
-      "label": "10. Provenance",
-      "file_type": "document",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L433",
-      "id": "tasks_background_sessions_plan_10_provenance",
-      "community": 7,
-      "norm_label": "10. provenance"
-    },
-    {
       "label": "AppSettingsTests.swift",
       "file_type": "code",
       "source_file": "Tests/HermesVoiceTests/AppSettingsTests.swift",
       "source_location": "L1",
+      "id": "hermesvoicetests_appsettingstests",
       "community": 129,
-      "norm_label": "appsettingstests.swift",
-      "id": "hermesvoicetests_appsettingstests"
+      "norm_label": "appsettingstests.swift"
     },
     {
       "label": "AppSettingsTests",
       "file_type": "code",
       "source_file": "Tests/HermesVoiceTests/AppSettingsTests.swift",
       "source_location": "L4",
+      "id": "hermesvoicetests_appsettingstests_appsettingstests",
       "community": 129,
-      "norm_label": "appsettingstests",
-      "id": "hermesvoicetests_appsettingstests_appsettingstests"
+      "norm_label": "appsettingstests"
     },
     {
       "label": "TestCase",
       "file_type": "code",
       "source_file": "Tests/HermesVoiceTests/AppSettingsTests.swift",
       "source_location": "L5",
+      "id": "tests_hermesvoicetests_appsettingstests_swift_testcase",
       "community": 129,
-      "norm_label": "testcase",
-      "id": "tests_hermesvoicetests_appsettingstests_swift_testcase"
+      "norm_label": "testcase"
     },
     {
       "label": "ConversationStoreTests.swift",
       "file_type": "code",
       "source_file": "Tests/HermesVoiceTests/ConversationStoreTests.swift",
       "source_location": "L1",
+      "id": "hermesvoicetests_conversationstoretests",
       "community": 129,
-      "norm_label": "conversationstoretests.swift",
-      "id": "hermesvoicetests_conversationstoretests"
+      "norm_label": "conversationstoretests.swift"
     },
     {
       "label": "ConversationStoreTests",
       "file_type": "code",
       "source_file": "Tests/HermesVoiceTests/ConversationStoreTests.swift",
       "source_location": "L4",
+      "id": "hermesvoicetests_conversationstoretests_conversationstoretests",
       "community": 129,
-      "norm_label": "conversationstoretests",
-      "id": "hermesvoicetests_conversationstoretests_conversationstoretests"
+      "norm_label": "conversationstoretests"
     },
     {
       "label": "TestCase",
       "file_type": "code",
       "source_file": "Tests/HermesVoiceTests/ConversationStoreTests.swift",
       "source_location": "L5",
+      "id": "tests_hermesvoicetests_conversationstoretests_swift_testcase",
       "community": 129,
-      "norm_label": "testcase",
-      "id": "tests_hermesvoicetests_conversationstoretests_swift_testcase"
+      "norm_label": "testcase"
     },
     {
       "label": "HermesErrorTests.swift",
       "file_type": "code",
       "source_file": "Tests/HermesVoiceTests/HermesErrorTests.swift",
       "source_location": "L1",
+      "id": "hermesvoicetests_hermeserrortests",
       "community": 4,
-      "norm_label": "hermeserrortests.swift",
-      "id": "hermesvoicetests_hermeserrortests"
+      "norm_label": "hermeserrortests.swift"
     },
     {
       "label": "HermesErrorTests",
       "file_type": "code",
       "source_file": "Tests/HermesVoiceTests/HermesErrorTests.swift",
       "source_location": "L4",
+      "id": "hermesvoicetests_hermeserrortests_hermeserrortests",
       "community": 4,
-      "norm_label": "hermeserrortests",
-      "id": "hermesvoicetests_hermeserrortests_hermeserrortests"
+      "norm_label": "hermeserrortests"
     },
     {
       "label": "TestCase",
       "file_type": "code",
       "source_file": "Tests/HermesVoiceTests/HermesErrorTests.swift",
       "source_location": "L5",
+      "id": "tests_hermesvoicetests_hermeserrortests_swift_testcase",
       "community": 4,
-      "norm_label": "testcase",
-      "id": "tests_hermesvoicetests_hermeserrortests_swift_testcase"
+      "norm_label": "testcase"
     },
     {
       "label": "SSEParserTests.swift",
       "file_type": "code",
       "source_file": "Tests/HermesVoiceTests/SSEParserTests.swift",
       "source_location": "L1",
+      "id": "hermesvoicetests_sseparsertests",
       "community": 6,
-      "norm_label": "sseparsertests.swift",
-      "id": "hermesvoicetests_sseparsertests"
+      "norm_label": "sseparsertests.swift"
     },
     {
       "label": "SSEParserTests",
       "file_type": "code",
       "source_file": "Tests/HermesVoiceTests/SSEParserTests.swift",
       "source_location": "L4",
+      "id": "hermesvoicetests_sseparsertests_sseparsertests",
       "community": 6,
-      "norm_label": "sseparsertests",
-      "id": "hermesvoicetests_sseparsertests_sseparsertests"
+      "norm_label": "sseparsertests"
     },
     {
       "label": "TestCase",
       "file_type": "code",
       "source_file": "Tests/HermesVoiceTests/SSEParserTests.swift",
       "source_location": "L5",
+      "id": "tests_hermesvoicetests_sseparsertests_swift_testcase",
       "community": 6,
-      "norm_label": "testcase",
-      "id": "tests_hermesvoicetests_sseparsertests_swift_testcase"
+      "norm_label": "testcase"
+    },
+    {
+      "label": "manual-verification-checklist.md",
+      "file_type": "document",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L1",
+      "id": "tasks_manual_verification_checklist",
+      "community": 156,
+      "norm_label": "manual-verification-checklist.md"
+    },
+    {
+      "label": "HermesVoice \u2014 Manual Verification Checklist",
+      "file_type": "document",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L1",
+      "id": "tasks_manual_verification_checklist_hermesvoice_manual_verification_checklist",
+      "community": 156,
+      "norm_label": "hermesvoice \u2014 manual verification checklist"
+    },
+    {
+      "label": "Phase 1 \u2014 Editing, dismissal, focus, resize",
+      "file_type": "document",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L11",
+      "id": "tasks_manual_verification_checklist_phase_1_editing_dismissal_focus_resize",
+      "community": 156,
+      "norm_label": "phase 1 \u2014 editing, dismissal, focus, resize"
+    },
+    {
+      "label": "Phase 2 \u2014 Persistence, continuity, reliability",
+      "file_type": "document",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L17",
+      "id": "tasks_manual_verification_checklist_phase_2_persistence_continuity_reliability",
+      "community": 156,
+      "norm_label": "phase 2 \u2014 persistence, continuity, reliability"
+    },
+    {
+      "label": "Phase 3 \u2014 History, new chat, copy",
+      "file_type": "document",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L23",
+      "id": "tasks_manual_verification_checklist_phase_3_history_new_chat_copy",
+      "community": 156,
+      "norm_label": "phase 3 \u2014 history, new chat, copy"
+    },
+    {
+      "label": "Phase 4 \u2014 Rich content",
+      "file_type": "document",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L29",
+      "id": "tasks_manual_verification_checklist_phase_4_rich_content",
+      "community": 156,
+      "norm_label": "phase 4 \u2014 rich content"
+    },
+    {
+      "label": "Phase 5 \u2014 Settings + keyboard control",
+      "file_type": "document",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L35",
+      "id": "tasks_manual_verification_checklist_phase_5_settings_keyboard_control",
+      "community": 156,
+      "norm_label": "phase 5 \u2014 settings + keyboard control"
+    },
+    {
+      "label": "Phase 6 \u2014 Voice flow",
+      "file_type": "document",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L41",
+      "id": "tasks_manual_verification_checklist_phase_6_voice_flow",
+      "community": 156,
+      "norm_label": "phase 6 \u2014 voice flow"
+    },
+    {
+      "label": "Phase 7 \u2014 Visual redesign (eyeball in BOTH light & dark)",
+      "file_type": "document",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L47",
+      "id": "tasks_manual_verification_checklist_phase_7_visual_redesign_eyeball_in_both_light_dark",
+      "community": 156,
+      "norm_label": "phase 7 \u2014 visual redesign (eyeball in both light & dark)"
+    },
+    {
+      "label": "Phase 8 \u2014 Packaging & onboarding",
+      "file_type": "document",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L53",
+      "id": "tasks_manual_verification_checklist_phase_8_packaging_onboarding",
+      "community": 156,
+      "norm_label": "phase 8 \u2014 packaging & onboarding"
+    },
+    {
+      "label": "Cross-cutting regression pass",
+      "file_type": "document",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L58",
+      "id": "tasks_manual_verification_checklist_cross_cutting_regression_pass",
+      "community": 156,
+      "norm_label": "cross-cutting regression pass"
+    },
+    {
+      "label": "overhaul-plan.md",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L1",
+      "id": "tasks_overhaul_plan",
+      "community": 7,
+      "norm_label": "overhaul-plan.md"
+    },
+    {
+      "label": "HermesVoice Overhaul Plan",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L1",
+      "id": "tasks_overhaul_plan_hermesvoice_overhaul_plan",
+      "community": 7,
+      "norm_label": "hermesvoice overhaul plan"
+    },
+    {
+      "label": "0. Orientation (read first)",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L11",
+      "id": "tasks_overhaul_plan_0_orientation_read_first",
+      "community": 7,
+      "norm_label": "0. orientation (read first)"
+    },
+    {
+      "label": "Progress tracker",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L62",
+      "id": "tasks_overhaul_plan_progress_tracker",
+      "community": 7,
+      "norm_label": "progress tracker"
+    },
+    {
+      "label": "1. Confirmed decisions (the spec)",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L78",
+      "id": "tasks_overhaul_plan_1_confirmed_decisions_the_spec",
+      "community": 7,
+      "norm_label": "1. confirmed decisions (the spec)"
+    },
+    {
+      "label": "2. Hermes server API reference (verified from `~/.hermes/hermes-agent/gateway/platforms/api_server.py`)",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L104",
+      "id": "tasks_overhaul_plan_2_hermes_server_api_reference_verified_from_hermes_hermes_agent_gateway_platforms_api_server_py",
+      "community": 7,
+      "norm_label": "2. hermes server api reference (verified from `~/.hermes/hermes-agent/gateway/platforms/api_server.py`)"
+    },
+    {
+      "label": "3. Known bugs / gaps (root causes)",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L140",
+      "id": "tasks_overhaul_plan_3_known_bugs_gaps_root_causes",
+      "community": 7,
+      "norm_label": "3. known bugs / gaps (root causes)"
+    },
+    {
+      "label": "4. Phased implementation plan",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L164",
+      "id": "tasks_overhaul_plan_4_phased_implementation_plan",
+      "community": 7,
+      "norm_label": "4. phased implementation plan"
+    },
+    {
+      "label": "Phase 1 \u2014 Quick-win bug fixes  *(user priority; isolated, low risk)*  \u2705 DONE (2026-06-07, commit `63861e9`)",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L170",
+      "id": "tasks_overhaul_plan_phase_1_quick_win_bug_fixes_user_priority_isolated_low_risk_done_2026_06_07_commit_63861e9",
+      "community": 7,
+      "norm_label": "phase 1 \u2014 quick-win bug fixes  *(user priority; isolated, low risk)*  \u2705 done (2026-06-07, commit `63861e9`)"
+    },
+    {
+      "label": "Phase 2 \u2014 Data & API foundation  *(mostly invisible; enables features)*  \u2705 DONE (2026-06-07)",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L204",
+      "id": "tasks_overhaul_plan_phase_2_data_api_foundation_mostly_invisible_enables_features_done_2026_06_07",
+      "community": 7,
+      "norm_label": "phase 2 \u2014 data & api foundation  *(mostly invisible; enables features)*  \u2705 done (2026-06-07)"
+    },
+    {
+      "label": "Phase 3 \u2014 Conversation features (history, new chat, copy)  \u2705 DONE (2026-06-07)",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L276",
+      "id": "tasks_overhaul_plan_phase_3_conversation_features_history_new_chat_copy_done_2026_06_07",
+      "community": 7,
+      "norm_label": "phase 3 \u2014 conversation features (history, new chat, copy)  \u2705 done (2026-06-07)"
+    },
+    {
+      "label": "Phase 4 \u2014 Rich content (markdown, images, tool activity)  \u2705 DONE (2026-06-07)",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L333",
+      "id": "tasks_overhaul_plan_phase_4_rich_content_markdown_images_tool_activity_done_2026_06_07",
+      "community": 7,
+      "norm_label": "phase 4 \u2014 rich content (markdown, images, tool activity)  \u2705 done (2026-06-07)"
+    },
+    {
+      "label": "Phase 5 \u2014 Settings + full keyboard control  \u2705 DONE (2026-06-07)",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L403",
+      "id": "tasks_overhaul_plan_phase_5_settings_full_keyboard_control_done_2026_06_07",
+      "community": 7,
+      "norm_label": "phase 5 \u2014 settings + full keyboard control  \u2705 done (2026-06-07)"
+    },
+    {
+      "label": "Phase 6 \u2014 Voice flow change  \u2705 DONE (2026-06-07)",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L484",
+      "id": "tasks_overhaul_plan_phase_6_voice_flow_change_done_2026_06_07",
+      "community": 7,
+      "norm_label": "phase 6 \u2014 voice flow change  \u2705 done (2026-06-07)"
+    },
+    {
+      "label": "Phase 7 \u2014 Expressive visual redesign  *(warm & expressive)*  \u2705 DONE (2026-06-07)",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L541",
+      "id": "tasks_overhaul_plan_phase_7_expressive_visual_redesign_warm_expressive_done_2026_06_07",
+      "community": 7,
+      "norm_label": "phase 7 \u2014 expressive visual redesign  *(warm & expressive)*  \u2705 done (2026-06-07)"
+    },
+    {
+      "label": "Phase 8 \u2014 Native packaging & onboarding  \u2705 DONE (2026-06-07)",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L616",
+      "id": "tasks_overhaul_plan_phase_8_native_packaging_onboarding_done_2026_06_07",
+      "community": 7,
+      "norm_label": "phase 8 \u2014 native packaging & onboarding  \u2705 done (2026-06-07)"
+    },
+    {
+      "label": "Phase 9 \u2014 QA, tests, verification  \u2705 DONE (2026-06-07)",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L681",
+      "id": "tasks_overhaul_plan_phase_9_qa_tests_verification_done_2026_06_07",
+      "community": 7,
+      "norm_label": "phase 9 \u2014 qa, tests, verification  \u2705 done (2026-06-07)"
+    },
+    {
+      "label": "5. Cross-cutting rules (\"don't break the app\")",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L733",
+      "id": "tasks_overhaul_plan_5_cross_cutting_rules_don_t_break_the_app",
+      "community": 7,
+      "norm_label": "5. cross-cutting rules (\"don't break the app\")"
+    },
+    {
+      "label": "6. Open items to verify during implementation",
+      "file_type": "document",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L741",
+      "id": "tasks_overhaul_plan_6_open_items_to_verify_during_implementation",
+      "community": 7,
+      "norm_label": "6. open items to verify during implementation"
     },
     {
       "label": "settings.json",
@@ -1393,7 +1483,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/critique-storage.mjs",
       "source_location": "L1",
-      "community": 102,
+      "community": 103,
       "norm_label": "critique-storage.mjs",
       "id": "scripts_critique_storage"
     },
@@ -1402,7 +1492,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/critique-storage.mjs",
       "source_location": "L43",
-      "community": 102,
+      "community": 103,
       "norm_label": "slugfromtarget()",
       "id": "scripts_critique_storage_slugfromtarget"
     },
@@ -1411,7 +1501,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/critique-storage.mjs",
       "source_location": "L70",
-      "community": 102,
+      "community": 103,
       "norm_label": "kebab()",
       "id": "scripts_critique_storage_kebab"
     },
@@ -1420,7 +1510,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/critique-storage.mjs",
       "source_location": "L87",
-      "community": 102,
+      "community": 103,
       "norm_label": "nowfilenamestamp()",
       "id": "scripts_critique_storage_nowfilenamestamp"
     },
@@ -1429,7 +1519,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/critique-storage.mjs",
       "source_location": "L99",
-      "community": 102,
+      "community": 103,
       "norm_label": "writesnapshot()",
       "id": "scripts_critique_storage_writesnapshot"
     },
@@ -1438,7 +1528,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/critique-storage.mjs",
       "source_location": "L114",
-      "community": 102,
+      "community": 103,
       "norm_label": "serializefrontmatter()",
       "id": "scripts_critique_storage_serializefrontmatter"
     },
@@ -1447,7 +1537,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/critique-storage.mjs",
       "source_location": "L127",
-      "community": 102,
+      "community": 103,
       "norm_label": "parsefrontmatter()",
       "id": "scripts_critique_storage_parsefrontmatter"
     },
@@ -1456,7 +1546,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/critique-storage.mjs",
       "source_location": "L149",
-      "community": 102,
+      "community": 103,
       "norm_label": "listsnapshotsforslug()",
       "id": "scripts_critique_storage_listsnapshotsforslug"
     },
@@ -1465,7 +1555,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/critique-storage.mjs",
       "source_location": "L163",
-      "community": 102,
+      "community": 103,
       "norm_label": "readlatestsnapshot()",
       "id": "scripts_critique_storage_readlatestsnapshot"
     },
@@ -1474,7 +1564,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/critique-storage.mjs",
       "source_location": "L175",
-      "community": 102,
+      "community": 103,
       "norm_label": "readtrend()",
       "id": "scripts_critique_storage_readtrend"
     },
@@ -1483,7 +1573,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/critique-storage.mjs",
       "source_location": "L183",
-      "community": 102,
+      "community": 103,
       "norm_label": "main()",
       "id": "scripts_critique_storage_main"
     },
@@ -1492,7 +1582,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/critique-storage.mjs",
       "source_location": "L225",
-      "community": 102,
+      "community": 103,
       "norm_label": "ismainmodule()",
       "id": "scripts_critique_storage_ismainmodule"
     },
@@ -5983,7 +6073,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/impeccable-paths.mjs",
       "source_location": "L116",
-      "community": 102,
+      "community": 103,
       "norm_label": "getcritiquedir()",
       "id": "scripts_impeccable_paths_getcritiquedir"
     },
@@ -12337,7 +12427,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L114",
-      "community": 32,
+      "community": 119,
       "norm_label": "tombstonetimedoutapplyid()",
       "id": "scripts_live_server_tombstonetimedoutapplyid"
     },
@@ -12382,7 +12472,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L189",
-      "community": 32,
+      "community": 119,
       "norm_label": "writemanualapplyevidence()",
       "id": "scripts_live_server_writemanualapplyevidence"
     },
@@ -12391,7 +12481,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L197",
-      "community": 32,
+      "community": 119,
       "norm_label": "manualapplyevidencedir()",
       "id": "scripts_live_server_manualapplyevidencedir"
     },
@@ -12400,7 +12490,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L201",
-      "community": 32,
+      "community": 119,
       "norm_label": "normalizemanualapplyevidencepath()",
       "id": "scripts_live_server_normalizemanualapplyevidencepath"
     },
@@ -12409,7 +12499,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L211",
-      "community": 32,
+      "community": 119,
       "norm_label": "removemanualapplyevidence()",
       "id": "scripts_live_server_removemanualapplyevidence"
     },
@@ -12418,7 +12508,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L222",
-      "community": 32,
+      "community": 119,
       "norm_label": "referencedmanualapplyevidencepaths()",
       "id": "scripts_live_server_referencedmanualapplyevidencepaths"
     },
@@ -12427,7 +12517,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L233",
-      "community": 32,
+      "community": 119,
       "norm_label": "prunestalemanualapplyevidence()",
       "id": "scripts_live_server_prunestalemanualapplyevidence"
     },
@@ -12472,7 +12562,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L308",
-      "community": 32,
+      "community": 157,
       "norm_label": "compactmanualapplyentry()",
       "id": "scripts_live_server_compactmanualapplyentry"
     },
@@ -12481,7 +12571,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L318",
-      "community": 32,
+      "community": 157,
       "norm_label": "compactmanualapplyop()",
       "id": "scripts_live_server_compactmanualapplyop"
     },
@@ -12490,7 +12580,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L337",
-      "community": 32,
+      "community": 157,
       "norm_label": "compactmanualapplycontext()",
       "id": "scripts_live_server_compactmanualapplycontext"
     },
@@ -12499,7 +12589,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L348",
-      "community": 32,
+      "community": 157,
       "norm_label": "compactnearbymanualedittexts()",
       "id": "scripts_live_server_compactnearbymanualedittexts"
     },
@@ -12508,7 +12598,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L359",
-      "community": 32,
+      "community": 157,
       "norm_label": "truncatemanualapplytext()",
       "id": "scripts_live_server_truncatemanualapplytext"
     },
@@ -12616,7 +12706,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L680",
-      "community": 32,
+      "community": 119,
       "norm_label": "resolveapplydeferred()",
       "id": "scripts_live_server_resolveapplydeferred"
     },
@@ -12625,7 +12715,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L690",
-      "community": 32,
+      "community": 119,
       "norm_label": "rejectapplydeferred()",
       "id": "scripts_live_server_rejectapplydeferred"
     },
@@ -12643,7 +12733,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L716",
-      "community": 9,
+      "community": 32,
       "norm_label": "manualapplytransactionpath()",
       "id": "scripts_live_server_manualapplytransactionpath"
     },
@@ -12652,7 +12742,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L720",
-      "community": 9,
+      "community": 32,
       "norm_label": "readmanualapplytransaction()",
       "id": "scripts_live_server_readmanualapplytransaction"
     },
@@ -12661,7 +12751,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L730",
-      "community": 9,
+      "community": 32,
       "norm_label": "writemanualapplytransaction()",
       "id": "scripts_live_server_writemanualapplytransaction"
     },
@@ -12670,7 +12760,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L755",
-      "community": 9,
+      "community": 32,
       "norm_label": "clearmanualapplytransaction()",
       "id": "scripts_live_server_clearmanualapplytransaction"
     },
@@ -12679,7 +12769,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L770",
-      "community": 9,
+      "community": 32,
       "norm_label": "rollbackmanualapplytransaction()",
       "id": "scripts_live_server_rollbackmanualapplytransaction"
     },
@@ -12697,7 +12787,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L836",
-      "community": 9,
+      "community": 32,
       "norm_label": "normalizeprojectfile()",
       "id": "scripts_live_server_normalizeprojectfile"
     },
@@ -12706,7 +12796,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L844",
-      "community": 32,
+      "community": 119,
       "norm_label": "rollbackapplysnapshot()",
       "id": "scripts_live_server_rollbackapplysnapshot"
     },
@@ -12715,7 +12805,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L867",
-      "community": 32,
+      "community": 119,
       "norm_label": "rollbacktimedoutapplyreply()",
       "id": "scripts_live_server_rollbacktimedoutapplyreply"
     },
@@ -12841,7 +12931,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L1009",
-      "community": 32,
+      "community": 119,
       "norm_label": "cancelpendingmanualapplyevents()",
       "id": "scripts_live_server_cancelpendingmanualapplyevents"
     },
@@ -12886,7 +12976,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L1099",
-      "community": 9,
+      "community": 32,
       "norm_label": "broadcast()",
       "id": "scripts_live_server_broadcast"
     },
@@ -12895,7 +12985,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L1106",
-      "community": 9,
+      "community": 32,
       "norm_label": "recordmanualeditactivity()",
       "id": "scripts_live_server_recordmanualeditactivity"
     },
@@ -12931,7 +13021,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L1168",
-      "community": 9,
+      "community": 32,
       "norm_label": "summarizemanualdiagnostics()",
       "id": "scripts_live_server_summarizemanualdiagnostics"
     },
@@ -13678,7 +13768,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-sveltekit-adapter.mjs",
       "source_location": "L1",
-      "community": 46,
+      "community": 24,
       "norm_label": "live-sveltekit-adapter.mjs",
       "id": "scripts_live_sveltekit_adapter"
     },
@@ -13687,7 +13777,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-sveltekit-adapter.mjs",
       "source_location": "L18",
-      "community": 46,
+      "community": 24,
       "norm_label": "detectsveltekitproject()",
       "id": "scripts_live_sveltekit_adapter_detectsveltekitproject"
     },
@@ -13696,7 +13786,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-sveltekit-adapter.mjs",
       "source_location": "L39",
-      "community": 46,
+      "community": 24,
       "norm_label": "applysveltekitliveadapter()",
       "id": "scripts_live_sveltekit_adapter_applysveltekitliveadapter"
     },
@@ -13705,7 +13795,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-sveltekit-adapter.mjs",
       "source_location": "L65",
-      "community": 46,
+      "community": 24,
       "norm_label": "removesveltekitliveadapter()",
       "id": "scripts_live_sveltekit_adapter_removesveltekitliveadapter"
     },
@@ -13714,7 +13804,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-sveltekit-adapter.mjs",
       "source_location": "L97",
-      "community": 46,
+      "community": 24,
       "norm_label": "patchsveltelayout()",
       "id": "scripts_live_sveltekit_adapter_patchsveltelayout"
     },
@@ -13723,7 +13813,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-sveltekit-adapter.mjs",
       "source_location": "L124",
-      "community": 46,
+      "community": 24,
       "norm_label": "unpatchsveltelayout()",
       "id": "scripts_live_sveltekit_adapter_unpatchsveltelayout"
     },
@@ -13732,7 +13822,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-sveltekit-adapter.mjs",
       "source_location": "L139",
-      "community": 46,
+      "community": 24,
       "norm_label": "ensuresvelteliverootcomponent()",
       "id": "scripts_live_sveltekit_adapter_ensuresvelteliverootcomponent"
     },
@@ -13741,7 +13831,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-sveltekit-adapter.mjs",
       "source_location": "L146",
-      "community": 46,
+      "community": 24,
       "norm_label": "buildsvelteliverootcomponent()",
       "id": "scripts_live_sveltekit_adapter_buildsvelteliverootcomponent"
     },
@@ -13750,7 +13840,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-sveltekit-adapter.mjs",
       "source_location": "L207",
-      "community": 46,
+      "community": 24,
       "norm_label": "findsveltekitapphtml()",
       "id": "scripts_live_sveltekit_adapter_findsveltekitapphtml"
     },
@@ -13759,7 +13849,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-sveltekit-adapter.mjs",
       "source_location": "L220",
-      "community": 46,
+      "community": 24,
       "norm_label": "findsveltekitlayout()",
       "id": "scripts_live_sveltekit_adapter_findsveltekitlayout"
     },
@@ -13768,7 +13858,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-sveltekit-adapter.mjs",
       "source_location": "L231",
-      "community": 46,
+      "community": 24,
       "norm_label": "defaultsveltelayout()",
       "id": "scripts_live_sveltekit_adapter_defaultsveltelayout"
     },
@@ -13777,7 +13867,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-sveltekit-adapter.mjs",
       "source_location": "L235",
-      "community": 46,
+      "community": 24,
       "norm_label": "packagehassveltekit()",
       "id": "scripts_live_sveltekit_adapter_packagehassveltekit"
     },
@@ -13786,7 +13876,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-sveltekit-adapter.mjs",
       "source_location": "L251",
-      "community": 46,
+      "community": 24,
       "norm_label": "fileincludes()",
       "id": "scripts_live_sveltekit_adapter_fileincludes"
     },
@@ -13795,7 +13885,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-sveltekit-adapter.mjs",
       "source_location": "L259",
-      "community": 46,
+      "community": 24,
       "norm_label": "pruneemptydir()",
       "id": "scripts_live_sveltekit_adapter_pruneemptydir"
     },
@@ -13804,7 +13894,7 @@
       "file_type": "code",
       "source_file": ".claude/skills/impeccable/scripts/live-sveltekit-adapter.mjs",
       "source_location": "L272",
-      "community": 46,
+      "community": 24,
       "norm_label": "escaperegexp()",
       "id": "scripts_live_sveltekit_adapter_escaperegexp"
     },
@@ -17098,7 +17188,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayPanel.swift",
       "source_location": "L175",
-      "community": 8,
+      "community": 97,
       "norm_label": ".keydown()",
       "id": "hermesvoice_overlaypanel_overlaypanel_keydown"
     },
@@ -17107,7 +17197,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayPanel.swift",
       "source_location": "L175",
-      "community": 8,
+      "community": 97,
       "norm_label": "nsevent",
       "id": "sources_hermesvoice_overlaypanel_swift_nsevent"
     },
@@ -17359,7 +17449,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L1",
-      "community": 1,
+      "community": 9,
       "norm_label": "overlayviewmodel.swift",
       "id": "hermesvoice_overlayviewmodel"
     },
@@ -17368,7 +17458,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L6",
-      "community": 1,
+      "community": 9,
       "norm_label": "overlaystate",
       "id": "hermesvoice_overlayviewmodel_overlaystate"
     },
@@ -17377,7 +17467,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L7",
-      "community": 1,
+      "community": 9,
       "norm_label": "idle",
       "id": "hermesvoice_overlayviewmodel_overlaystate_idle"
     },
@@ -17386,7 +17476,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L8",
-      "community": 1,
+      "community": 9,
       "norm_label": "listening",
       "id": "hermesvoice_overlayviewmodel_overlaystate_listening"
     },
@@ -17395,7 +17485,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L9",
-      "community": 1,
+      "community": 9,
       "norm_label": "transcribing",
       "id": "hermesvoice_overlayviewmodel_overlaystate_transcribing"
     },
@@ -17404,7 +17494,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L10",
-      "community": 1,
+      "community": 9,
       "norm_label": "sending",
       "id": "hermesvoice_overlayviewmodel_overlaystate_sending"
     },
@@ -17413,7 +17503,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L11",
-      "community": 1,
+      "community": 9,
       "norm_label": "responding",
       "id": "hermesvoice_overlayviewmodel_overlaystate_responding"
     },
@@ -17422,7 +17512,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L12",
-      "community": 1,
+      "community": 9,
       "norm_label": "done",
       "id": "hermesvoice_overlayviewmodel_overlaystate_done"
     },
@@ -17431,7 +17521,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L13",
-      "community": 1,
+      "community": 9,
       "norm_label": "error",
       "id": "hermesvoice_overlayviewmodel_overlaystate_error"
     },
@@ -17440,7 +17530,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L17",
-      "community": 1,
+      "community": 9,
       "norm_label": "connectionstate",
       "id": "hermesvoice_overlayviewmodel_connectionstate"
     },
@@ -17449,7 +17539,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L18",
-      "community": 1,
+      "community": 9,
       "norm_label": "unknown",
       "id": "hermesvoice_overlayviewmodel_connectionstate_unknown"
     },
@@ -17458,7 +17548,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L19",
-      "community": 1,
+      "community": 9,
       "norm_label": "online",
       "id": "hermesvoice_overlayviewmodel_connectionstate_online"
     },
@@ -17467,7 +17557,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L20",
-      "community": 1,
+      "community": 9,
       "norm_label": "offline",
       "id": "hermesvoice_overlayviewmodel_connectionstate_offline"
     },
@@ -17476,7 +17566,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L23",
-      "community": 1,
+      "community": 28,
       "norm_label": "chatmessage",
       "id": "hermesvoice_overlayviewmodel_chatmessage"
     },
@@ -17485,7 +17575,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L24",
-      "community": 1,
+      "community": 28,
       "norm_label": "uuid",
       "id": "sources_hermesvoice_overlayviewmodel_swift_uuid"
     },
@@ -17494,7 +17584,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L25",
-      "community": 1,
+      "community": 9,
       "norm_label": "role",
       "id": "role"
     },
@@ -17503,7 +17593,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L26",
-      "community": 1,
+      "community": 28,
       "norm_label": "string",
       "id": "sources_hermesvoice_overlayviewmodel_swift_string"
     },
@@ -17512,7 +17602,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L27",
-      "community": 1,
+      "community": 28,
       "norm_label": "bool",
       "id": "sources_hermesvoice_overlayviewmodel_swift_bool"
     },
@@ -17521,7 +17611,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L30",
-      "community": 1,
+      "community": 28,
       "norm_label": "date",
       "id": "sources_hermesvoice_overlayviewmodel_swift_date"
     },
@@ -17530,7 +17620,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L34",
-      "community": 1,
+      "community": 28,
       "norm_label": ".init()",
       "id": "hermesvoice_overlayviewmodel_chatmessage_init"
     },
@@ -17539,7 +17629,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L50",
-      "community": 1,
+      "community": 9,
       "norm_label": "role",
       "id": "hermesvoice_overlayviewmodel_role"
     },
@@ -17548,7 +17638,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L51",
-      "community": 1,
+      "community": 9,
       "norm_label": "user",
       "id": "hermesvoice_overlayviewmodel_role_user"
     },
@@ -17557,7 +17647,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L52",
-      "community": 1,
+      "community": 9,
       "norm_label": "assistant",
       "id": "hermesvoice_overlayviewmodel_role_assistant"
     },
@@ -17566,7 +17656,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L53",
-      "community": 1,
+      "community": 9,
       "norm_label": "error",
       "id": "hermesvoice_overlayviewmodel_role_error"
     },
@@ -17620,7 +17710,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L79",
-      "community": 1,
+      "community": 94,
       "norm_label": "sessionmeta",
       "id": "sources_hermesvoice_overlayviewmodel_swift_sessionmeta"
     },
@@ -17629,7 +17719,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L102",
-      "community": 1,
+      "community": 28,
       "norm_label": "voiceengine",
       "id": "voiceengine"
     },
@@ -17665,7 +17755,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L117",
-      "community": 1,
+      "community": 28,
       "norm_label": ".init()",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_init"
     },
@@ -17728,7 +17818,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L207",
-      "community": 1,
+      "community": 28,
       "norm_label": ".handletranscript()",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_handletranscript"
     },
@@ -17737,7 +17827,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L228",
-      "community": 1,
+      "community": 28,
       "norm_label": ".sendmessage()",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_sendmessage"
     },
@@ -17746,7 +17836,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L236",
-      "community": 1,
+      "community": 28,
       "norm_label": ".sendtohermes()",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_sendtohermes"
     },
@@ -17773,7 +17863,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L269",
-      "community": 1,
+      "community": 28,
       "norm_label": ".removependingimage()",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_removependingimage"
     },
@@ -17782,7 +17872,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L283",
-      "community": 1,
+      "community": 94,
       "norm_label": ".retrylast()",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_retrylast"
     },
@@ -17791,7 +17881,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L298",
-      "community": 1,
+      "community": 94,
       "norm_label": ".generateresponse()",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_generateresponse"
     },
@@ -17800,7 +17890,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L318",
-      "community": 1,
+      "community": 94,
       "norm_label": ".runstream()",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_runstream"
     },
@@ -17809,7 +17899,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L318",
-      "community": 1,
+      "community": 94,
       "norm_label": "outgoingmessage",
       "id": "outgoingmessage"
     },
@@ -17818,7 +17908,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L318",
-      "community": 1,
+      "community": 94,
       "norm_label": "int",
       "id": "sources_hermesvoice_overlayviewmodel_swift_int"
     },
@@ -17827,7 +17917,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L372",
-      "community": 1,
+      "community": 94,
       "norm_label": ".finishassistant()",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_finishassistant"
     },
@@ -17836,7 +17926,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L384",
-      "community": 1,
+      "community": 94,
       "norm_label": ".handlestreamfailure()",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_handlestreamfailure"
     },
@@ -17845,7 +17935,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L384",
-      "community": 1,
+      "community": 94,
       "norm_label": "hermesapierror",
       "id": "hermesapierror"
     },
@@ -17863,7 +17953,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L421",
-      "community": 1,
+      "community": 94,
       "norm_label": ".cancelstreaming()",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_cancelstreaming"
     },
@@ -17872,7 +17962,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L443",
-      "community": 1,
+      "community": 28,
       "norm_label": ".registerconversationifneeded()",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_registerconversationifneeded"
     },
@@ -17881,7 +17971,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L458",
-      "community": 1,
+      "community": 94,
       "norm_label": ".persist()",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_persist"
     },
@@ -17890,7 +17980,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L468",
-      "community": 1,
+      "community": 94,
       "norm_label": ".updateindexmeta()",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_updateindexmeta"
     },
@@ -17899,7 +17989,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L493",
-      "community": 1,
+      "community": 94,
       "norm_label": ".rewritepersistedtranscript()",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_rewritepersistedtranscript"
     },
@@ -17980,7 +18070,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L596",
-      "community": 1,
+      "community": 94,
       "norm_label": ".recentsessions()",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_recentsessions"
     },
@@ -25191,7 +25281,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L24",
-      "community": 1,
+      "community": 28,
       "norm_label": "uuid",
       "id": "uuid"
     },
@@ -25200,7 +25290,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L30",
-      "community": 1,
+      "community": 28,
       "norm_label": "date",
       "id": "date"
     },
@@ -25245,7 +25335,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayPanel.swift",
       "source_location": "L175",
-      "community": 8,
+      "community": 97,
       "norm_label": "nsevent",
       "id": "nsevent"
     },
@@ -25542,196 +25632,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan",
-      "target": "tasks_background_sessions_plan_background_concurrent_sessions_implementation_plan",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L14",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan_background_concurrent_sessions_implementation_plan",
-      "target": "tasks_background_sessions_plan_0_the_goal_read_first",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L433",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan_background_concurrent_sessions_implementation_plan",
-      "target": "tasks_background_sessions_plan_10_provenance",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L48",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan_background_concurrent_sessions_implementation_plan",
-      "target": "tasks_background_sessions_plan_1_orientation_the_app_how_to_build_it",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L94",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan_background_concurrent_sessions_implementation_plan",
-      "target": "tasks_background_sessions_plan_2_why_the_current_architecture_fights_us_the_3_root_blockers",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L126",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan_background_concurrent_sessions_implementation_plan",
-      "target": "tasks_background_sessions_plan_3_target_architecture",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L190",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan_background_concurrent_sessions_implementation_plan",
-      "target": "tasks_background_sessions_plan_4_critical_implementation_details_the_traps_read_before_coding",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L289",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan_background_concurrent_sessions_implementation_plan",
-      "target": "tasks_background_sessions_plan_5_phased_implementation",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L369",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan_background_concurrent_sessions_implementation_plan",
-      "target": "tasks_background_sessions_plan_6_edge_case_behavior_matrix_condensed_full_analysis_in_design_notes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L388",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan_background_concurrent_sessions_implementation_plan",
-      "target": "tasks_background_sessions_plan_7_open_decisions_pick_before_while_implementing",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L403",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan_background_concurrent_sessions_implementation_plan",
-      "target": "tasks_background_sessions_plan_8_testing_strategy",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L417",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan_background_concurrent_sessions_implementation_plan",
-      "target": "tasks_background_sessions_plan_9_risk_register_top_items",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L167",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan_3_target_architecture",
-      "target": "tasks_background_sessions_plan_per_session_vs_global_state_split",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L294",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan_5_phased_implementation",
-      "target": "tasks_background_sessions_plan_phase_0_pure_testable_algorithms_no_wiring_no_behavior_change",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L305",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan_5_phased_implementation",
-      "target": "tasks_background_sessions_plan_phase_1_id_based_streaming_target_still_single_vm_behavior_preserving",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L314",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan_5_phased_implementation",
-      "target": "tasks_background_sessions_plan_phase_2_extract_chatsession_vm_becomes_a_facade_over_one_session",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L324",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan_5_phased_implementation",
-      "target": "tasks_background_sessions_plan_phase_3_sessionmanager_non_destructive_hide_switch_the_behavior_change",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L341",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan_5_phased_implementation",
-      "target": "tasks_background_sessions_plan_phase_4_durability_delete_evict_safety",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/background-sessions-plan.md",
-      "source_location": "L356",
-      "weight": 1.0,
-      "source": "tasks_background_sessions_plan_5_phased_implementation",
-      "target": "tasks_background_sessions_plan_phase_5_ux_surfacing_of_background_activity_no_correctness_risk",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "Tests/HermesVoiceTests/AppSettingsTests.swift",
       "source_location": "L4",
       "weight": 1.0,
@@ -25966,6 +25866,286 @@
       "confidence_score": 1.0,
       "source": "hermesvoicetests_sseparsertests_sseparsertests",
       "target": "tests_hermesvoicetests_sseparsertests_swift_testcase"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_manual_verification_checklist",
+      "target": "tasks_manual_verification_checklist_hermesvoice_manual_verification_checklist"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L58",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_manual_verification_checklist_hermesvoice_manual_verification_checklist",
+      "target": "tasks_manual_verification_checklist_cross_cutting_regression_pass"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_manual_verification_checklist_hermesvoice_manual_verification_checklist",
+      "target": "tasks_manual_verification_checklist_phase_1_editing_dismissal_focus_resize"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L17",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_manual_verification_checklist_hermesvoice_manual_verification_checklist",
+      "target": "tasks_manual_verification_checklist_phase_2_persistence_continuity_reliability"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L23",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_manual_verification_checklist_hermesvoice_manual_verification_checklist",
+      "target": "tasks_manual_verification_checklist_phase_3_history_new_chat_copy"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L29",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_manual_verification_checklist_hermesvoice_manual_verification_checklist",
+      "target": "tasks_manual_verification_checklist_phase_4_rich_content"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L35",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_manual_verification_checklist_hermesvoice_manual_verification_checklist",
+      "target": "tasks_manual_verification_checklist_phase_5_settings_keyboard_control"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L41",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_manual_verification_checklist_hermesvoice_manual_verification_checklist",
+      "target": "tasks_manual_verification_checklist_phase_6_voice_flow"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L47",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_manual_verification_checklist_hermesvoice_manual_verification_checklist",
+      "target": "tasks_manual_verification_checklist_phase_7_visual_redesign_eyeball_in_both_light_dark"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/manual-verification-checklist.md",
+      "source_location": "L53",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_manual_verification_checklist_hermesvoice_manual_verification_checklist",
+      "target": "tasks_manual_verification_checklist_phase_8_packaging_onboarding"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_overhaul_plan",
+      "target": "tasks_overhaul_plan_hermesvoice_overhaul_plan"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_overhaul_plan_hermesvoice_overhaul_plan",
+      "target": "tasks_overhaul_plan_0_orientation_read_first"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L78",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_overhaul_plan_hermesvoice_overhaul_plan",
+      "target": "tasks_overhaul_plan_1_confirmed_decisions_the_spec"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L104",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_overhaul_plan_hermesvoice_overhaul_plan",
+      "target": "tasks_overhaul_plan_2_hermes_server_api_reference_verified_from_hermes_hermes_agent_gateway_platforms_api_server_py"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L140",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_overhaul_plan_hermesvoice_overhaul_plan",
+      "target": "tasks_overhaul_plan_3_known_bugs_gaps_root_causes"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L164",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_overhaul_plan_hermesvoice_overhaul_plan",
+      "target": "tasks_overhaul_plan_4_phased_implementation_plan"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L483",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_overhaul_plan_hermesvoice_overhaul_plan",
+      "target": "tasks_overhaul_plan_5_cross_cutting_rules_don_t_break_the_app"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L491",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_overhaul_plan_hermesvoice_overhaul_plan",
+      "target": "tasks_overhaul_plan_6_open_items_to_verify_during_implementation"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L62",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_overhaul_plan_hermesvoice_overhaul_plan",
+      "target": "tasks_overhaul_plan_progress_tracker"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L170",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_overhaul_plan_4_phased_implementation_plan",
+      "target": "tasks_overhaul_plan_phase_1_quick_win_bug_fixes_user_priority_isolated_low_risk_done_2026_06_07_commit_63861e9"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L204",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_overhaul_plan_4_phased_implementation_plan",
+      "target": "tasks_overhaul_plan_phase_2_data_api_foundation_mostly_invisible_enables_features_done_2026_06_07"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L276",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_overhaul_plan_4_phased_implementation_plan",
+      "target": "tasks_overhaul_plan_phase_3_conversation_features_history_new_chat_copy_done_2026_06_07"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L333",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_overhaul_plan_4_phased_implementation_plan",
+      "target": "tasks_overhaul_plan_phase_4_rich_content_markdown_images_tool_activity_done_2026_06_07"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L403",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_overhaul_plan_4_phased_implementation_plan",
+      "target": "tasks_overhaul_plan_phase_5_settings_full_keyboard_control_done_2026_06_07"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L484",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_overhaul_plan_4_phased_implementation_plan",
+      "target": "tasks_overhaul_plan_phase_6_voice_flow_change_done_2026_06_07"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L541",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_overhaul_plan_4_phased_implementation_plan",
+      "target": "tasks_overhaul_plan_phase_7_expressive_visual_redesign_warm_expressive_done_2026_06_07"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L616",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_overhaul_plan_4_phased_implementation_plan",
+      "target": "tasks_overhaul_plan_phase_8_native_packaging_onboarding_done_2026_06_07"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tasks/overhaul-plan.md",
+      "source_location": "L681",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tasks_overhaul_plan_4_phased_implementation_plan",
+      "target": "tasks_overhaul_plan_phase_9_qa_tests_verification_done_2026_06_07"
     },
     {
       "relation": "contains",
@@ -85170,5 +85350,5 @@
       "source_file": "Sources/HermesVoiceKit/ConversationStore.swift"
     }
   ],
-  "built_at_commit": "ae86b19837ee6945ab5631d1c0b9334969e6a21a"
+  "built_at_commit": "326bca7f48defe5198db7379e08923c58abea3f4"
 }
