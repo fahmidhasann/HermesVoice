@@ -1,74 +1,93 @@
 import SwiftUI
 
-/// Compact icon button for header actions (clear, close).
+/// Compact icon button for header actions (new chat, history, close).
+/// Subtle at rest, a soft amber-neutral wash on hover, a confident press dip.
 struct IconButtonStyle: ButtonStyle {
     @State private var isHovered = false
-    var size: CGFloat = 24
-    var backgroundColor: Color = Theme.Colors.textPrimary.opacity(0.04)
-    var hoverColor: Color = Theme.Colors.textPrimary.opacity(0.10)
+    var size: CGFloat = 26
+    var backgroundColor: Color = Color.clear
+    var hoverColor: Color = Theme.Colors.textPrimary.opacity(0.08)
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(width: size, height: size)
-            .background(isHovered ? hoverColor : backgroundColor)
-            .clipShape(Circle())
+            .background(
+                Circle().fill(configuration.isPressed
+                              ? Theme.Colors.textPrimary.opacity(0.14)
+                              : (isHovered ? hoverColor : backgroundColor))
+            )
             .scaleEffect(configuration.isPressed ? 0.90 : 1.0)
             .animation(.easeOut(duration: 0.12), value: isHovered)
             .animation(.easeOut(duration: 0.08), value: configuration.isPressed)
-            .onHover { hovering in
-                isHovered = hovering
-            }
+            .onHover { isHovered = $0 }
     }
 }
 
-/// Circular mic toggle button — turns red when active.
+/// Circular mic toggle button — fills with the recording gradient when active,
+/// a soft neutral wash otherwise. Active state carries a faint red glow.
 struct CircleButtonStyle: ButtonStyle {
     @State private var isHovered = false
     var size: CGFloat = 34
-    var activeColor: Color = Theme.Colors.recordingRed
     var isActive: Bool = false
-
-    private var bg: Color {
-        if isActive { return activeColor }
-        if isHovered { return Theme.Colors.textPrimary.opacity(0.12) }
-        return Theme.Colors.textPrimary.opacity(0.06)
-    }
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(width: size, height: size)
-            .background(bg)
-            .clipShape(Circle())
+            .background {
+                if isActive {
+                    Circle().fill(Theme.Gradients.recording)
+                } else {
+                    Circle().fill(isHovered
+                                  ? Theme.Colors.textPrimary.opacity(0.13)
+                                  : Theme.Colors.textPrimary.opacity(0.06))
+                }
+            }
+            .overlay(
+                Circle().strokeBorder(Theme.Colors.hairline, lineWidth: isActive ? 0 : 0.5)
+            )
+            .shadow(color: isActive ? Theme.Colors.recordingRed.opacity(0.45) : .clear,
+                    radius: isActive ? 7 : 0, x: 0, y: isActive ? 2 : 0)
             .scaleEffect(configuration.isPressed ? 0.90 : 1.0)
             .animation(.easeOut(duration: 0.12), value: isHovered)
+            .animation(.easeOut(duration: 0.16), value: isActive)
             .animation(.easeOut(duration: 0.08), value: configuration.isPressed)
-            .onHover { hovering in
-                isHovered = hovering
-            }
+            .onHover { isHovered = $0 }
     }
 }
 
-/// Accent-filled circle send button.
+/// Accent-filled circle send button — warm amber gradient with a soft glow,
+/// flattening to a muted disc when there's nothing to send.
 struct SendButtonStyle: ButtonStyle {
     @State private var isHovered = false
     var size: CGFloat = 34
     var isDisabled: Bool = false
 
-    private var bg: Color {
-        if isDisabled { return Theme.Colors.textSecondary.opacity(0.25) }
-        if isHovered { return Theme.Colors.accent.opacity(0.85) }
-        return Theme.Colors.accent
-    }
-
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(width: size, height: size)
-            .background(Circle().fill(bg))
+            .background {
+                if isDisabled {
+                    Circle().fill(Theme.Colors.textSecondary.opacity(0.22))
+                } else {
+                    Circle()
+                        .fill(Theme.Gradients.accent)
+                        .overlay(
+                            // A whisper of inner highlight up top for a domed feel.
+                            Circle().fill(
+                                LinearGradient(colors: [Color.white.opacity(0.22), .clear],
+                                               startPoint: .top, endPoint: .center)
+                            )
+                        )
+                        .brightness(isHovered ? 0.05 : 0)
+                }
+            }
+            .shadow(color: isDisabled ? .clear : Theme.Depth.actionGlow(),
+                    radius: isDisabled ? 0 : Theme.Depth.actionRadius,
+                    x: 0, y: isDisabled ? 0 : Theme.Depth.actionY)
             .scaleEffect(configuration.isPressed ? 0.90 : 1.0)
             .animation(.easeOut(duration: 0.12), value: isHovered)
             .animation(.easeOut(duration: 0.08), value: configuration.isPressed)
-            .onHover { hovering in
-                isHovered = hovering
-            }
+            .animation(.easeOut(duration: 0.15), value: isDisabled)
+            .onHover { isHovered = $0 }
     }
 }

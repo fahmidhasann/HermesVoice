@@ -20,6 +20,9 @@ struct SettingsView: View {
                 .tabItem { Label("Shortcuts", systemImage: "keyboard") }
         }
         .frame(width: 480, height: 380)
+        // Carry the warm-amber identity into the native controls (selected tab,
+        // toggles, slider, pickers) while keeping standard macOS form idioms.
+        .tint(Theme.Colors.accent)
     }
 }
 

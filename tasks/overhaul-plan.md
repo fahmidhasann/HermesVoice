@@ -69,7 +69,7 @@ committed (`63861e9`).
 | **4 — Rich content** | ✅ **Done (2026-06-07)** |
 | **5 — Settings + keyboard control** | ✅ **Done (2026-06-07)** |
 | **6 — Voice flow change** | ✅ **Done (2026-06-07)** |
-| 7 — Expressive visual redesign | ⬜ Not started |
+| **7 — Expressive visual redesign** | ✅ **Done (2026-06-07)** |
 | 8 — Native packaging & onboarding | ⬜ Not started |
 | 9 — QA, tests, verification | ⬜ Not started |
 
@@ -538,8 +538,65 @@ waveform animates while capturing.
 
 </details>
 
-### Phase 7 — Expressive visual redesign  *(warm & expressive)*
+### Phase 7 — Expressive visual redesign  *(warm & expressive)*  ✅ DONE (2026-06-07)
 **Goal:** Cozy, deep, richly-amber — yet native/premium. Applies to **all** surfaces.
+
+**What shipped:**
+- **7a. Theme evolution.** `Theme.swift` gained an **amber ramp** (`accent` /
+  `accentBright` / `accentDeep`, light+dark) feeding a new **`Gradients`** group —
+  `accent` (primary action), `recording` (live capture), `userBubble`,
+  `assistantBubble`, and a faint `header` wash — all built from appearance-resolved
+  colours so light/dark parity is automatic. Added a **`Depth`** group (two elevation
+  steps: near-invisible `bubble` lift + warm `actionGlow` under the send button), a
+  **`Radius`** group (`bubble`/`control`/`chip`), an `accentSoft` wash, a `hairline`
+  edge colour, and a livelier `springBubble` motion token plus a `Motion.reduceMotion`
+  flag. Every token stays centralized; gradients are **purposeful** (action + live
+  state), never decorative — and no gradient-text.
+- **7b. Component polish.**
+  - **Buttons** (`ButtonStyles.swift`): send button is now an amber **gradient disc**
+    with a domed top-highlight + warm glow, flattening to a muted disc when disabled;
+    mic toggle fills with the **recording gradient** + red glow when active; icon
+    buttons get a clean hover/press wash. All keep distinct rest/hover/press/disabled
+    states.
+  - **Message bubbles** (`OverlayView.swift`): role-tinted **gradient fill** (amber
+    whisper for user, neutral lift for assistant) on a continuous-rounded surface with
+    a hairline edge + a faint drop shadow for depth; arrival is a gentle **spring**
+    (scale+offset from the correct corner), reduce-motion safe.
+  - **Status pill**: the header dot+label now sits in a **state-tinted capsule** (live
+    connection/state read at a glance).
+  - **Empty state**: layered amber halo + gradient disc behind a gradient `waveform`
+    glyph; cozier copy chip.
+  - **Waveform**: gradient capsule bars with a centre-weighted edge fade on a soft amber
+    wash.
+  - **Input field** (chat + history search): continuous-rounded surface with a hairline
+    that lights to an **amber focus ring**.
+  - **Panel chrome** (`OverlayPanel.swift`): added a hairline edge so the panel reads
+    crisp on bright wallpapers + a deeper/softer drop shadow for a grounded float.
+  - Tool-activity rows + transcription preview re-themed onto the `accentSoft` /
+    recording washes with hairlines.
+- **7c. New surfaces covered.** History rows use a **soft amber gradient wash + hairline**
+  for the selected/keyboard-focused row (no side-stripe) and a faint neutral hover; the
+  history empty-state icon uses the accent gradient. The **Settings** window keeps native
+  macOS form/`TabView` idioms (earned familiarity) but inherits the warm-amber identity via
+  `.tint(Theme.Colors.accent)` (selected tab, toggles, slider, pickers, the hotkey
+  recorder). *(Onboarding is Phase 8 — not yet a surface.)*
+
+**Files changed:** `Theme.swift`, `ButtonStyles.swift`, `WaveformView.swift`,
+`OverlayView.swift`, `OverlayPanel.swift`, `HistoryView.swift`, `SettingsView.swift`.
+No new files; no logic changes (pure-logic suite untouched).
+
+**Verification:** `swift build -c release` ✅ (no warnings) · `swift run HermesVoiceTests`
+→ 145 checks, 0 failures ✅ · `./build-app.sh` (clean) embeds the Highlightr bundle ✅ ·
+launch smoke test via `open` (launches, lock acquired, clean quit + lock released) ✅.
+⚠️ **Still needs a manual on-device pass** (couldn't be automated — sending the ⌃⇧H
+keystroke and screen-capture both require Accessibility/Screen-Recording permission this
+process doesn't hold): eyeball the panel in **both light & dark** — bubble depth/gradients,
+status pill, empty state, waveform, send/mic gradient + glow, input focus ring, panel edge;
+history selected-row wash; Settings amber tint; and confirm **reduce-motion** flattens the
+arrivals.
+
+<details><summary>Original task list</summary>
+
 **Tasks:**
 - **7a. Theme evolution** in `Theme.swift`: richer amber usage, subtle gradients (mic/send
   buttons, header tint), layered depth/shadow, refined materials, cozy spacing,
@@ -553,6 +610,8 @@ waveform animates while capturing.
 all new views.
 **Acceptance:** warm/expressive and consistent across light/dark; no perf regressions
 (smooth animations).
+
+</details>
 
 ### Phase 8 — Native packaging & onboarding
 **Goal:** Feels installed and first-class.

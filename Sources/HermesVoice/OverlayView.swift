@@ -63,7 +63,7 @@ struct OverlayView: View {
             // Recording accent line
             if viewModel.isRecording {
                 Rectangle()
-                    .fill(Theme.Colors.recordingRed)
+                    .fill(Theme.Gradients.recording)
                     .frame(height: 2)
                     .transition(.opacity)
             }
@@ -156,6 +156,7 @@ struct OverlayView: View {
             }
             .padding(.horizontal, Theme.Spacing.xl)
             .padding(.vertical, Theme.Spacing.md)
+            .background(Theme.Gradients.header)
 
             Rectangle()
                 .fill(Theme.Colors.divider)
@@ -163,7 +164,7 @@ struct OverlayView: View {
         }
     }
 
-    // MARK: - Status (dot badge style)
+    // MARK: - Status (pill: dot + label on a state-tinted capsule)
 
     @ViewBuilder
     private var statusView: some View {
@@ -171,6 +172,18 @@ struct OverlayView: View {
             statusDot
             statusLabel
         }
+        .padding(.leading, Theme.Spacing.sm)
+        .padding(.trailing, Theme.Spacing.md)
+        .padding(.vertical, 5)
+        .background(
+            Capsule(style: .continuous)
+                .fill(statusColor.opacity(0.12))
+                .overlay(
+                    Capsule(style: .continuous)
+                        .strokeBorder(statusColor.opacity(0.18), lineWidth: 0.5)
+                )
+        )
+        .animation(Theme.Motion.ifMotion(.easeInOut(duration: 0.25)), value: viewModel.state)
     }
 
     @ViewBuilder
@@ -243,26 +256,33 @@ struct OverlayView: View {
     private var emptyStateView: some View {
         VStack(spacing: Theme.Spacing.md) {
             ZStack {
+                // Soft amber halo + gradient disc for a warm, cozy focal point.
                 Circle()
-                    .fill(Theme.Colors.accent.opacity(0.08))
-                    .frame(width: 48, height: 48)
+                    .fill(Theme.Colors.accentSoft)
+                    .frame(width: 64, height: 64)
+                    .blur(radius: 6)
+                Circle()
+                    .fill(Theme.Gradients.accent.opacity(0.16))
+                    .overlay(Circle().strokeBorder(Theme.Colors.accent.opacity(0.22), lineWidth: 1))
+                    .frame(width: 54, height: 54)
 
                 Image(systemName: "waveform")
-                    .font(.system(size: 20, weight: .ultraLight))
-                    .foregroundColor(Theme.Colors.accent.opacity(0.5))
+                    .font(.system(size: 22, weight: .light))
+                    .foregroundStyle(Theme.Gradients.accent)
             }
 
             Text("Click the mic or type to begin")
-                .font(Theme.Font.message(size: 13.5))
-                .foregroundColor(Theme.Colors.textSecondary)
+                .font(Theme.Font.messageEmphasized(size: 13.5))
+                .foregroundColor(Theme.Colors.textPrimary.opacity(0.75))
 
             Text("⌃⇧H to toggle  ·  Enter to send")
                 .font(.system(size: 10.5, weight: .medium))
-                .foregroundColor(Theme.Colors.textSecondary.opacity(0.55))
+                .foregroundColor(Theme.Colors.textSecondary.opacity(0.7))
                 .padding(.horizontal, 10)
                 .padding(.vertical, 4)
-                .background(Theme.Colors.textPrimary.opacity(0.04))
-                .cornerRadius(6)
+                .background(
+                    Capsule(style: .continuous).fill(Theme.Colors.textPrimary.opacity(0.05))
+                )
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, Theme.Spacing.xxl + Theme.Spacing.sm)
@@ -336,8 +356,14 @@ struct OverlayView: View {
             }
             .padding(.horizontal, Theme.Spacing.md)
             .padding(.vertical, Theme.Spacing.sm + 2)
-            .background(Theme.Colors.recordingRed.opacity(0.06))
-            .cornerRadius(12)
+            .background(
+                RoundedRectangle(cornerRadius: Theme.Radius.bubble, style: .continuous)
+                    .fill(Theme.Colors.recordingRed.opacity(0.08))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Theme.Radius.bubble, style: .continuous)
+                            .strokeBorder(Theme.Colors.recordingRed.opacity(0.18), lineWidth: 0.5)
+                    )
+            )
             Spacer(minLength: 40)
         }
     }
@@ -410,19 +436,24 @@ struct OverlayView: View {
     /// on Button's tap semantics. Styled to match `CircleButtonStyle`.
     private var pushToTalkMic: some View {
         let active = viewModel.isRecording
-        let bg: Color = active
-            ? Theme.Colors.recordingRed
-            : (micHovering ? Theme.Colors.textPrimary.opacity(0.12)
-                           : Theme.Colors.textPrimary.opacity(0.06))
         return micIcon
             .frame(width: 34, height: 34)
-            .background(bg)
-            .clipShape(Circle())
+            .background {
+                if active {
+                    Circle().fill(Theme.Gradients.recording)
+                } else {
+                    Circle().fill(micHovering ? Theme.Colors.textPrimary.opacity(0.13)
+                                              : Theme.Colors.textPrimary.opacity(0.06))
+                }
+            }
+            .overlay(Circle().strokeBorder(Theme.Colors.hairline, lineWidth: active ? 0 : 0.5))
+            .shadow(color: active ? Theme.Colors.recordingRed.opacity(0.45) : .clear,
+                    radius: active ? 7 : 0, x: 0, y: active ? 2 : 0)
             .scaleEffect(active ? 0.94 : 1.0)
             .opacity(micDisabled ? 0.5 : 1)
             .contentShape(Circle())
             .animation(.easeOut(duration: 0.12), value: micHovering)
-            .animation(.easeOut(duration: 0.1), value: active)
+            .animation(.easeOut(duration: 0.16), value: active)
             .onHover { micHovering = $0 }
             .gesture(
                 DragGesture(minimumDistance: 0)
@@ -524,8 +555,17 @@ struct OverlayView: View {
                 if should { inputFocused = true }
             }
             .disabled(viewModel.state == .sending || viewModel.state == .responding)
-            .background(Theme.Colors.textPrimary.opacity(0.04))
-            .cornerRadius(10)
+            .background(
+                RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
+                    .fill(Theme.Colors.textPrimary.opacity(0.045))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
+                            .strokeBorder(inputFocused ? Theme.Colors.accent.opacity(0.55)
+                                                        : Theme.Colors.hairline,
+                                          lineWidth: inputFocused ? 1.5 : 0.5)
+                    )
+            )
+            .animation(Theme.Motion.ifMotion(.easeOut(duration: 0.15)), value: inputFocused)
             .accessibilityLabel("Message input")
     }
 }
@@ -551,9 +591,10 @@ struct MessageBubble: View {
             }
         }
         .opacity(appeared ? 1 : 0)
-        .offset(y: appeared ? 0 : 8)
+        .offset(y: appeared ? 0 : 10)
+        .scaleEffect(appeared ? 1 : 0.98, anchor: message.role == .user ? .bottomTrailing : .bottomLeading)
         .onAppear {
-            withAnimation(Theme.Motion.ifMotion(.easeOut(duration: 0.25))) {
+            withAnimation(Theme.Motion.ifMotion(.spring(response: 0.34, dampingFraction: 0.78))) {
                 appeared = true
             }
         }
@@ -604,8 +645,7 @@ struct MessageBubble: View {
             }
             .padding(.horizontal, Theme.Spacing.md + 2)
             .padding(.vertical, Theme.Spacing.sm + 2)
-            .background(backgroundColor)
-            .cornerRadius(12)
+            .background(bubbleBackground)
 
             Text(formatTimestamp(message.timestamp))
                 .font(.system(size: 9.5))
@@ -659,14 +699,32 @@ struct MessageBubble: View {
         return formatter.string(from: date)
     }
 
-    private var backgroundColor: Color {
+    /// Rounded surface with a role-specific gradient tint, a hairline edge, and a
+    /// near-invisible drop shadow so bubbles lift gently off the panel.
+    @ViewBuilder
+    private var bubbleBackground: some View {
+        let shape = RoundedRectangle(cornerRadius: Theme.Radius.bubble, style: .continuous)
+        shape
+            .fill(bubbleFill)
+            .overlay(shape.strokeBorder(bubbleStroke, lineWidth: 0.5))
+            .shadow(color: Theme.Depth.bubbleColor,
+                    radius: Theme.Depth.bubbleRadius,
+                    x: 0, y: Theme.Depth.bubbleY)
+    }
+
+    private var bubbleFill: AnyShapeStyle {
         switch message.role {
-        case .user:
-            return Theme.Colors.userBubble
-        case .assistant:
-            return Theme.Colors.assistantBubble
-        case .error:
-            return Theme.Colors.error.opacity(0.08)
+        case .user:      return AnyShapeStyle(Theme.Gradients.userBubble)
+        case .assistant: return AnyShapeStyle(Theme.Gradients.assistantBubble)
+        case .error:     return AnyShapeStyle(Theme.Colors.error.opacity(0.10))
+        }
+    }
+
+    private var bubbleStroke: Color {
+        switch message.role {
+        case .user:      return Theme.Colors.accent.opacity(0.18)
+        case .assistant: return Theme.Colors.hairline
+        case .error:     return Theme.Colors.error.opacity(0.22)
         }
     }
 }
@@ -704,8 +762,14 @@ struct ToolActivityRow: View {
         }
         .padding(.horizontal, Theme.Spacing.md)
         .padding(.vertical, Theme.Spacing.xs + 2)
-        .background(Theme.Colors.accent.opacity(0.07))
-        .cornerRadius(10)
+        .background(
+            RoundedRectangle(cornerRadius: Theme.Radius.chip, style: .continuous)
+                .fill(Theme.Colors.accentSoft)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Radius.chip, style: .continuous)
+                        .strokeBorder(Theme.Colors.accent.opacity(0.15), lineWidth: 0.5)
+                )
+        )
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Hermes is using \(label)")
     }

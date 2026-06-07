@@ -54,12 +54,17 @@ class OverlayPanel: NSPanel {
         visualEffect.wantsLayer = true
         visualEffect.layer?.cornerRadius = Theme.Layout.cornerRadius
         visualEffect.layer?.masksToBounds = true
+        // Hairline edge so the panel reads as a crisp, lifted object on both
+        // light and dark wallpapers (the blur alone can dissolve into bright bg).
+        visualEffect.layer?.borderWidth = 0.5
+        visualEffect.layer?.borderColor = NSColor.white.withAlphaComponent(0.12).cgColor
 
-        // Shadow on wrapper — visible because wrapper.masksToBounds = false
+        // Shadow on wrapper — visible because wrapper.masksToBounds = false.
+        // Deeper + softer than before for a more grounded, premium float.
         wrapper.layer?.shadowColor = NSColor.black.cgColor
-        wrapper.layer?.shadowOpacity = 0.22
-        wrapper.layer?.shadowRadius = 28
-        wrapper.layer?.shadowOffset = NSSize(width: 0, height: -10)
+        wrapper.layer?.shadowOpacity = 0.28
+        wrapper.layer?.shadowRadius = 34
+        wrapper.layer?.shadowOffset = NSSize(width: 0, height: -12)
         wrapper.layer?.shadowPath = CGPath(
             roundedRect: wrapper.bounds,
             cornerWidth: Theme.Layout.cornerRadius,

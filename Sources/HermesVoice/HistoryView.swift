@@ -87,8 +87,17 @@ struct HistoryView: View {
         }
         .padding(.horizontal, Theme.Spacing.md + 2)
         .padding(.vertical, Theme.Spacing.sm + 2)
-        .background(Theme.Colors.textPrimary.opacity(0.04))
-        .cornerRadius(10)
+        .background(
+            RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
+                .fill(Theme.Colors.textPrimary.opacity(0.045))
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
+                        .strokeBorder(searchFocused ? Theme.Colors.accent.opacity(0.55)
+                                                     : Theme.Colors.hairline,
+                                      lineWidth: searchFocused ? 1.5 : 0.5)
+                )
+        )
+        .animation(Theme.Motion.ifMotion(.easeOut(duration: 0.15)), value: searchFocused)
         .padding(.horizontal, Theme.Spacing.lg)
         .padding(.vertical, Theme.Spacing.md)
     }
@@ -134,8 +143,8 @@ struct HistoryView: View {
     private var emptyState: some View {
         VStack(spacing: Theme.Spacing.md) {
             Image(systemName: viewModel.historyQuery.isEmpty ? "clock" : "magnifyingglass")
-                .font(.system(size: 22, weight: .ultraLight))
-                .foregroundColor(Theme.Colors.accent.opacity(0.5))
+                .font(.system(size: 24, weight: .light))
+                .foregroundStyle(Theme.Gradients.accent.opacity(0.7))
             Text(viewModel.historyQuery.isEmpty
                  ? "No conversations yet"
                  : "No matches for “\(viewModel.historyQuery)”")
@@ -220,17 +229,28 @@ private struct HistoryRow: View {
         }
         .padding(.horizontal, Theme.Spacing.md)
         .padding(.vertical, Theme.Spacing.sm + 2)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(isSelected
-                      ? Theme.Colors.accent.opacity(0.12)
-                      : (isHovered ? Theme.Colors.textPrimary.opacity(0.04) : Color.clear))
-        )
+        .background(rowBackground)
         .contentShape(Rectangle())
         .onHover { hovering in
             withAnimation(Theme.Motion.ifMotion(.easeOut(duration: 0.12))) {
                 isHovered = hovering
             }
+        }
+    }
+
+    /// Selected rows take a soft amber gradient wash + hairline; hovered rows a
+    /// faint neutral lift. Both use the continuous rounded shape for consistency.
+    @ViewBuilder
+    private var rowBackground: some View {
+        let shape = RoundedRectangle(cornerRadius: Theme.Radius.chip, style: .continuous)
+        if isSelected {
+            shape
+                .fill(Theme.Gradients.accent.opacity(0.16))
+                .overlay(shape.strokeBorder(Theme.Colors.accent.opacity(0.30), lineWidth: 0.5))
+        } else if isHovered {
+            shape.fill(Theme.Colors.textPrimary.opacity(0.05))
+        } else {
+            Color.clear
         }
     }
 }
