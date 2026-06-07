@@ -53,6 +53,25 @@ Resources/Info.plist, entitlements.plist, com.hermes.voice.plist, build-app.sh
 **FIRST, before any code:** the project is **not under version control**. Run
 `git init`, commit the current state, and commit after each phase so every step is
 reversible. This is the main safeguard for "don't break the app."
+✅ **Done (2026-06-07):** repo initialized, `.gitignore` added (excludes
+`.build/`, `build/`, `.DS_Store`), baseline committed (`abf874b`), Phase 1
+committed (`63861e9`).
+
+---
+
+## Progress tracker
+
+| Phase | Status |
+|---|---|
+| **1 — Quick-win bug fixes** | ✅ **Done (2026-06-07)** — commit `63861e9` |
+| 2 — Data & API foundation | ⬜ Not started |
+| 3 — Conversation features | ⬜ Not started |
+| 4 — Rich content | ⬜ Not started |
+| 5 — Settings + keyboard control | ⬜ Not started |
+| 6 — Voice flow change | ⬜ Not started |
+| 7 — Expressive visual redesign | ⬜ Not started |
+| 8 — Native packaging & onboarding | ⬜ Not started |
+| 9 — QA, tests, verification | ⬜ Not started |
 
 ---
 
@@ -148,30 +167,39 @@ from `~/.hermes/.env`, already handled by `APIKeyParser`/`Config`).
 > Run `swift build -c release` + `swift run HermesVoiceTests` + a launch smoke test
 > (hotkey toggles panel) at the end of every phase. Commit.
 
-### Phase 1 — Quick-win bug fixes  *(user priority; isolated, low risk)*
+### Phase 1 — Quick-win bug fixes  *(user priority; isolated, low risk)*  ✅ DONE (2026-06-07, commit `63861e9`)
 **Goal:** Daily use feels right; no architectural change.
 **Tasks:**
-- **1a. Editing shortcuts + paste.** Install a proper `NSMenu` main menu in `App.swift`
-  with an **Edit** menu: Undo/Redo, Cut (`x`), Copy (`c`), Paste (`v`), Select All (`a`)
-  using the standard first-responder selectors (`undo:`, `cut:`, `copy:`, `paste:`,
-  `selectAll:`). Confirm the panel becomes key and the `TextField` is first responder so
-  the chain resolves. (Also add an App menu with Quit `q`.)
-- **1b. Click-outside to close.** While the panel is visible, install a global mouse-down
-  monitor (`NSEvent.addGlobalMonitorForEvents(matching:.leftMouseDown/.rightMouseDown)`)
-  and/or a local monitor; if the click is outside the panel frame → `hidePanel()`.
-  Remove the monitor on hide. (Keep it from firing during show animation.)
-- **1c. Focus return on close.** Before activating, capture
-  `NSWorkspace.shared.frontmostApplication`. On hide, `previousApp?.activate()`. Consider
-  not calling `NSApp.activate(ignoringOtherApps:)` at all — make the panel key without
-  full app activation if the field still accepts input.
-- **1d. Resize jitter.** Stabilize the height loop: raise the change threshold, debounce
-  preference updates, ensure a single animation drives the frame, and don't re-emit the
-  preference because of the animation. Verify smooth growth while typing + streaming.
+- [x] **1a. Editing shortcuts + paste.** Installed a real `NSMenu` main menu in `App.swift`
+  (`makeMainMenu()`): an **App** menu (About, Quit `q`) and an **Edit** menu —
+  Undo/Redo, Cut (`x`), Copy (`c`), Paste (`v`), Select All (`a`) using the standard
+  first-responder selectors (`undo:`/`redo:`, `cut:`/`copy:`/`paste:`/`selectAll:`),
+  target `nil` so they route through the field-editor responder chain. Panel already
+  `canBecomeKey`; `OverlayView.onAppear` makes the field first responder.
+- [x] **1b. Click-outside to close.** `AppDelegate` installs a global mouse-down monitor
+  (`.leftMouseDown/.rightMouseDown/.otherMouseDown`) → `hidePanel()`. Armed only in the
+  show-animation completion handler (so the opening click can't dismiss); removed on hide.
+  Global monitors only see other-app events, so clicks inside the panel don't trigger it.
+- [x] **1c. Focus return on close.** `showPanel()` captures
+  `NSWorkspace.shared.frontmostApplication` into `previousApp`; `hidePanel()` calls
+  `previousApp.activate()` (skipped if it's our own bundle). Kept `NSApp.activate` for
+  reliable field focus — restoring the prior app on close still returns focus correctly.
+- [x] **1d. Resize jitter.** Root cause: `updateHeight` gated against the *live*
+  (mid-animation) `frame.height`, re-issuing the same target each frame and restarting the
+  animation. Now gates against a stored `targetHeight`, rounds to whole points, and drives
+  a single animation (`Theme.Layout.heightDuration`).
 
 **Files:** `App.swift`, `AppDelegate.swift`, `OverlayPanel.swift`, `OverlayView.swift`.
 **Acceptance:** Cmd+V/C/X/A/Z work in the field; clicking outside closes; previous app
 regains focus + cursor; panel resizes smoothly with no flicker.
 **Don't-break:** Keep `PanelStateMachine` transitions, debouncers, single-instance lock.
+
+**Verification status:** `swift build -c release` ✅ · `swift run HermesVoiceTests` →
+42 checks, 0 failures ✅ · launch smoke test (bundle launches, lock acquired, status
+item + hotkey registered, no crash, clean quit + lock released) ✅.
+⚠️ **Still needs a manual on-device pass** (couldn't be automated headlessly): actually
+typing Cmd+V/C/X/A/Z in the field, clicking outside to dismiss, ⌃⇧H toggle, and watching
+for smooth resize while streaming.
 
 ### Phase 2 — Data & API foundation  *(mostly invisible; enables features)*
 **Goal:** Local persistence + correct streaming + reliability primitives.
