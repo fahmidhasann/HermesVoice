@@ -19,7 +19,7 @@ final class HotKeyManager {
     init(keyCode: UInt32, modifiers: UInt32, callback: @escaping () -> Void) {
         self.callback = callback
         HotKeyManager.instance = self
-        registerHotKey(keyCode: keyCode, modifiers: modifiers)
+        _ = registerHotKey(keyCode: keyCode, modifiers: modifiers)
     }
 
     deinit {
@@ -27,7 +27,24 @@ final class HotKeyManager {
         HotKeyManager.instance = nil
     }
 
-    private func registerHotKey(keyCode: UInt32, modifiers: UInt32) {
+    /// Re-register the global hotkey live (Settings ▸ Shortcuts). Returns `false`
+    /// if Carbon rejects the combination — typically because it's already claimed
+    /// by the system or another app — in which case the previous hotkey is
+    /// restored so the user is never left without a working shortcut.
+    @discardableResult
+    func update(keyCode: UInt32, modifiers: UInt32, previousKeyCode: UInt32, previousModifiers: UInt32) -> Bool {
+        unregisterHotKey()
+        if registerHotKey(keyCode: keyCode, modifiers: modifiers) {
+            return true
+        }
+        // Revert to the prior, known-good combination.
+        unregisterHotKey()
+        _ = registerHotKey(keyCode: previousKeyCode, modifiers: previousModifiers)
+        return false
+    }
+
+    @discardableResult
+    private func registerHotKey(keyCode: UInt32, modifiers: UInt32) -> Bool {
         var hotKeyID = EventHotKeyID()
         hotKeyID.signature = OSType(0x48564B59) // "HVKY"
         hotKeyID.id = 1
@@ -79,7 +96,9 @@ final class HotKeyManager {
 
         if status != noErr {
             print("HermesVoice: Failed to register hotkey, status: \(status)")
+            return false
         }
+        return true
     }
 
     private func fireIfNotDebounced() {

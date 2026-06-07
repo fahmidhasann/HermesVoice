@@ -36,6 +36,14 @@ struct OutgoingMessage {
 final class HermesAPIClient {
     private let config = Config.shared
 
+    /// Endpoints are resolved per call from the live settings (host/port), so a
+    /// change in the Connection tab takes effect on the next request without a
+    /// restart. Falls back to the compiled-in default if a URL can't be built.
+    private func endpoint(_ path: String) -> URL {
+        let settings = AppSettingsStore.loadCurrent()
+        return URL(string: settings.baseURLString + path) ?? config.apiEndpoint
+    }
+
     /// Stream a chat completion. The caller owns history, so the full `messages`
     /// array is sent as-is — we deliberately do NOT send `X-Hermes-Session-Id`
     /// (sending both history and the header double-counts context server-side).
@@ -44,16 +52,21 @@ final class HermesAPIClient {
     /// returned); a mid-stream drop throws into the returned stream so the caller
     /// can keep whatever partial text already arrived.
     func streamCompletion(messages: [OutgoingMessage]) async throws -> AsyncThrowingStream<HermesStreamEvent, Error> {
-        var request = URLRequest(url: config.apiEndpoint)
+        var request = URLRequest(url: endpoint("/v1/chat/completions"))
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(config.apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue(config.userAgent, forHTTPHeaderField: "User-Agent")
 
-        let payload: [String: Any] = [
+        var payload: [String: Any] = [
             "messages": messages.map { ["role": $0.role, "content": $0.contentJSON] },
             "stream": true
         ]
+        // Honor the user's model choice (Settings ▸ Connection). Omitted when
+        // unset so the server applies its own default.
+        if let model = AppSettingsStore.loadCurrent().normalizedModel {
+            payload["model"] = model
+        }
         request.httpBody = try JSONSerialization.data(withJSONObject: payload)
 
         let asyncBytes: URLSession.AsyncBytes
@@ -107,7 +120,7 @@ final class HermesAPIClient {
     /// Lightweight reachability probe against `/v1/health`. Never throws —
     /// returns `false` for any failure so callers can drive an offline indicator.
     func checkHealth() async -> Bool {
-        var request = URLRequest(url: config.healthEndpoint)
+        var request = URLRequest(url: endpoint("/v1/health"))
         request.httpMethod = "GET"
         request.setValue(config.userAgent, forHTTPHeaderField: "User-Agent")
         request.timeoutInterval = 3
@@ -116,6 +129,24 @@ final class HermesAPIClient {
             return false
         }
         return httpResponse.statusCode == 200
+    }
+
+    /// Fetch available model ids from `/v1/models` for the Settings model picker.
+    /// Returns an empty list on any failure (offline, auth, malformed) so the UI
+    /// can degrade to a free-text fallback.
+    func fetchModels() async -> [String] {
+        var request = URLRequest(url: endpoint("/v1/models"))
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(config.apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue(config.userAgent, forHTTPHeaderField: "User-Agent")
+        request.timeoutInterval = 5
+        guard let (data, response) = try? await URLSession.shared.data(for: request),
+              let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200,
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let list = json["data"] as? [[String: Any]] else {
+            return []
+        }
+        return list.compactMap { $0["id"] as? String }
     }
 }
 

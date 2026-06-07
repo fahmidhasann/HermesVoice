@@ -67,7 +67,7 @@ committed (`63861e9`).
 | **2 — Data & API foundation** | ✅ **Done (2026-06-07)** |
 | **3 — Conversation features** | ✅ **Done (2026-06-07)** |
 | **4 — Rich content** | ✅ **Done (2026-06-07)** |
-| 5 — Settings + keyboard control | ⬜ Not started |
+| **5 — Settings + keyboard control** | ✅ **Done (2026-06-07)** |
 | 6 — Voice flow change | ⬜ Not started |
 | 7 — Expressive visual redesign | ⬜ Not started |
 | 8 — Native packaging & onboarding | ⬜ Not started |
@@ -400,8 +400,65 @@ an image sends it and Hermes responds to it; tool steps appear live then resolve
 
 </details>
 
-### Phase 5 — Settings + full keyboard control
+### Phase 5 — Settings + full keyboard control  ✅ DONE (2026-06-07)
 **Goal:** Make hardcoded behavior configurable; native shortcuts everywhere.
+
+**What shipped:**
+- **5a. Settings window** — new `SettingsView.swift` (SwiftUI `TabView`) hosted in a
+  reusable titled `NSWindow` via `SettingsWindowController` (lazy, `isReleasedWhenClosed
+  = false`, activates the accessory app so it can take key focus). Tabs:
+  **General** (appearance segmented picker · launch-at-login toggle), **Voice**
+  (default-flow picker · silence-timeout slider · recognition-language picker),
+  **Connection** (host/port fields · model picker), **Shortcuts** (hotkey recorder +
+  reset). All controls bind into `AppSettingsStore.shared.settings`.
+  - **Hotkey recorder** (`HotKeyRecorder.swift`): click-to-record via a local
+    `.keyDown` monitor; ignores bare modifier keys, requires ≥1 modifier, Esc cancels.
+    Translates AppKit flags → Carbon mask. `HotKeyManager.update(…)` re-registers live
+    and **reverts to the prior combo + shows an alert** when Carbon rejects it (real
+    conflict detection via `RegisterEventHotKey` status).
+  - **Model picker** from `/v1/models` (`HermesAPIClient.fetchModels()`), persisted and
+    sent as `body.model`. *(See open item #2 below — the gateway is effectively
+    single-model; the value is accepted but doesn't switch behavior. Picker kept,
+    future-proof.)*
+  - **Launch-at-login** via `SMAppService.mainApp` (register/unregister, idempotent,
+    errors swallowed in dev). Existing `com.hermes.voice.plist` left for Phase 8.
+  - **Voice** silence-timeout + recognition-language plumbed into `VoiceEngine`
+    (refreshed on each `startRecording`; recognizer rebuilt only when the locale id
+    changes). Default-flow stored for Phase 6 to consume.
+  - **Advanced:** endpoint host/port drive `HermesAPIClient` endpoints (resolved
+    per-request from live settings, no restart); appearance applied via
+    `NSApp.appearance`.
+- **5b. Full keyboard control** — App menu **Settings… ⌘,** and a Window menu
+  **Close ⌘W** (`closeFrontWindow`: closes the Settings window when frontmost, else
+  hides the panel). ⌘N / ⌘F / Esc / history arrows already wired (Phases 1/3).
+  `AppDelegate` subscribes to the settings store (`Combine`, `receive(on: .main)`),
+  diffing against `appliedSettings` so each side effect (hotkey/appearance/launch) only
+  fires on real change.
+
+**New pure logic (HermesVoiceKit, tested):** `AppSettings` (Codable, per-field tolerant
+decode so future fields never wipe saved settings), `VoiceFlow` / `AppearanceMode`
+enums, `HotKeyFormatter` (Carbon modifier masks, canonical-order glyphs, key-code names,
+display strings, validity). 10 new tests (`AppSettingsTests`) — 130 checks total.
+
+**Files added:** `Sources/HermesVoiceKit/AppSettings.swift`,
+`Sources/HermesVoice/{AppSettingsStore,SettingsView,HotKeyRecorder,SettingsWindowController}.swift`,
+`Tests/HermesVoiceTests/AppSettingsTests.swift`.
+**Files changed:** `HermesAPIClient.swift` (settings-driven endpoints + model + fetchModels),
+`HotKeyManager.swift` (revertable live re-register), `VoiceEngine.swift` (settings),
+`App.swift` (menus), `AppDelegate.swift` (store subscription + side effects + actions),
+`Tests/…/main.swift`.
+
+**Verification:** `swift build -c release` ✅ (no warnings) · `swift run HermesVoiceTests`
+→ 130 checks, 0 failures ✅ · `./build-app.sh` ✅ · launch smoke test via `open`
+(launches, lock acquired, no crash, clean quit) ✅ · live-gateway checks for the model
+path ✅.
+⚠️ **Still needs a manual on-device pass:** open Settings (⌘, / menu-bar); record a new
+hotkey and confirm it re-registers live + a taken combo reverts with the alert; toggle
+launch-at-login; switch appearance light/dark; change host/port and model; ⌘W closes
+Settings then hides panel.
+
+<details><summary>Original task list</summary>
+
 **Tasks:**
 - **5a. Settings window** (dedicated window for the accessory app; or SwiftUI `Settings`
   scene). Tabs: **General / Voice / Connection / Shortcuts.**
@@ -421,6 +478,8 @@ an image sends it and Hermes responds to it; tool steps appear live then resolve
 pure parts in Kit), `HotKeyManager.swift`, `App.swift`.
 **Acceptance:** change hotkey live; switch model; toggle launch-at-login; switch voice
 default; all shortcuts work.
+
+</details>
 
 ### Phase 6 — Voice flow change
 **Goal:** Make voice "accurate" by default.
@@ -492,8 +551,12 @@ all new views.
 1. ✅ **Verified (2026-06-07).** Repeating an identical request *with* a fixed
    `X-Hermes-Session-Id` grows `prompt_tokens` (20639 → 20648); *without* the header it's
    stable (20659 → 20659). Confirms accumulation; the Phase 2c fix (drop the header) is correct.
-2. Does the server honor a per-request **`model`** in the body, or is the model global?
-   (Shapes the Phase 5 model picker.)
+2. ✅ **Verified (2026-06-07).** The gateway **accepts** a per-request `model` (200, and
+   echoes it back in the response) but treats it as a **no-op** — even a bogus id
+   (`"definitely-not-a-model"`) still answers normally. `/v1/models` advertises a single
+   model (`hermes-agent`). So the model is effectively **global**; the Phase 5 picker
+   sends `body.model` (harmless) and is populated from `/v1/models` to stay future-proof,
+   but switching it won't change behavior on the current single-model gateway.
 3. ✅ **Verified (2026-06-07).** The gateway accepts OpenAI Chat-Completions multimodal
    `content`: an array of `{"type":"text","text":…}` and
    `{"type":"image_url","image_url":{"url":"data:image/…;base64,…"}}` parts (data URLs must

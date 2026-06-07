@@ -7,6 +7,7 @@ let allCases =
     SSEParserTests.cases +
     APIKeyParserTests.cases +
     ConversationStoreTests.cases +
-    HermesErrorTests.cases
+    HermesErrorTests.cases +
+    AppSettingsTests.cases
 
 runAllTests(allCases)

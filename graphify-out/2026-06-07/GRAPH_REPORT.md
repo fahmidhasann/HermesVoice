@@ -5,12 +5,12 @@
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 549 nodes · 1100 edges · 26 communities (21 shown, 5 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 29 edges (avg confidence: 0.8)
+- 485 nodes · 881 edges · 32 communities (22 shown, 10 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 13 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5703755a`
+- Built from commit: `745d4e05`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -39,30 +39,36 @@
 - [[_COMMUNITY_Community 23|Community 23]]
 - [[_COMMUNITY_Community 24|Community 24]]
 - [[_COMMUNITY_Community 25|Community 25]]
+- [[_COMMUNITY_Community 26|Community 26]]
+- [[_COMMUNITY_Community 27|Community 27]]
+- [[_COMMUNITY_Community 28|Community 28]]
+- [[_COMMUNITY_Community 29|Community 29]]
+- [[_COMMUNITY_Community 30|Community 30]]
+- [[_COMMUNITY_Community 31|Community 31]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `OverlayViewModel` - 58 edges
-2. `OverlayViewModel` - 47 edges
-3. `AppDelegate` - 29 edges
-4. `AppDelegate` - 25 edges
-5. `ChatMessage` - 19 edges
-6. `VoiceEngine` - 19 edges
-7. `OverlayViewModel.persist` - 19 edges
-8. `OverlayPanel` - 18 edges
-9. `SwiftUI` - 17 edges
-10. `SessionMeta` - 17 edges
+1. `OverlayViewModel` - 47 edges
+2. `AppDelegate` - 25 edges
+3. `VoiceEngine` - 19 edges
+4. `OverlayPanel` - 18 edges
+5. `SwiftUI` - 17 edges
+6. `ChatMessage` - 15 edges
+7. `SessionMeta` - 15 edges
+8. `TranscriptRecord` - 15 edges
+9. `HermesAPIError` - 14 edges
+10. `View` - 13 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Drop X-Hermes-Session-Id decision` --rationale_for--> `HermesAPIClient.streamCompletion`  [INFERRED]
-  tasks/overhaul-plan.md → Sources/HermesVoice/HermesAPIClient.swift
-- `Warm-amber editorial visual identity` --rationale_for--> `Theme design tokens`  [INFERRED]
-  tasks/overhaul-plan.md → Sources/HermesVoice/Theme.swift
-- `Local-only conversation storage under ~/.hermes/hermes_voice/` --rationale_for--> `ConversationFileStore (disk IO)`  [INFERRED]
-  tasks/overhaul-plan.md → Sources/HermesVoice/ConversationFileStore.swift
-- `Resume-last-conversation on launch` --rationale_for--> `OverlayViewModel`  [INFERRED]
-  tasks/overhaul-plan.md → Sources/HermesVoice/OverlayViewModel.swift
-- `Reliability primitives (retry, keep-partial, offline)` --rationale_for--> `OverlayViewModel.persist`  [INFERRED]
-  tasks/overhaul-plan.md → Sources/HermesVoice/OverlayViewModel.swift
+- `SSEParserTests` --references--> `SSEParser.parse(line:)`  [EXTRACTED]
+  Tests/HermesVoiceTests/SSEParserTests.swift → Sources/HermesVoiceKit/SSEParser.swift
+- `main test runner entry point` --references--> `PanelStateMachine`  [EXTRACTED]
+  Tests/HermesVoiceTests/main.swift → Sources/HermesVoice/OverlayPanel.swift
+- `PanelStateMachine` --references--> `TestCase`  [EXTRACTED]
+  Sources/HermesVoice/OverlayPanel.swift → Tests/HermesVoiceTests/TestHarness.swift
+- `PanelStateMachine` --references--> `TestCase`  [EXTRACTED]
+  Sources/HermesVoice/OverlayPanel.swift → Tests/HermesVoiceTests/PanelStateMachineTests.swift
+- `SSEParserTests` --references--> `ToolActivity`  [EXTRACTED]
+  Tests/HermesVoiceTests/SSEParserTests.swift → Sources/HermesVoiceKit/SSEParser.swift
 
 ## Import Cycles
 - None detected.
@@ -72,71 +78,71 @@
 - **In-panel history browser feature** — hermesvoice_historyview_historyview, hermesvoice_overlayviewmodel_filteredhistory, hermesvoice_overlayviewmodel_openconversation, hermesvoicekit_conversationstore_conversationstore [INFERRED 0.75]
 - **Persisted local data model (SessionMeta + TranscriptRecord)** — hermesvoicekit_conversationstore_sessionmeta, hermesvoicekit_conversationstore_transcriptrecord, hermesvoice_conversationfilestore_conversationfilestore, hermesvoice_overlayviewmodel_overlayviewmodel [INFERRED 0.75]
 
-## Communities (26 total, 5 thin omitted)
+## Communities (32 total, 10 thin omitted)
 
 ### Community 0 - "App Lifecycle & Hotkeys"
-Cohesion: 0.07
-Nodes (33): Any, HermesVoiceApp main entry, makeMainMenu (Edit responder chain), AppDelegate, AppDelegate, AppDelegate.claimSingleInstanceLock (flock), AppDelegate.hidePanel, AppDelegate.installClickOutsideMonitor (+25 more)
+Cohesion: 0.08
+Nodes (16): EventHandlerRef, EventHotKeyRef, AppDelegate, HotKeyManager, HotKeyManager, Int32, Notification, NSApplicationDelegate (+8 more)
 
 ### Community 1 - "Conversation View Model"
 Cohesion: 0.08
-Nodes (38): HermesAPIError, ChatMessage, ConnectionState, offline, online, unknown, HistoryEntry, OverlayViewModel (+30 more)
+Nodes (29): HermesAPIError, ChatMessage, ConnectionState, offline, online, unknown, HistoryEntry, OverlayViewModel (+21 more)
 
 ### Community 2 - "API Client & Streaming"
 Cohesion: 0.10
-Nodes (30): AsyncThrowingStream, Config (endpoints + API key), Config.loadAPIKey, Error, HermesAPIClient.checkHealth, HermesAPIError, HermesStreamEvent, HermesAPIClient.streamCompletion (+22 more)
+Nodes (22): AsyncThrowingStream, Error, HermesErrorKind, HermesAPIClient, HermesAPIError, auth, http, invalidResponse (+14 more)
 
 ### Community 3 - "Conversation Storage & History"
-Cohesion: 0.10
-Nodes (26): Double, ConversationFileStore.deleteConversation, ConversationFileStore.loadIndex, ConversationFileStore.loadPreview, ConversationFileStore.loadTranscript, ConversationFileStore.rewriteTranscript, OverlayViewModel.openConversation, OverlayViewModel.registerConversationIfNeeded (+18 more)
+Cohesion: 0.12
+Nodes (24): Codable, Double, Equatable, ConversationFileStore.appendRecord, ConversationFileStore.deleteConversation, ConversationFileStore.loadIndex, ConversationFileStore.loadPreview, ConversationFileStore.loadTranscript (+16 more)
 
 ### Community 4 - "Error Handling & Utilities"
-Cohesion: 0.08
-Nodes (32): APIKeyParser.parse(env:), Debouncer.shouldFire(at:), HermesErrorClassifier.classify, HermesErrorClassifier, HermesErrorKind, auth, http, offline (+24 more)
+Cohesion: 0.12
+Nodes (20): APIKeyParser.parse(env:), Debouncer.shouldFire(at:), APIKeyParserTests, DebouncerTests, main test runner entry point, SSEParserTests, check(), checkEqual() (+12 more)
 
 ### Community 5 - "History & Overlay UI"
-Cohesion: 0.09
-Nodes (28): ConversationFileStore.atomicWrite, ConversationFileStore (disk IO), ConversationFileStore.appendRecord, HistoryRow, HistoryView, OverlayViewModel.filteredHistory, OverlayState, done (+20 more)
+Cohesion: 0.25
+Nodes (8): OverlayState, done, error, idle, listening, responding, sending, transcribing
 
 ### Community 6 - "SSE Parsing"
-Cohesion: 0.14
-Nodes (23): Codable, Decodable, Equatable, Choice, Chunk, Delta, SSEParser.parse(line:), SSEParser.parseContent(payload:) (+15 more)
+Cohesion: 0.19
+Nodes (14): Decodable, Choice, Chunk, Delta, SSEParser.parse(line:), SSEParser.parseContent(payload:), SSEEvent, content (+6 more)
 
 ### Community 7 - "Overhaul Plan & Design Decisions"
-Cohesion: 0.12
-Nodes (23): HermesVoice Overhaul Plan, Client-owned history model, Drop X-Hermes-Session-Id decision, 0. Orientation (read first), 1. Confirmed decisions (the spec), 2. Hermes server API reference (verified from `~/.hermes/hermes-agent/gateway/platforms/api_server.py`), 3. Known bugs / gaps (root causes), 4. Phased implementation plan (+15 more)
+Cohesion: 0.11
+Nodes (18): 0. Orientation (read first), 1. Confirmed decisions (the spec), 2. Hermes server API reference (verified from `~/.hermes/hermes-agent/gateway/platforms/api_server.py`), 3. Known bugs / gaps (root causes), 4. Phased implementation plan, 5. Cross-cutting rules ("don't break the app"), 6. Open items to verify during implementation, HermesVoice Overhaul Plan (+10 more)
 
 ### Community 8 - "Panel State Machine"
 Cohesion: 0.09
 Nodes (16): Debouncer, PanelStateMachine.beginHide, PanelStateMachine.beginShow, PanelPhase, hidden, hiding, showing, visible (+8 more)
 
 ### Community 9 - "Button Styles & Visuals"
-Cohesion: 0.07
-Nodes (43): ButtonStyle, CircleButtonStyle (mic toggle), IconButtonStyle, SendButtonStyle, ChatMessage, Color, Configuration, CircleButtonStyle (+35 more)
+Cohesion: 0.09
+Nodes (26): ChatMessage, Color, HistoryRow, HistoryView, ContentHeightKey, MessageBubble, OverlayView, PendingImageChip (+18 more)
 
 ### Community 10 - "Overlay Panel Transitions"
 Cohesion: 0.17
 Nodes (8): OverlayPanel, NSEvent, NSPanel, PanelPhase, Bool, CGFloat, OverlayViewModel, Void
 
 ### Community 11 - "Theme & Appearance"
-Cohesion: 0.16
-Nodes (12): Notification.Name, Appearance, Colors, Font, Layout, Motion, resolvedColor(), Spacing (+4 more)
+Cohesion: 0.12
+Nodes (15): AppDelegate, HermesVoiceApp, Notification.Name, Appearance, Colors, Font, Layout, Motion (+7 more)
 
 ### Community 12 - "Voice & Speech Engine"
-Cohesion: 0.15
-Nodes (12): AVAudioEngine, VoiceEngine, SFSpeechAudioBufferRecognitionRequest, SFSpeechRecognitionTask, SFSpeechRecognizerAuthorizationStatus, Bool, CGFloat, Date (+4 more)
+Cohesion: 0.14
+Nodes (13): AVAudioEngine, VoiceEngine, ObservableObject, SFSpeechAudioBufferRecognitionRequest, SFSpeechRecognitionTask, SFSpeechRecognizerAuthorizationStatus, Bool, CGFloat (+5 more)
 
 ### Community 13 - "Conversation File Store"
-Cohesion: 0.32
-Nodes (8): ConversationFileStore, SessionMeta, Data, SessionMeta, String, URL, TranscriptRecord, URL
+Cohesion: 0.29
+Nodes (9): ConversationFileStore.atomicWrite, ConversationFileStore (disk IO), ConversationFileStore, Data, SessionMeta, String, URL, TranscriptRecord (+1 more)
 
 ### Community 14 - "Configuration"
 Cohesion: 0.47
 Nodes (3): Config, String, URL
 
 ### Community 15 - "Build Targets"
-Cohesion: 0.50
-Nodes (4): build-app.sh bundle build script, HermesVoice executable target, HermesVoiceKit target, HermesVoiceTests target
+Cohesion: 0.19
+Nodes (17): ButtonStyle, CircleButtonStyle (mic toggle), IconButtonStyle, SendButtonStyle, Configuration, CircleButtonStyle, IconButtonStyle, SendButtonStyle (+9 more)
 
 ### Community 23 - "Community 23"
 Cohesion: 0.18
@@ -147,28 +153,32 @@ Cohesion: 0.31
 Nodes (8): ImageAttachment, ImageEncoder, Bool, CGFloat, Data, NSImage, String, UUID
 
 ### Community 25 - "Community 25"
-Cohesion: 0.29
-Nodes (5): EventHandlerRef, EventHotKeyRef, HotKeyManager, Void, UInt32
+Cohesion: 0.16
+Nodes (14): HermesErrorClassifier.classify, HermesErrorClassifier, HermesErrorKind, auth, http, offline, streamDropped, timeout (+6 more)
+
+### Community 26 - "Community 26"
+Cohesion: 0.67
+Nodes (3): VoiceEngine.startRecording, VoiceEngine.startSilenceDetection, VoiceEngine (Speech + AVAudioEngine)
 
 ## Knowledge Gaps
-- **112 isolated node(s):** `PreToolUse`, `Notification.Name`, `Bool`, `URL`, `Any` (+107 more)
+- **126 isolated node(s):** `Notification.Name`, `NSStatusItem`, `NSRunningApplication`, `Int32`, `Bool` (+121 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **10 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `OverlayViewModel` connect `Conversation View Model` to `App Lifecycle & Hotkeys`, `API Client & Streaming`, `History & Overlay UI`, `Button Styles & Visuals`, `Conversation File Store`?**
-  _High betweenness centrality (0.387) - this node is a cross-community bridge._
-- **Why does `AppDelegate` connect `App Lifecycle & Hotkeys` to `Conversation View Model`?**
-  _High betweenness centrality (0.154) - this node is a cross-community bridge._
-- **Why does `SwiftUI` connect `Theme & Appearance` to `App Lifecycle & Hotkeys`, `Button Styles & Visuals`, `History & Overlay UI`, `Community 23`?**
-  _High betweenness centrality (0.120) - this node is a cross-community bridge._
-- **Are the 2 inferred relationships involving `OverlayViewModel` (e.g. with `Resume-last-conversation on launch` and `VoiceEngine (Speech + AVAudioEngine)`) actually correct?**
-  _`OverlayViewModel` has 2 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `PreToolUse`, `Notification.Name`, `Bool` to the rest of the system?**
-  _116 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `Task` connect `Conversation View Model` to `App Lifecycle & Hotkeys`, `Button Styles & Visuals`, `API Client & Streaming`?**
+  _High betweenness centrality (0.192) - this node is a cross-community bridge._
+- **Why does `OverlayViewModel` connect `Conversation View Model` to `Voice & Speech Engine`, `History & Overlay UI`?**
+  _High betweenness centrality (0.189) - this node is a cross-community bridge._
+- **Why does `SwiftUI` connect `Theme & Appearance` to `App Lifecycle & Hotkeys`, `Button Styles & Visuals`, `Community 23`, `Build Targets`?**
+  _High betweenness centrality (0.136) - this node is a cross-community bridge._
+- **What connects `Notification.Name`, `NSStatusItem`, `NSRunningApplication` to the rest of the system?**
+  _126 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `App Lifecycle & Hotkeys` be split into smaller, more focused modules?**
-  _Cohesion score 0.07402031930333818 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08367071524966262 - nodes in this community are weakly interconnected._
 - **Should `Conversation View Model` be split into smaller, more focused modules?**
-  _Cohesion score 0.08020344287949922 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07932310946589106 - nodes in this community are weakly interconnected._
+- **Should `API Client & Streaming` be split into smaller, more focused modules?**
+  _Cohesion score 0.10461538461538461 - nodes in this community are weakly interconnected._

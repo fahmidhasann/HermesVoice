@@ -31,6 +31,10 @@ struct HermesVoiceApp {
         activateItem.target = delegate
         menu.addItem(activateItem)
         menu.addItem(NSMenuItem.separator())
+        let settingsBarItem = NSMenuItem(title: "Settings…", action: #selector(AppDelegate.openSettings), keyEquivalent: "")
+        settingsBarItem.target = delegate
+        menu.addItem(settingsBarItem)
+        menu.addItem(NSMenuItem.separator())
         let quitItem = NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         quitItem.target = NSApp
         menu.addItem(quitItem)
@@ -56,6 +60,11 @@ struct HermesVoiceApp {
         appMenu.addItem(withTitle: "About \(appName)",
                         action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)),
                         keyEquivalent: "")
+        appMenu.addItem(.separator())
+        let settingsItem = appMenu.addItem(withTitle: "Settings…",
+                                           action: #selector(AppDelegate.openSettings),
+                                           keyEquivalent: ",")
+        settingsItem.target = target
         appMenu.addItem(.separator())
         appMenu.addItem(withTitle: "Quit \(appName)",
                         action: #selector(NSApplication.terminate(_:)),
@@ -97,6 +106,16 @@ struct HermesVoiceApp {
                                           action: #selector(AppDelegate.searchHistory),
                                           keyEquivalent: "f")
         searchItem.target = target
+
+        // Window menu — ⌘W closes the front window (Settings) or hides the panel.
+        let windowMenuItem = NSMenuItem()
+        mainMenu.addItem(windowMenuItem)
+        let windowMenu = NSMenu(title: "Window")
+        windowMenuItem.submenu = windowMenu
+        let closeItem = windowMenu.addItem(withTitle: "Close",
+                                           action: #selector(AppDelegate.closeFrontWindow),
+                                           keyEquivalent: "w")
+        closeItem.target = target
 
         return mainMenu
     }

@@ -1,27 +1,49 @@
 import Foundation
 import Speech
 import AVFoundation
+import HermesVoiceKit
 
 class VoiceEngine: ObservableObject {
     var onPartialResult: ((String) -> Void)?
     var onFinalResult: ((String) -> Void)?
     var onError: ((String) -> Void)?
     var onAudioLevel: ((CGFloat) -> Void)?
-    
-    private let speechRecognizer = SFSpeechRecognizer(locale: Locale.current)
+
+    private var speechRecognizer = SFSpeechRecognizer(locale: Locale.current)
     private var audioEngine: AVAudioEngine?
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
-    
+
     private var silenceTimer: Timer?
     private var lastResultTime: Date = Date()
-    private let silenceThreshold: TimeInterval = 1.5
+    /// Silence-before-stop window; refreshed from Settings ▸ Voice on each start.
+    private var silenceThreshold: TimeInterval = 1.5
+    /// Recognition locale identifier currently backing `speechRecognizer` ("" =
+    /// system locale). Tracked so we only rebuild the recognizer when it changes.
+    private var currentLanguage: String = ""
 
     private var isRecording = false
     private var authorizationStatus: SFSpeechRecognizerAuthorizationStatus = .notDetermined
 
     var isAvailable: Bool {
         return speechRecognizer?.isAvailable ?? false
+    }
+
+    /// Apply the latest Voice settings (silence timeout + recognition locale).
+    /// Rebuilding the recognizer is cheap and only happens when the locale id
+    /// actually changes.
+    private func applyVoiceSettings() {
+        let settings = AppSettingsStore.loadCurrent()
+        silenceThreshold = max(0.3, settings.silenceTimeout)
+        let language = settings.recognitionLanguage
+        guard language != currentLanguage else { return }
+        currentLanguage = language
+        if language.isEmpty {
+            speechRecognizer = SFSpeechRecognizer(locale: Locale.current)
+        } else {
+            speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: language))
+                ?? SFSpeechRecognizer(locale: Locale.current)
+        }
     }
 
     init() {
@@ -54,6 +76,9 @@ class VoiceEngine: ObservableObject {
             onError?("Speech recognition not authorized.")
             return
         }
+
+        // Pick up the latest silence timeout / recognition language.
+        applyVoiceSettings()
 
         // Cancel any existing task
         recognitionTask?.cancel()

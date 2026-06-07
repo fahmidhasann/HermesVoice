@@ -1,6 +1,8 @@
 import AppKit
 import SwiftUI
 import Carbon
+import Combine
+import ServiceManagement
 import HermesVoiceKit
 
 extension Notification.Name {
@@ -14,6 +16,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var hotKeyManager: HotKeyManager?
     var viewModel = OverlayViewModel()
     private var autoHideObserver: Any?
+
+    let settingsController = SettingsWindowController()
+
+    // Subscription to the settings store + the last successfully applied
+    // settings, used to diff which system-level effect to (re)apply on change.
+    private var settingsCancellable: AnyCancellable?
+    private var appliedSettings: AppSettings = .default
 
     // Global monitor that closes the panel when the user clicks anywhere outside
     // of it. Installed only while the panel is fully shown and torn down on hide.
@@ -46,6 +55,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         setupOverlayPanel()
         setupHotKey()
+        subscribeToSettings()
 
         // Listen for auto-hide notification
         autoHideObserver = NotificationCenter.default.addObserver(
@@ -140,12 +150,92 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func setupHotKey() {
-        // kVK_ANSI_H = 0x04, controlKey = 0x1000, shiftKey = 0x0200
-        hotKeyManager = HotKeyManager(keyCode: UInt32(0x04), modifiers: UInt32(controlKey | shiftKey)) { [weak self] in
+        // Register the configured hotkey (defaults to ⌃⇧H).
+        let s = AppSettingsStore.shared.settings
+        hotKeyManager = HotKeyManager(keyCode: s.hotKeyCode, modifiers: s.hotKeyModifiers) { [weak self] in
             DispatchQueue.main.async {
                 self?.togglePanel()
             }
         }
+    }
+
+    // MARK: - Settings side effects
+
+    /// Subscribe to settings changes and apply the system-level ones that the
+    /// SwiftUI bindings can't perform themselves: hotkey re-registration,
+    /// appearance, and launch-at-login. Diffs against `appliedSettings` so each
+    /// effect only runs when its field actually changed.
+    private func subscribeToSettings() {
+        let store = AppSettingsStore.shared
+        appliedSettings = store.settings
+        applyAppearance(appliedSettings.appearance)
+        applyLaunchAtLogin(appliedSettings.launchAtLogin)
+        // Deliver on the next runloop tick so the store's `didSet` has committed
+        // the new value (and re-entrant reverts below don't fight the publisher).
+        settingsCancellable = store.$settings
+            .receive(on: RunLoop.main)
+            .sink { [weak self] newSettings in
+                self?.applySettingsChange(newSettings)
+            }
+    }
+
+    private func applySettingsChange(_ new: AppSettings) {
+        if new.appearance != appliedSettings.appearance {
+            applyAppearance(new.appearance)
+        }
+        if new.launchAtLogin != appliedSettings.launchAtLogin {
+            applyLaunchAtLogin(new.launchAtLogin)
+        }
+
+        let hotkeyChanged = new.hotKeyCode != appliedSettings.hotKeyCode
+            || new.hotKeyModifiers != appliedSettings.hotKeyModifiers
+        guard hotkeyChanged else { appliedSettings = new; return }
+
+        let ok = hotKeyManager?.update(keyCode: new.hotKeyCode,
+                                       modifiers: new.hotKeyModifiers,
+                                       previousKeyCode: appliedSettings.hotKeyCode,
+                                       previousModifiers: appliedSettings.hotKeyModifiers) ?? false
+        if ok {
+            appliedSettings = new
+        } else {
+            // Carbon rejected the combo (already claimed). Roll the store's
+            // hotkey back to the last working one and tell the user.
+            var reverted = AppSettingsStore.shared.settings
+            reverted.hotKeyCode = appliedSettings.hotKeyCode
+            reverted.hotKeyModifiers = appliedSettings.hotKeyModifiers
+            AppSettingsStore.shared.settings = reverted
+            appliedSettings = reverted
+            showHotKeyConflictAlert()
+        }
+    }
+
+    private func applyAppearance(_ mode: AppearanceMode) {
+        switch mode {
+        case .system: NSApp.appearance = nil
+        case .light:  NSApp.appearance = NSAppearance(named: .aqua)
+        case .dark:   NSApp.appearance = NSAppearance(named: .darkAqua)
+        }
+    }
+
+    private func applyLaunchAtLogin(_ enabled: Bool) {
+        let service = SMAppService.mainApp
+        do {
+            if enabled {
+                if service.status != .enabled { try service.register() }
+            } else {
+                if service.status == .enabled { try service.unregister() }
+            }
+        } catch {
+            NSLog("HermesVoice: launch-at-login update failed: \(error.localizedDescription)")
+        }
+    }
+
+    private func showHotKeyConflictAlert() {
+        let alert = NSAlert()
+        alert.messageText = "Shortcut unavailable"
+        alert.informativeText = "That key combination is already in use by macOS or another app. Your previous shortcut has been kept."
+        alert.alertStyle = .warning
+        alert.runModal()
     }
 
     // MARK: - Toggle
@@ -201,6 +291,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func menuBarNewChat() {
         if overlayPanel?.phase != .visible { showPanel() }
         viewModel.newChat()
+    }
+
+    /// ⌘, / Settings… — open (or focus) the Settings window.
+    @objc func openSettings() {
+        settingsController.show()
+    }
+
+    /// ⌘W / Window ▸ Close. Closes the Settings window when it's frontmost;
+    /// otherwise hides the overlay panel.
+    @objc func closeFrontWindow() {
+        if let key = NSApp.keyWindow {
+            if key === overlayPanel {
+                hidePanel()
+            } else {
+                key.performClose(nil)
+            }
+            return
+        }
+        if overlayPanel?.phase == .visible { hidePanel() }
     }
 
     private func showPanel() {
