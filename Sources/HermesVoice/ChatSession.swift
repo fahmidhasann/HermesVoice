@@ -88,6 +88,13 @@ final class ChatSession: ObservableObject {
     var onStreamingBegin: (() -> Void)?
     var onStreamingEnd: (() -> Void)?
 
+    /// Fired once with this session's id when a response finishes successfully
+    /// (a non-empty assistant message was committed). Used by `SessionManager`
+    /// to surface a background-completion cue — read at `finishAssistant` time
+    /// rather than inferred from `state == .done`, which evaporates after the
+    /// cosmetic 1.5s done→idle window (§4.8).
+    var onFinished: ((String) -> Void)?
+
     init(conversationId: String,
          startedAt: Date,
          model: String?,
@@ -290,6 +297,9 @@ final class ChatSession: ObservableObject {
             chatMessages.remove(at: index)
         } else {
             persist(chatMessages[index])
+            // A real answer landed — fire the one-shot completion cue so a
+            // background finish can be surfaced in the menu bar (§4.8).
+            onFinished?(conversationId)
         }
     }
 

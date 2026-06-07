@@ -140,6 +140,22 @@ class OverlayViewModel: ObservableObject {
     /// compare against the open conversation, e.g. menu-bar recents).
     var conversationId: String { foreground.conversationId }
 
+    // MARK: - Background-activity surfacing (Phase 5)
+
+    /// True while any session — foreground or background — is streaming. The
+    /// menu-bar status item observes this to animate while a hidden-panel
+    /// background stream runs (§4.8). The manager is private, so the facade
+    /// re-publishes its signals for `AppDelegate`.
+    var anyStreamingPublisher: AnyPublisher<Bool, Never> {
+        manager.$isAnyStreaming.eraseToAnyPublisher()
+    }
+
+    /// Fires the id of a session that just finished a response, so the app can
+    /// post an ambient completion cue for background finishes (§4.8).
+    var sessionFinishedPublisher: AnyPublisher<String, Never> {
+        manager.didFinish.eraseToAnyPublisher()
+    }
+
     init() {
         indexWriter = SessionIndexWriter(store: store)
 

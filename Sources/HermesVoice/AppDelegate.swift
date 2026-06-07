@@ -31,6 +31,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var settingsCancellable: AnyCancellable?
     private var appliedSettings: AppSettings = .default
 
+    // Subscriptions to the view model's background-activity signals (Phase 5).
+    private var activityCancellables = Set<AnyCancellable>()
+
+    // Repeating timer that pulses the status-item symbol's opacity while any
+    // session is streaming. nil when nothing is in flight.
+    private var statusPulseTimer: Timer?
+
     // Global monitor that closes the panel when the user clicks anywhere outside
     // of it. Installed only while the panel is fully shown and torn down on hide.
     private var clickOutsideMonitor: Any?
@@ -63,6 +70,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         setupOverlayPanel()
         setupHotKey()
         subscribeToSettings()
+        subscribeToBackgroundActivity()
         showOnboardingIfNeeded()
 
         // Listen for auto-hide notification
@@ -244,6 +252,79 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         alert.informativeText = "That key combination is already in use by macOS or another app. Your previous shortcut has been kept."
         alert.alertStyle = .warning
         alert.runModal()
+    }
+
+    // MARK: - Background-activity surfacing (Phase 5)
+
+    /// Observe the view model's aggregate streaming flag and one-shot finish
+    /// events so the menu-bar status item can reflect background work even with
+    /// the panel hidden. The status *menu* only rebuilds on open
+    /// (`menuNeedsUpdate`), so it can't show live progress — instead we animate
+    /// the status item's symbol directly. The in-panel pill stays
+    /// foreground-only and is untouched.
+    private func subscribeToBackgroundActivity() {
+        viewModel.anyStreamingPublisher
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] streaming in self?.setStatusItemStreaming(streaming) }
+            .store(in: &activityCancellables)
+
+        viewModel.sessionFinishedPublisher
+            .receive(on: RunLoop.main)
+            .sink { [weak self] id in self?.postBackgroundFinishCue(for: id) }
+            .store(in: &activityCancellables)
+    }
+
+    /// Start/stop a gentle opacity pulse on the status-item symbol while any
+    /// session is streaming. AppKit's `NSView.addSymbolEffect` isn't available
+    /// under the Command Line Tools toolchain we build with, so we animate the
+    /// button's `alphaValue` on a repeating timer — a tint-preserving pulse that
+    /// works on any image. Idempotent in both directions.
+    private func setStatusItemStreaming(_ streaming: Bool) {
+        guard let button = statusItem?.button else { return }
+        if streaming {
+            guard statusPulseTimer == nil else { return }
+            let timer = Timer(timeInterval: 0.75, repeats: true) { [weak self] _ in
+                MainActor.assumeIsolated {
+                    guard let button = self?.statusItem?.button else { return }
+                    NSAnimationContext.runAnimationGroup { ctx in
+                        ctx.duration = 0.7
+                        button.animator().alphaValue = button.alphaValue > 0.6 ? 0.35 : 1.0
+                    }
+                }
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            statusPulseTimer = timer
+            timer.fire() // begin dimming immediately rather than after one period
+        } else {
+            statusPulseTimer?.invalidate()
+            statusPulseTimer = nil
+            button.animator().alphaValue = 1.0
+        }
+    }
+
+    /// A session finished a response. When that happened in the background —
+    /// the panel is hidden, or the finished session isn't the one on screen —
+    /// give a subtle, permission-free flash on the status item so the user
+    /// notices without an interrupting notification (Open Decision C: silent +
+    /// ambient for v1). Skipped while the streaming pulse is running, since that
+    /// already conveys ongoing activity.
+    private func postBackgroundFinishCue(for id: String) {
+        let visibleForeground = overlayPanel?.phase == .visible && id == viewModel.conversationId
+        guard !visibleForeground, statusPulseTimer == nil,
+              let button = statusItem?.button else { return }
+        NSAnimationContext.runAnimationGroup({ ctx in
+            ctx.duration = 0.12
+            button.animator().alphaValue = 0.2
+        }, completionHandler: {
+            MainActor.assumeIsolated {
+                guard let button = self.statusItem?.button else { return }
+                NSAnimationContext.runAnimationGroup { ctx in
+                    ctx.duration = 0.45
+                    button.animator().alphaValue = 1.0
+                }
+            }
+        })
     }
 
     // MARK: - Toggle

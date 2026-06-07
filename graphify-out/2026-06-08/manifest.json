@@ -25,9 +25,9 @@
     "semantic_hash": "ef5f06f61011e18d1195939a3f3d0059"
   },
   "/Users/fahmidhasantaohid/Projects/HermesVoice/Sources/HermesVoice/ConversationFileStore.swift": {
-    "mtime": 1780829693.553827,
-    "ast_hash": "34a34d59b5bdacf0069db72eb6950b55",
-    "semantic_hash": "34a34d59b5bdacf0069db72eb6950b55"
+    "mtime": 1780860153.8114948,
+    "ast_hash": "34d6af6b97c24985591ad1e26cdebb84",
+    "semantic_hash": ""
   },
   "/Users/fahmidhasantaohid/Projects/HermesVoice/Sources/HermesVoice/HermesAPIClient.swift": {
     "mtime": 1780830500.753191,
@@ -50,8 +50,8 @@
     "semantic_hash": ""
   },
   "/Users/fahmidhasantaohid/Projects/HermesVoice/Sources/HermesVoice/OverlayViewModel.swift": {
-    "mtime": 1780859605.467887,
-    "ast_hash": "5c17759feb53e8452b3f566490edf3f2",
+    "mtime": 1780860308.8776395,
+    "ast_hash": "56c34b74ab00b0676ac5033448d9abfc",
     "semantic_hash": ""
   },
   "/Users/fahmidhasantaohid/Projects/HermesVoice/Sources/HermesVoice/Theme.swift": {
@@ -75,9 +75,9 @@
     "semantic_hash": "b327d0b13bd8fb1971405c560fa5b249"
   },
   "/Users/fahmidhasantaohid/Projects/HermesVoice/Sources/HermesVoiceKit/ConversationStore.swift": {
-    "mtime": 1780829693.554029,
-    "ast_hash": "f6cf369f5e7905390ee66a77e78f94d4",
-    "semantic_hash": "f6cf369f5e7905390ee66a77e78f94d4"
+    "mtime": 1780860130.747776,
+    "ast_hash": "e4b2778f42690bc74920658bdf9ffe73",
+    "semantic_hash": ""
   },
   "/Users/fahmidhasantaohid/Projects/HermesVoice/Sources/HermesVoiceKit/Debouncer.swift": {
     "mtime": 1780829693.554043,
@@ -105,9 +105,9 @@
     "semantic_hash": "97ea62f6c17ca6793c77b9cd8ee0e7cd"
   },
   "/Users/fahmidhasantaohid/Projects/HermesVoice/Tests/HermesVoiceTests/ConversationStoreTests.swift": {
-    "mtime": 1780845443.1496303,
-    "ast_hash": "30c38beb17966ad6f00b9709029ebcfd",
-    "semantic_hash": "30c38beb17966ad6f00b9709029ebcfd"
+    "mtime": 1780860369.3488278,
+    "ast_hash": "83daee1aa61390df0b4abfb2c0f7014d",
+    "semantic_hash": ""
   },
   "/Users/fahmidhasantaohid/Projects/HermesVoice/Tests/HermesVoiceTests/DebouncerTests.swift": {
     "mtime": 1780773693.7735753,
@@ -640,8 +640,8 @@
     "semantic_hash": "709d21acc0192950806af9c29086f24d"
   },
   "/Users/fahmidhasantaohid/Projects/HermesVoice/tasks/background-sessions-plan.md": {
-    "mtime": 1780859138.954269,
-    "ast_hash": "b8ee8c51a3c1b2ee00e069fd77361edf",
+    "mtime": 1780860419.1612334,
+    "ast_hash": "5f2b3e298835dd821009d543c0eeb288",
     "semantic_hash": ""
   },
   "/Users/fahmidhasantaohid/Projects/HermesVoice/Sources/HermesVoiceKit/ActivityRefCounter.swift": {
@@ -675,8 +675,8 @@
     "semantic_hash": ""
   },
   "/Users/fahmidhasantaohid/Projects/HermesVoice/Sources/HermesVoice/ChatSession.swift": {
-    "mtime": 1780859426.2167134,
-    "ast_hash": "fa32f60715c2066ec46387f03ee11652",
+    "mtime": 1780860258.8076298,
+    "ast_hash": "24a0e2ccdd1416455826fbeff0775eee",
     "semantic_hash": ""
   },
   "/Users/fahmidhasantaohid/Projects/HermesVoice/Sources/HermesVoice/SessionManager.swift": {

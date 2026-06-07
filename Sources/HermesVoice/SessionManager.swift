@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import HermesVoiceKit
 
 /// Registry of live `ChatSession`s plus the process-wide App Nap assertion.
@@ -13,9 +14,20 @@ import HermesVoiceKit
 /// (delete, or switched away while not worth keeping resident). Streaming
 /// sessions are never removed underneath a live stream.
 @MainActor
-final class SessionManager {
+final class SessionManager: ObservableObject {
     /// Live sessions keyed off their immutable `conversationId`.
     private(set) var sessions: [String: ChatSession] = [:]
+
+    /// True while at least one registered session is streaming (foreground or
+    /// background). Published so the menu-bar status item can animate while a
+    /// background stream runs with the panel hidden (§4.8). The in-panel pill
+    /// stays foreground-only and is unaffected.
+    @Published private(set) var isAnyStreaming = false
+
+    /// Fires the id of a session that just finished a response. One-shot per
+    /// completion (driven by `ChatSession.onFinished`), so a background finish
+    /// can post an ambient cue without inferring it from a transient state.
+    let didFinish = PassthroughSubject<String, Never>()
 
     /// Ref-counts how many sessions are streaming so the OS activity token is
     /// acquired exactly once (0→1) and released exactly once (1→0), §4.3.
@@ -23,13 +35,15 @@ final class SessionManager {
     /// The held `ProcessInfo.beginActivity` token; nil when no stream is in flight.
     private var activityToken: NSObjectProtocol?
 
-    /// Register a freshly created session and wire its streaming-activity
-    /// callbacks. Wiring here (not in the facade) means a session keeps holding
-    /// the App Nap assertion even after it drops to the background.
+    /// Register a freshly created session and wire its streaming-activity and
+    /// completion callbacks. Wiring here (not in the facade) means a session
+    /// keeps holding the App Nap assertion — and still reports its finish —
+    /// even after it drops to the background.
     func register(_ session: ChatSession) {
         sessions[session.conversationId] = session
         session.onStreamingBegin = { [weak self] in self?.streamingDidBegin() }
         session.onStreamingEnd = { [weak self] in self?.streamingDidEnd() }
+        session.onFinished = { [weak self] id in self?.didFinish.send(id) }
     }
 
     /// Look up a still-live session by id (nil if it was torn down / evicted).
@@ -41,13 +55,11 @@ final class SessionManager {
         sessions[id] = nil
     }
 
-    /// True while at least one registered session is streaming.
-    var isAnyStreaming: Bool { activity.count > 0 }
-
     // MARK: - App Nap suppression (§4.3)
 
     /// A stream started. Acquire the OS activity token on the 0→1 transition.
     private func streamingDidBegin() {
+        defer { isAnyStreaming = activity.count > 0 }
         guard activity.begin() else { return }
         activityToken = ProcessInfo.processInfo.beginActivity(
             options: .userInitiated,
@@ -56,6 +68,7 @@ final class SessionManager {
 
     /// A stream ended. Release the OS activity token on the 1→0 transition.
     private func streamingDidEnd() {
+        defer { isAnyStreaming = activity.count > 0 }
         guard activity.end() else { return }
         if let token = activityToken {
             ProcessInfo.processInfo.endActivity(token)
