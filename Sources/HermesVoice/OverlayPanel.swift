@@ -54,10 +54,12 @@ class OverlayPanel: NSPanel {
 
         // Shadow on wrapper — visible because wrapper.masksToBounds = false.
         // Deeper + softer than before for a more grounded, premium float.
+        // Single source: Theme.Elevation.floating (a SwiftUI .shadow can't reach
+        // this window-level AppKit view, so the values are read raw here).
         wrapper.layer?.shadowColor = NSColor.black.cgColor
-        wrapper.layer?.shadowOpacity = 0.28
-        wrapper.layer?.shadowRadius = 34
-        wrapper.layer?.shadowOffset = NSSize(width: 0, height: -12)
+        wrapper.layer?.shadowOpacity = Float(Theme.Elevation.floatingOpacity)
+        wrapper.layer?.shadowRadius = Theme.Elevation.floatingRadius
+        wrapper.layer?.shadowOffset = NSSize(width: 0, height: Theme.Elevation.floatingY)
         wrapper.layer?.shadowPath = CGPath(
             roundedRect: wrapper.bounds,
             cornerWidth: Theme.Layout.cornerRadius,

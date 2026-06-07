@@ -27,7 +27,7 @@ struct OverlayView: View {
         // conversation/history scroll inside this fixed size instead.
         .frame(width: Theme.Layout.panelWidth, height: Theme.Layout.panelHeight)
         .background(Color.clear)
-        .animation(Theme.Motion.ifMotion(.easeInOut(duration: 0.2)), value: viewModel.isRecording)
+        .animation(Theme.Motion.ifMotion(Theme.Motion.content), value: viewModel.isRecording)
         .onAppear {
             inputFocused = true
         }
@@ -106,7 +106,7 @@ struct OverlayView: View {
                 Spacer()
                 Button(action: viewModel.newChat) {
                     Image(systemName: "square.and.pencil")
-                        .font(.system(size: 12.5, weight: .regular))
+                        .font(Theme.Icon.font(Theme.Icon.sm, weight: .regular))
                         .foregroundColor(Theme.Colors.textSecondary)
                 }
                 .buttonStyle(IconButtonStyle())
@@ -115,7 +115,7 @@ struct OverlayView: View {
 
                 Button(action: { viewModel.openHistory() }) {
                     Image(systemName: "clock.arrow.circlepath")
-                        .font(.system(size: 12.5, weight: .regular))
+                        .font(Theme.Icon.font(Theme.Icon.sm, weight: .regular))
                         .foregroundColor(Theme.Colors.textSecondary)
                 }
                 .buttonStyle(IconButtonStyle())
@@ -126,7 +126,7 @@ struct OverlayView: View {
                     NotificationCenter.default.post(name: .hermesAutoHide, object: nil)
                 }) {
                     Image(systemName: "xmark")
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(Theme.Icon.font(Theme.Icon.xs, weight: .semibold))
                         .foregroundColor(Theme.Colors.textSecondary)
                 }
                 .buttonStyle(IconButtonStyle())
@@ -153,7 +153,7 @@ struct OverlayView: View {
         }
         .padding(.leading, Theme.Spacing.sm)
         .padding(.trailing, Theme.Spacing.md)
-        .padding(.vertical, 5)
+        .padding(.vertical, Theme.Spacing.xs2)
         .background(
             Capsule(style: .continuous)
                 .fill(statusColor.opacity(0.12))
@@ -162,7 +162,7 @@ struct OverlayView: View {
                         .strokeBorder(statusColor.opacity(0.18), lineWidth: 0.5)
                 )
         )
-        .animation(Theme.Motion.ifMotion(.easeInOut(duration: 0.25)), value: viewModel.state)
+        .animation(Theme.Motion.ifMotion(Theme.Motion.state), value: viewModel.state)
     }
 
     @ViewBuilder
@@ -177,12 +177,12 @@ struct OverlayView: View {
                     .opacity(viewModel.state == .listening || viewModel.state == .responding ? 0.6 : 0)
                     .animation(
                         viewModel.state == .listening || viewModel.state == .responding
-                            ? Theme.Motion.ifMotion(.easeInOut(duration: 1.2).repeatForever(autoreverses: true))
+                            ? Theme.Motion.ifMotion(Theme.Motion.breathe)
                             : .default,
                         value: viewModel.state
                     )
             )
-            .animation(Theme.Motion.ifMotion(.easeInOut(duration: 0.25)), value: viewModel.state)
+            .animation(Theme.Motion.ifMotion(Theme.Motion.state), value: viewModel.state)
     }
 
     private var statusColor: Color {
@@ -216,7 +216,7 @@ struct OverlayView: View {
             .foregroundColor(statusColor)
             .lineLimit(viewModel.state == .error ? 2 : 1)
             .fixedSize(horizontal: false, vertical: true)
-            .animation(Theme.Motion.ifMotion(.easeInOut(duration: 0.25)), value: viewModel.state)
+            .animation(Theme.Motion.ifMotion(Theme.Motion.state), value: viewModel.state)
     }
 
     // MARK: - Conversation
@@ -248,7 +248,7 @@ struct OverlayView: View {
                     .frame(width: 54, height: 54)
 
                 Image(systemName: "waveform")
-                    .font(.system(size: 22, weight: .light))
+                    .font(Theme.Icon.font(Theme.Icon.lg, weight: .light))
                     .foregroundStyle(Theme.Gradients.accent)
             }
 
@@ -257,16 +257,16 @@ struct OverlayView: View {
                 .foregroundColor(Theme.Colors.textPrimary.opacity(0.75))
 
             Text("⌃⇧H to toggle  ·  Enter to send")
-                .font(.system(size: 10.5, weight: .medium))
+                .font(Theme.Font.hint())
                 .foregroundColor(Theme.Colors.textSecondary.opacity(0.7))
-                .padding(.horizontal, 10)
-                .padding(.vertical, 4)
+                .padding(.horizontal, Theme.Spacing.sm2)
+                .padding(.vertical, Theme.Spacing.xs)
                 .background(
                     Capsule(style: .continuous).fill(Theme.Colors.textPrimary.opacity(0.05))
                 )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.vertical, Theme.Spacing.xxl + Theme.Spacing.sm)
+        .padding(.vertical, Theme.Spacing.xxxl)
     }
 
     private var chatThreadView: some View {
@@ -287,14 +287,14 @@ struct OverlayView: View {
                         transcriptionPreview
                     }
                 }
-                .animation(Theme.Motion.ifMotion(.easeOut(duration: 0.2)), value: viewModel.activeTools)
+                .animation(Theme.Motion.ifMotion(Theme.Motion.content), value: viewModel.activeTools)
                 .padding(.horizontal, Theme.Spacing.lg)
                 .padding(.vertical, Theme.Spacing.md)
             }
             // Scroll to new messages
             .onChange(of: viewModel.chatMessages.count) { _, _ in
                 if let last = viewModel.chatMessages.last {
-                    withAnimation(Theme.Motion.ifMotion(.easeOut(duration: 0.2))) {
+                    withAnimation(Theme.Motion.ifMotion(Theme.Motion.content)) {
                         proxy.scrollTo(last.id, anchor: .bottom)
                     }
                 }
@@ -345,7 +345,7 @@ struct OverlayView: View {
                 }
             }
             .padding(.horizontal, Theme.Spacing.md)
-            .padding(.vertical, Theme.Spacing.sm + 2)
+            .padding(.vertical, Theme.Spacing.sm2)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.bubble, style: .continuous)
                     .fill(Theme.Colors.recordingRed.opacity(0.08))
@@ -369,7 +369,7 @@ struct OverlayView: View {
         }
         .padding(.horizontal, Theme.Spacing.lg)
         .padding(.vertical, Theme.Spacing.md)
-        .animation(Theme.Motion.ifMotion(.easeInOut(duration: 0.18)), value: viewModel.pendingImages)
+        .animation(Theme.Motion.ifMotion(Theme.Motion.content), value: viewModel.pendingImages)
     }
 
     /// Horizontal strip of staged image thumbnails (paste/drag) with remove
@@ -383,8 +383,8 @@ struct OverlayView: View {
                     }
                 }
             }
-            .padding(.horizontal, 2)
-            .padding(.vertical, 2)
+            .padding(.horizontal, Theme.Spacing.xxs)
+            .padding(.vertical, Theme.Spacing.xxs)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -402,7 +402,7 @@ struct OverlayView: View {
 
     private var micIcon: some View {
         Image(systemName: viewModel.isRecording ? "mic.fill" : "mic")
-            .font(.system(size: 14, weight: .medium))
+            .font(Theme.Icon.font(Theme.Icon.md, weight: .medium))
             .foregroundColor(viewModel.isRecording ? .white : Theme.Colors.textPrimary)
     }
 
@@ -442,8 +442,8 @@ struct OverlayView: View {
             .scaleEffect(active ? 0.94 : 1.0)
             .opacity(micDisabled ? 0.5 : 1)
             .contentShape(Circle())
-            .animation(.easeOut(duration: 0.12), value: micHovering)
-            .animation(.easeOut(duration: 0.16), value: active)
+            .animation(Theme.Motion.hover, value: micHovering)
+            .animation(Theme.Motion.toggle, value: active)
             .onHover { micHovering = $0 }
             .gesture(
                 DragGesture(minimumDistance: 0)
@@ -479,7 +479,7 @@ struct OverlayView: View {
             if viewModel.canRetry && viewModel.state != .sending && viewModel.state != .responding {
                 Button(action: viewModel.retryLast) {
                     Image(systemName: "arrow.clockwise")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(Theme.Icon.font(Theme.Icon.sm, weight: .semibold))
                         .foregroundColor(Theme.Colors.accent)
                         .frame(width: 22, height: 22)
                 }
@@ -493,7 +493,7 @@ struct OverlayView: View {
             if viewModel.state == .sending || viewModel.state == .responding {
                 Button(action: viewModel.cancelStreaming) {
                     Image(systemName: "stop.fill")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(Theme.Icon.font(Theme.Icon.sm, weight: .semibold))
                         .foregroundColor(.white)
                 }
                 .buttonStyle(SendButtonStyle(isDisabled: false))
@@ -503,7 +503,7 @@ struct OverlayView: View {
             } else {
                 Button(action: viewModel.sendMessage) {
                     Image(systemName: "arrow.up")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(Theme.Icon.font(Theme.Icon.sm, weight: .semibold))
                         .foregroundColor(.white)
                 }
                 .buttonStyle(SendButtonStyle(isDisabled: sendDisabled))
@@ -513,7 +513,7 @@ struct OverlayView: View {
                 .transition(.opacity)
             }
         }
-        .animation(Theme.Motion.ifMotion(.easeInOut(duration: 0.18)), value: viewModel.state)
+        .animation(Theme.Motion.ifMotion(Theme.Motion.state), value: viewModel.state)
     }
 
     /// Multi-line text field with Enter-to-send.
@@ -525,8 +525,8 @@ struct OverlayView: View {
             .foregroundColor(Theme.Colors.textPrimary)
             .lineLimit(1...4)
             .textFieldStyle(.plain)
-            .padding(.horizontal, Theme.Spacing.md + 4)
-            .padding(.vertical, Theme.Spacing.sm + 2)
+            .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.vertical, Theme.Spacing.sm2)
             .focused($inputFocused)
             // Return sends; Shift/Option+Return falls through to insert a newline.
             // (`.onSubmit` is unreliable for an axis: .vertical field on macOS.)
@@ -555,7 +555,7 @@ struct OverlayView: View {
                                           lineWidth: inputFocused ? 1.5 : 0.5)
                     )
             )
-            .animation(Theme.Motion.ifMotion(.easeOut(duration: 0.15)), value: inputFocused)
+            .animation(Theme.Motion.ifMotion(Theme.Motion.toggle), value: inputFocused)
             .accessibilityLabel("Message input")
     }
 }
@@ -584,12 +584,12 @@ struct MessageBubble: View {
         .offset(y: appeared ? 0 : 10)
         .scaleEffect(appeared ? 1 : 0.98, anchor: message.role == .user ? .bottomTrailing : .bottomLeading)
         .onAppear {
-            withAnimation(Theme.Motion.ifMotion(.spring(response: 0.34, dampingFraction: 0.78))) {
+            withAnimation(Theme.Motion.ifMotion(Theme.Motion.springBubble)) {
                 appeared = true
             }
         }
         .onHover { hovering in
-            withAnimation(.easeOut(duration: 0.15)) {
+            withAnimation(Theme.Motion.hover) {
                 isHovered = hovering
             }
         }
@@ -619,7 +619,7 @@ struct MessageBubble: View {
                         if !message.isStreaming && !message.content.isEmpty {
                             Button(action: copyMessage) {
                                 Image(systemName: showCopied ? "checkmark" : "doc.on.doc")
-                                    .font(.system(size: 10.5, weight: .medium))
+                                    .font(Theme.Icon.font(Theme.Icon.xs, weight: .medium))
                                     .foregroundColor(showCopied ? .green : Theme.Colors.textSecondary)
                                     .frame(width: 22, height: 22)
                                     .background(Theme.Colors.textPrimary.opacity(showCopied ? 0.08 : 0.04))
@@ -633,14 +633,14 @@ struct MessageBubble: View {
                     }
                 }
             }
-            .padding(.horizontal, Theme.Spacing.md + 2)
-            .padding(.vertical, Theme.Spacing.sm + 2)
+            .padding(.horizontal, Theme.Spacing.md2)
+            .padding(.vertical, Theme.Spacing.sm2)
             .background(bubbleBackground)
 
             Text(formatTimestamp(message.timestamp))
-                .font(.system(size: 9.5))
+                .font(Theme.Font.caption(size: 9.5))
                 .foregroundColor(Theme.Colors.textSecondary.opacity(0.45))
-                .padding(.horizontal, 4)
+                .padding(.horizontal, Theme.Spacing.xs)
         }
     }
 
@@ -678,7 +678,7 @@ struct MessageBubble: View {
                     .resizable()
                     .scaledToFit()
                     .frame(maxWidth: 240, maxHeight: 220, alignment: message.role == .user ? .trailing : .leading)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.image))
             }
         }
     }
@@ -697,9 +697,9 @@ struct MessageBubble: View {
         shape
             .fill(bubbleFill)
             .overlay(shape.strokeBorder(bubbleStroke, lineWidth: 0.5))
-            .shadow(color: Theme.Depth.bubbleColor,
-                    radius: Theme.Depth.bubbleRadius,
-                    x: 0, y: Theme.Depth.bubbleY)
+            .shadow(color: Theme.Elevation.restColor,
+                    radius: Theme.Elevation.restRadius,
+                    x: 0, y: Theme.Elevation.restY)
     }
 
     private var bubbleFill: AnyShapeStyle {
@@ -735,7 +735,7 @@ struct ToolActivityRow: View {
     var body: some View {
         HStack(spacing: Theme.Spacing.sm) {
             Text(tool.emoji ?? "🔧")
-                .font(.system(size: 12))
+                .font(Theme.Icon.font(Theme.Icon.sm))
 
             (Text("Hermes is using ").foregroundColor(Theme.Colors.textSecondary)
              + Text(label).foregroundColor(Theme.Colors.textPrimary)
@@ -751,7 +751,7 @@ struct ToolActivityRow: View {
             Spacer(minLength: 24)
         }
         .padding(.horizontal, Theme.Spacing.md)
-        .padding(.vertical, Theme.Spacing.xs + 2)
+        .padding(.vertical, Theme.Spacing.xs2)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.chip, style: .continuous)
                 .fill(Theme.Colors.accentSoft)
@@ -777,19 +777,19 @@ struct PendingImageChip: View {
             .resizable()
             .scaledToFill()
             .frame(width: 52, height: 52)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.image))
             .overlay(
-                RoundedRectangle(cornerRadius: 8)
+                RoundedRectangle(cornerRadius: Theme.Radius.image)
                     .stroke(Theme.Colors.divider, lineWidth: 1)
             )
             .overlay(alignment: .topTrailing) {
                 Button(action: onRemove) {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 14))
+                        .font(Theme.Icon.font(Theme.Icon.md))
                         .foregroundStyle(.white, Color.black.opacity(0.55))
                 }
                 .buttonStyle(.plain)
-                .padding(2)
+                .padding(Theme.Spacing.xxs)
                 .help("Remove image")
                 .accessibilityLabel("Remove image")
             }

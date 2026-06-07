@@ -688,5 +688,20 @@
     "mtime": 1780864844.4637275,
     "ast_hash": "c72973eecf15f18c9505e1d5d016fea4",
     "semantic_hash": ""
+  },
+  "/Users/fahmidhasantaohid/Projects/HermesVoice/CONTEXT.md": {
+    "mtime": 1780867122.024691,
+    "ast_hash": "487eb6e747b3cc4d4823bd5801b3ea24",
+    "semantic_hash": ""
+  },
+  "/Users/fahmidhasantaohid/Projects/HermesVoice/docs/adr/0001-translucent-chrome-near-solid-content.md": {
+    "mtime": 1780867359.1217086,
+    "ast_hash": "36b930406b3cc372059bcb809518eb8b",
+    "semantic_hash": ""
+  },
+  "/Users/fahmidhasantaohid/Projects/HermesVoice/tasks/ui-polish-plan.md": {
+    "mtime": 1780867395.9919326,
+    "ast_hash": "d198f69d738922bbf36cb3aa94780c51",
+    "semantic_hash": ""
   }
 }

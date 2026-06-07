@@ -17,8 +17,8 @@ struct IconButtonStyle: ButtonStyle {
                               : (isHovered ? hoverColor : backgroundColor))
             )
             .scaleEffect(configuration.isPressed ? 0.90 : 1.0)
-            .animation(.easeOut(duration: 0.12), value: isHovered)
-            .animation(.easeOut(duration: 0.08), value: configuration.isPressed)
+            .animation(Theme.Motion.hover, value: isHovered)
+            .animation(Theme.Motion.press, value: configuration.isPressed)
             .onHover { isHovered = $0 }
     }
 }
@@ -48,9 +48,9 @@ struct CircleButtonStyle: ButtonStyle {
             .shadow(color: isActive ? Theme.Colors.recordingRed.opacity(0.45) : .clear,
                     radius: isActive ? 7 : 0, x: 0, y: isActive ? 2 : 0)
             .scaleEffect(configuration.isPressed ? 0.90 : 1.0)
-            .animation(.easeOut(duration: 0.12), value: isHovered)
-            .animation(.easeOut(duration: 0.16), value: isActive)
-            .animation(.easeOut(duration: 0.08), value: configuration.isPressed)
+            .animation(Theme.Motion.hover, value: isHovered)
+            .animation(Theme.Motion.toggle, value: isActive)
+            .animation(Theme.Motion.press, value: configuration.isPressed)
             .onHover { isHovered = $0 }
     }
 }
@@ -81,13 +81,13 @@ struct SendButtonStyle: ButtonStyle {
                         .brightness(isHovered ? 0.05 : 0)
                 }
             }
-            .shadow(color: isDisabled ? .clear : Theme.Depth.actionGlow(),
-                    radius: isDisabled ? 0 : Theme.Depth.actionRadius,
-                    x: 0, y: isDisabled ? 0 : Theme.Depth.actionY)
+            .shadow(color: isDisabled ? .clear : Theme.Elevation.actionGlow(),
+                    radius: isDisabled ? 0 : Theme.Elevation.actionRadius,
+                    x: 0, y: isDisabled ? 0 : Theme.Elevation.actionY)
             .scaleEffect(configuration.isPressed ? 0.90 : 1.0)
-            .animation(.easeOut(duration: 0.12), value: isHovered)
-            .animation(.easeOut(duration: 0.08), value: configuration.isPressed)
-            .animation(.easeOut(duration: 0.15), value: isDisabled)
+            .animation(Theme.Motion.hover, value: isHovered)
+            .animation(Theme.Motion.press, value: configuration.isPressed)
+            .animation(Theme.Motion.toggle, value: isDisabled)
             .onHover { isHovered = $0 }
     }
 }
