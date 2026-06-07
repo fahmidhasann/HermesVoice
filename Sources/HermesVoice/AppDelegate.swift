@@ -10,7 +10,7 @@ extension Notification.Name {
 }
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     var statusItem: NSStatusItem?
     var overlayPanel: OverlayPanel?
     var hotKeyManager: HotKeyManager?
@@ -18,6 +18,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var autoHideObserver: Any?
 
     let settingsController = SettingsWindowController()
+    let onboardingController = OnboardingWindowController()
+
+    /// The status-bar menu, rebuilt on open (recents + connection line).
+    private var statusMenu: NSMenu?
+
+    /// UserDefaults flag marking that the first-run onboarding has been shown.
+    private static let onboardedKey = "hermesVoiceHasOnboarded"
 
     // Subscription to the settings store + the last successfully applied
     // settings, used to diff which system-level effect to (re)apply on change.
@@ -56,6 +63,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         setupOverlayPanel()
         setupHotKey()
         subscribeToSettings()
+        showOnboardingIfNeeded()
 
         // Listen for auto-hide notification
         autoHideObserver = NotificationCenter.default.addObserver(
@@ -296,6 +304,100 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// ⌘, / Settings… — open (or focus) the Settings window.
     @objc func openSettings() {
         settingsController.show()
+    }
+
+    /// Menu-bar ▸ Recent. Open a stored conversation, showing the panel first.
+    @objc func openRecentConversation(_ sender: NSMenuItem) {
+        guard let id = sender.representedObject as? String else { return }
+        if overlayPanel?.phase != .visible { showPanel() }
+        viewModel.openConversation(id: id)
+    }
+
+    // MARK: - First-run onboarding
+
+    /// On the very first launch, show the welcome + permissions flow once, then
+    /// open the panel so the user can try it immediately.
+    private func showOnboardingIfNeeded() {
+        guard !UserDefaults.standard.bool(forKey: Self.onboardedKey) else { return }
+        onboardingController.show { [weak self] in
+            UserDefaults.standard.set(true, forKey: Self.onboardedKey)
+            self?.showPanel()
+        }
+    }
+
+    // MARK: - Status-bar menu (rebuilt on open)
+
+    /// Installs an empty menu whose contents are (re)built in `menuNeedsUpdate`.
+    func configureStatusMenu() {
+        let menu = NSMenu()
+        menu.delegate = self
+        statusItem?.menu = menu
+        statusMenu = menu
+    }
+
+    nonisolated func menuNeedsUpdate(_ menu: NSMenu) {
+        MainActor.assumeIsolated {
+            guard menu === statusMenu else { return }
+            rebuildStatusMenu(menu)
+            // Refresh reachability so the *next* open shows current state.
+            viewModel.checkConnection()
+        }
+    }
+
+    private func rebuildStatusMenu(_ menu: NSMenu) {
+        menu.removeAllItems()
+
+        // Live connection line (non-actionable).
+        let status = NSMenuItem(title: connectionStatusTitle(), action: nil, keyEquivalent: "")
+        status.isEnabled = false
+        menu.addItem(status)
+        menu.addItem(.separator())
+
+        let newChat = NSMenuItem(title: "New Chat", action: #selector(menuBarNewChat), keyEquivalent: "n")
+        newChat.keyEquivalentModifierMask = [.command]
+        newChat.target = self
+        menu.addItem(newChat)
+
+        let activate = NSMenuItem(title: "Open HermesVoice  (⌃⇧H)", action: #selector(togglePanel), keyEquivalent: "")
+        activate.target = self
+        menu.addItem(activate)
+
+        // Recent conversations (most recent first).
+        let recents = viewModel.recentSessions(limit: 5)
+        if !recents.isEmpty {
+            menu.addItem(.separator())
+            let header = NSMenuItem(title: "Recent", action: nil, keyEquivalent: "")
+            header.isEnabled = false
+            menu.addItem(header)
+            for meta in recents {
+                let title = meta.title.isEmpty ? "Untitled" : meta.title
+                let item = NSMenuItem(title: title, action: #selector(openRecentConversation(_:)), keyEquivalent: "")
+                item.target = self
+                item.representedObject = meta.id
+                item.indentationLevel = 1
+                menu.addItem(item)
+            }
+        }
+
+        menu.addItem(.separator())
+        let settings = NSMenuItem(title: "Settings…", action: #selector(openSettings), keyEquivalent: ",")
+        settings.keyEquivalentModifierMask = [.command]
+        settings.target = self
+        menu.addItem(settings)
+
+        menu.addItem(.separator())
+        let quit = NSMenuItem(title: "Quit HermesVoice", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        quit.keyEquivalentModifierMask = [.command]
+        quit.target = NSApp
+        menu.addItem(quit)
+    }
+
+    private func connectionStatusTitle() -> String {
+        switch viewModel.connectionState {
+        case .online:  return "● Connected to Hermes"
+        case .offline: return "○ Gateway offline"
+        case .unknown: return "○ Checking connection…"
+        }
     }
 
     /// ⌘W / Window ▸ Close. Closes the Settings window when it's frontmost;

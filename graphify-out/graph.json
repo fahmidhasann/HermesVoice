@@ -188,7 +188,7 @@
       "source_file": ".claude/skills/impeccable/scripts/command-metadata.json",
       "source_location": "L1",
       "id": "scripts_command_metadata",
-      "community": 133,
+      "community": 130,
       "norm_label": "command-metadata.json"
     },
     {
@@ -2204,7 +2204,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/cli/main.mjs",
       "source_location": "L64",
       "id": "cli_main_confirm",
-      "community": 62,
+      "community": 55,
       "norm_label": "confirm()"
     },
     {
@@ -2267,7 +2267,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/detect-antipatterns-browser.js",
       "source_location": "L537",
       "id": "detector_detect_antipatterns_browser_relativeluminance",
-      "community": 113,
+      "community": 57,
       "norm_label": "relativeluminance()"
     },
     {
@@ -2276,7 +2276,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/detect-antipatterns-browser.js",
       "source_location": "L544",
       "id": "detector_detect_antipatterns_browser_contrastratio",
-      "community": 113,
+      "community": 72,
       "norm_label": "contrastratio()"
     },
     {
@@ -2294,7 +2294,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/detect-antipatterns-browser.js",
       "source_location": "L568",
       "id": "detector_detect_antipatterns_browser_haschroma",
-      "community": 113,
+      "community": 57,
       "norm_label": "haschroma()"
     },
     {
@@ -2303,7 +2303,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/detect-antipatterns-browser.js",
       "source_location": "L573",
       "id": "detector_detect_antipatterns_browser_gethue",
-      "community": 113,
+      "community": 57,
       "norm_label": "gethue()"
     },
     {
@@ -2312,7 +2312,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/detect-antipatterns-browser.js",
       "source_location": "L586",
       "id": "detector_detect_antipatterns_browser_colortohex",
-      "community": 113,
+      "community": 57,
       "norm_label": "colortohex()"
     },
     {
@@ -2339,7 +2339,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/detect-antipatterns-browser.js",
       "source_location": "L635",
       "id": "detector_detect_antipatterns_browser_checkcolors",
-      "community": 113,
+      "community": 57,
       "norm_label": "checkcolors()"
     },
     {
@@ -2420,7 +2420,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/detect-antipatterns-browser.js",
       "source_location": "L980",
       "id": "detector_detect_antipatterns_browser_checkglow",
-      "community": 113,
+      "community": 57,
       "norm_label": "checkglow()"
     },
     {
@@ -2627,7 +2627,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/detect-antipatterns-browser.js",
       "source_location": "L1708",
       "id": "detector_detect_antipatterns_browser_checkelementaipalettedom",
-      "community": 113,
+      "community": 57,
       "norm_label": "checkelementaipalettedom()"
     },
     {
@@ -2762,7 +2762,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/detect-antipatterns-browser.js",
       "source_location": "L2353",
       "id": "detector_detect_antipatterns_browser_checkelementglow",
-      "community": 113,
+      "community": 57,
       "norm_label": "checkelementglow()"
     },
     {
@@ -3203,7 +3203,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/detect-antipatterns-browser.js",
       "source_location": "L3619",
       "id": "detector_detect_antipatterns_browser_pickworstcontrastcolor",
-      "community": 113,
+      "community": 72,
       "norm_label": "pickworstcontrastcolor()"
     },
     {
@@ -3320,7 +3320,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/detect-antipatterns-browser.js",
       "source_location": "L3890",
       "id": "detector_detect_antipatterns_browser_textsamplepoints",
-      "community": 57,
+      "community": 72,
       "norm_label": "textsamplepoints()"
     },
     {
@@ -3338,7 +3338,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/detect-antipatterns-browser.js",
       "source_location": "L3969",
       "id": "detector_detect_antipatterns_browser_analyzevisualcontrastcandidate",
-      "community": 57,
+      "community": 72,
       "norm_label": "analyzevisualcontrastcandidate()"
     },
     {
@@ -3347,7 +3347,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/detect-antipatterns-browser.js",
       "source_location": "L4048",
       "id": "detector_detect_antipatterns_browser_waitforvisualpaint",
-      "community": 57,
+      "community": 96,
       "norm_label": "waitforvisualpaint()"
     },
     {
@@ -3356,7 +3356,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/detect-antipatterns-browser.js",
       "source_location": "L4054",
       "id": "detector_detect_antipatterns_browser_analyzevisualcontrast",
-      "community": 57,
+      "community": 96,
       "norm_label": "analyzevisualcontrast()"
     },
     {
@@ -3653,7 +3653,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/engines/regex/detect-text.mjs",
       "source_location": "L325",
       "id": "regex_detect_text_extractstyleblocks",
-      "community": 37,
+      "community": 62,
       "norm_label": "extractstyleblocks()"
     },
     {
@@ -3671,7 +3671,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/engines/regex/detect-text.mjs",
       "source_location": "L345",
       "id": "regex_detect_text_extractcssinjs",
-      "community": 37,
+      "community": 62,
       "norm_label": "extractcssinjs()"
     },
     {
@@ -3698,7 +3698,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/engines/regex/detect-text.mjs",
       "source_location": "L423",
       "id": "regex_detect_text_runtextcontentanalyzers",
-      "community": 37,
+      "community": 62,
       "norm_label": "runtextcontentanalyzers()"
     },
     {
@@ -3707,7 +3707,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/engines/regex/detect-text.mjs",
       "source_location": "L441",
       "id": "regex_detect_text_detecttext",
-      "community": 37,
+      "community": 62,
       "norm_label": "detecttext()"
     },
     {
@@ -4157,7 +4157,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/engines/static-html/css-cascade.mjs",
       "source_location": "L812",
       "id": "static_html_css_cascade_staticdocument_getstyle",
-      "community": 79,
+      "community": 33,
       "norm_label": ".getstyle()"
     },
     {
@@ -4166,7 +4166,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/engines/static-html/css-cascade.mjs",
       "source_location": "L817",
       "id": "static_html_css_cascade_makestaticstyle",
-      "community": 51,
+      "community": 33,
       "norm_label": "makestaticstyle()"
     },
     {
@@ -4175,7 +4175,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/engines/static-html/css-cascade.mjs",
       "source_location": "L826",
       "id": "static_html_css_cascade_buildstaticwindow",
-      "community": 37,
+      "community": 62,
       "norm_label": "buildstaticwindow()"
     },
     {
@@ -4184,7 +4184,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/engines/static-html/css-cascade.mjs",
       "source_location": "L833",
       "id": "static_html_css_cascade_collectstaticcsstext",
-      "community": 37,
+      "community": 67,
       "norm_label": "collectstaticcsstext()"
     },
     {
@@ -4193,7 +4193,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/engines/static-html/css-cascade.mjs",
       "source_location": "L858",
       "id": "static_html_css_cascade_buildstaticstylemap",
-      "community": 37,
+      "community": 51,
       "norm_label": "buildstaticstylemap()"
     },
     {
@@ -4202,7 +4202,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/engines/static-html/detect-html.mjs",
       "source_location": "L1",
       "id": "static_html_detect_html",
-      "community": 37,
+      "community": 62,
       "norm_label": "detect-html.mjs"
     },
     {
@@ -4211,7 +4211,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/engines/static-html/detect-html.mjs",
       "source_location": "L37",
       "id": "static_html_detect_html_checkstaticpagetypography",
-      "community": 37,
+      "community": 62,
       "norm_label": "checkstaticpagetypography()"
     },
     {
@@ -4220,7 +4220,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/engines/static-html/detect-html.mjs",
       "source_location": "L72",
       "id": "static_html_detect_html_checkelementbrokenimage",
-      "community": 37,
+      "community": 62,
       "norm_label": "checkelementbrokenimage()"
     },
     {
@@ -4229,7 +4229,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/engines/static-html/detect-html.mjs",
       "source_location": "L86",
       "id": "static_html_detect_html_static_element_rules",
-      "community": 37,
+      "community": 62,
       "norm_label": "static_element_rules"
     },
     {
@@ -4238,7 +4238,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/engines/static-html/detect-html.mjs",
       "source_location": "L101",
       "id": "static_html_detect_html_detecthtml",
-      "community": 37,
+      "community": 62,
       "norm_label": "detecthtml()"
     },
     {
@@ -4499,7 +4499,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/registry/antipatterns.mjs",
       "source_location": "L1",
       "id": "registry_antipatterns",
-      "community": 62,
+      "community": 37,
       "norm_label": "antipatterns.mjs"
     },
     {
@@ -4508,7 +4508,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/registry/antipatterns.mjs",
       "source_location": "L1",
       "id": "registry_antipatterns_antipatterns",
-      "community": 62,
+      "community": 37,
       "norm_label": "antipatterns"
     },
     {
@@ -4517,7 +4517,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/registry/antipatterns.mjs",
       "source_location": "L374",
       "id": "registry_antipatterns_rule_engine_support",
-      "community": 62,
+      "community": 37,
       "norm_label": "rule_engine_support"
     },
     {
@@ -4535,7 +4535,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/registry/antipatterns.mjs",
       "source_location": "L385",
       "id": "registry_antipatterns_getrulesforcategory",
-      "community": 62,
+      "community": 37,
       "norm_label": "getrulesforcategory()"
     },
     {
@@ -4544,7 +4544,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/registry/antipatterns.mjs",
       "source_location": "L389",
       "id": "registry_antipatterns_getruleenginesupport",
-      "community": 62,
+      "community": 37,
       "norm_label": "getruleenginesupport()"
     },
     {
@@ -4553,7 +4553,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/registry/antipatterns.mjs",
       "source_location": "L394",
       "id": "registry_antipatterns_gated_providers",
-      "community": 62,
+      "community": 37,
       "norm_label": "gated_providers"
     },
     {
@@ -4589,7 +4589,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L59",
       "id": "rules_checks_isemojionlytext",
-      "community": 33,
+      "community": 21,
       "norm_label": "isemojionlytext()"
     },
     {
@@ -4598,7 +4598,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L65",
       "id": "rules_checks_checkcolors",
-      "community": 33,
+      "community": 21,
       "norm_label": "checkcolors()"
     },
     {
@@ -4625,7 +4625,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L179",
       "id": "rules_checks_checkicontile",
-      "community": 33,
+      "community": 21,
       "norm_label": "checkicontile()"
     },
     {
@@ -4697,7 +4697,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L410",
       "id": "rules_checks_checkglow",
-      "community": 33,
+      "community": 21,
       "norm_label": "checkglow()"
     },
     {
@@ -4706,7 +4706,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L446",
       "id": "rules_checks_checkhtmlpatterns",
-      "community": 37,
+      "community": 62,
       "norm_label": "checkhtmlpatterns()"
     },
     {
@@ -4715,7 +4715,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L612",
       "id": "rules_checks_readownbackgroundcolor",
-      "community": 33,
+      "community": 21,
       "norm_label": "readownbackgroundcolor()"
     },
     {
@@ -4724,7 +4724,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L633",
       "id": "rules_checks_resolvebackground",
-      "community": 33,
+      "community": 21,
       "norm_label": "resolvebackground()"
     },
     {
@@ -4733,7 +4733,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L695",
       "id": "rules_checks_resolvegradientstops",
-      "community": 33,
+      "community": 21,
       "norm_label": "resolvegradientstops()"
     },
     {
@@ -4769,7 +4769,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L766",
       "id": "rules_checks_checkelementcolorsdom",
-      "community": 33,
+      "community": 21,
       "norm_label": "checkelementcolorsdom()"
     },
     {
@@ -4778,7 +4778,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L793",
       "id": "rules_checks_checkelementicontiledom",
-      "community": 33,
+      "community": 21,
       "norm_label": "checkelementicontiledom()"
     },
     {
@@ -4823,7 +4823,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L921",
       "id": "rules_checks_oklchtorgb",
-      "community": 33,
+      "community": 21,
       "norm_label": "oklchtorgb()"
     },
     {
@@ -4832,7 +4832,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L947",
       "id": "rules_checks_parseanycolor",
-      "community": 33,
+      "community": 21,
       "norm_label": "parseanycolor()"
     },
     {
@@ -4841,7 +4841,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L989",
       "id": "rules_checks_parsecolorresolved",
-      "community": 33,
+      "community": 21,
       "norm_label": "parsecolorresolved()"
     },
     {
@@ -4904,7 +4904,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L1109",
       "id": "rules_checks_checkelementglowdom",
-      "community": 33,
+      "community": 21,
       "norm_label": "checkelementglowdom()"
     },
     {
@@ -4913,7 +4913,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L1138",
       "id": "rules_checks_checkelementaipalettedom",
-      "community": 33,
+      "community": 21,
       "norm_label": "checkelementaipalettedom()"
     },
     {
@@ -4940,7 +4940,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L1226",
       "id": "rules_checks_resolvelengthpx",
-      "community": 51,
+      "community": 33,
       "norm_label": "resolvelengthpx()"
     },
     {
@@ -4949,7 +4949,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L1245",
       "id": "rules_checks_checkquality",
-      "community": 51,
+      "community": 33,
       "norm_label": "checkquality()"
     },
     {
@@ -4958,7 +4958,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L1543",
       "id": "rules_checks_checkelementqualitydom",
-      "community": 51,
+      "community": 33,
       "norm_label": "checkelementqualitydom()"
     },
     {
@@ -4985,7 +4985,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L1592",
       "id": "rules_checks_checkelementquality",
-      "community": 51,
+      "community": 33,
       "norm_label": "checkelementquality()"
     },
     {
@@ -5003,7 +5003,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L1631",
       "id": "rules_checks_checkelementcolors",
-      "community": 33,
+      "community": 21,
       "norm_label": "checkelementcolors()"
     },
     {
@@ -5012,7 +5012,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L1685",
       "id": "rules_checks_checkelementicontile",
-      "community": 33,
+      "community": 21,
       "norm_label": "checkelementicontile()"
     },
     {
@@ -5030,7 +5030,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L1733",
       "id": "rules_checks_checkelementheroeyebrow",
-      "community": 51,
+      "community": 33,
       "norm_label": "checkelementheroeyebrow()"
     },
     {
@@ -5039,7 +5039,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L1764",
       "id": "rules_checks_checkrepeatedsectionkickersfromdoc",
-      "community": 37,
+      "community": 33,
       "norm_label": "checkrepeatedsectionkickersfromdoc()"
     },
     {
@@ -5057,7 +5057,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L1783",
       "id": "rules_checks_checkelementglow",
-      "community": 33,
+      "community": 62,
       "norm_label": "checkelementglow()"
     },
     {
@@ -5066,7 +5066,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L1792",
       "id": "rules_checks_checktypography",
-      "community": 94,
+      "community": 33,
       "norm_label": "checktypography()"
     },
     {
@@ -5111,7 +5111,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L1995",
       "id": "rules_checks_checkpagelayout",
-      "community": 37,
+      "community": 62,
       "norm_label": "checkpagelayout()"
     },
     {
@@ -5120,7 +5120,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2045",
       "id": "rules_checks_iscreamcolor",
-      "community": 33,
+      "community": 21,
       "norm_label": "iscreamcolor()"
     },
     {
@@ -5138,7 +5138,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2067",
       "id": "rules_checks_creamfromclasslist",
-      "community": 33,
+      "community": 21,
       "norm_label": "creamfromclasslist()"
     },
     {
@@ -5147,7 +5147,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2079",
       "id": "rules_checks_checkcreampalette",
-      "community": 33,
+      "community": 21,
       "norm_label": "checkcreampalette()"
     },
     {
@@ -5183,7 +5183,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2142",
       "id": "rules_checks_shadowmaxblurpx",
-      "community": 155,
+      "community": 33,
       "norm_label": "shadowmaxblurpx()"
     },
     {
@@ -5192,7 +5192,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2158",
       "id": "rules_checks_checkgptthinborderwideshadow",
-      "community": 155,
+      "community": 33,
       "norm_label": "checkgptthinborderwideshadow()"
     },
     {
@@ -5201,7 +5201,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2168",
       "id": "rules_checks_borderwidthsfromstyle",
-      "community": 155,
+      "community": 33,
       "norm_label": "borderwidthsfromstyle()"
     },
     {
@@ -5210,7 +5210,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2177",
       "id": "rules_checks_checkelementgptbordershadow",
-      "community": 155,
+      "community": 33,
       "norm_label": "checkelementgptbordershadow()"
     },
     {
@@ -5219,7 +5219,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2181",
       "id": "rules_checks_checkelementgptbordershadowdom",
-      "community": 155,
+      "community": 33,
       "norm_label": "checkelementgptbordershadowdom()"
     },
     {
@@ -5228,7 +5228,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2189",
       "id": "rules_checks_classselector",
-      "community": 104,
+      "community": 33,
       "norm_label": "classselector()"
     },
     {
@@ -5237,7 +5237,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2196",
       "id": "rules_checks_checkclippedoverflow",
-      "community": 104,
+      "community": 33,
       "norm_label": "checkclippedoverflow()"
     },
     {
@@ -5246,7 +5246,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2213",
       "id": "rules_checks_checkelementclippedoverflow",
-      "community": 104,
+      "community": 33,
       "norm_label": "checkelementclippedoverflow()"
     },
     {
@@ -5255,7 +5255,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2217",
       "id": "rules_checks_checkelementclippedoverflowdom",
-      "community": 104,
+      "community": 33,
       "norm_label": "checkelementclippedoverflowdom()"
     },
     {
@@ -5273,7 +5273,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2225",
       "id": "rules_checks_metriclengthpx",
-      "community": 104,
+      "community": 33,
       "norm_label": "metriclengthpx()"
     },
     {
@@ -5282,7 +5282,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2231",
       "id": "rules_checks_firstmetriclengthpx",
-      "community": 104,
+      "community": 33,
       "norm_label": "firstmetriclengthpx()"
     },
     {
@@ -5291,7 +5291,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2239",
       "id": "rules_checks_expandboxshorthand",
-      "community": 104,
+      "community": 33,
       "norm_label": "expandboxshorthand()"
     },
     {
@@ -5300,7 +5300,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2246",
       "id": "rules_checks_clippedbyinset",
-      "community": 104,
+      "community": 33,
       "norm_label": "clippedbyinset()"
     },
     {
@@ -5309,7 +5309,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2258",
       "id": "rules_checks_clippedbyrect",
-      "community": 104,
+      "community": 33,
       "norm_label": "clippedbyrect()"
     },
     {
@@ -5318,7 +5318,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2268",
       "id": "rules_checks_isscreenreaderonlytextstyle",
-      "community": 104,
+      "community": 33,
       "norm_label": "isscreenreaderonlytextstyle()"
     },
     {
@@ -5327,7 +5327,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/rules/checks.mjs",
       "source_location": "L2285",
       "id": "rules_checks_checkelementtextoverflowdom",
-      "community": 104,
+      "community": 33,
       "norm_label": "checkelementtextoverflowdom()"
     },
     {
@@ -5336,7 +5336,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/color.mjs",
       "source_location": "L1",
       "id": "shared_color",
-      "community": 33,
+      "community": 21,
       "norm_label": "color.mjs"
     },
     {
@@ -5354,7 +5354,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/color.mjs",
       "source_location": "L54",
       "id": "shared_color_parsergb",
-      "community": 33,
+      "community": 21,
       "norm_label": "parsergb()"
     },
     {
@@ -5363,7 +5363,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/color.mjs",
       "source_location": "L61",
       "id": "shared_color_relativeluminance",
-      "community": 33,
+      "community": 21,
       "norm_label": "relativeluminance()"
     },
     {
@@ -5372,7 +5372,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/color.mjs",
       "source_location": "L68",
       "id": "shared_color_contrastratio",
-      "community": 33,
+      "community": 21,
       "norm_label": "contrastratio()"
     },
     {
@@ -5381,7 +5381,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/color.mjs",
       "source_location": "L74",
       "id": "shared_color_parsegradientcolors",
-      "community": 33,
+      "community": 21,
       "norm_label": "parsegradientcolors()"
     },
     {
@@ -5390,7 +5390,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/color.mjs",
       "source_location": "L92",
       "id": "shared_color_haschroma",
-      "community": 33,
+      "community": 21,
       "norm_label": "haschroma()"
     },
     {
@@ -5399,7 +5399,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/color.mjs",
       "source_location": "L97",
       "id": "shared_color_gethue",
-      "community": 33,
+      "community": 21,
       "norm_label": "gethue()"
     },
     {
@@ -5408,7 +5408,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/color.mjs",
       "source_location": "L110",
       "id": "shared_color_colortohex",
-      "community": 33,
+      "community": 21,
       "norm_label": "colortohex()"
     },
     {
@@ -5417,7 +5417,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/constants.mjs",
       "source_location": "L1",
       "id": "shared_constants",
-      "community": 94,
+      "community": 62,
       "norm_label": "constants.mjs"
     },
     {
@@ -5426,7 +5426,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/constants.mjs",
       "source_location": "L3",
       "id": "shared_constants_safe_tags",
-      "community": 94,
+      "community": 62,
       "norm_label": "safe_tags"
     },
     {
@@ -5435,7 +5435,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/constants.mjs",
       "source_location": "L19",
       "id": "shared_constants_border_safe_tags",
-      "community": 94,
+      "community": 62,
       "norm_label": "border_safe_tags"
     },
     {
@@ -5444,7 +5444,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/constants.mjs",
       "source_location": "L23",
       "id": "shared_constants_overused_fonts",
-      "community": 94,
+      "community": 62,
       "norm_label": "overused_fonts"
     },
     {
@@ -5453,7 +5453,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/constants.mjs",
       "source_location": "L35",
       "id": "shared_constants_google_domains",
-      "community": 94,
+      "community": 62,
       "norm_label": "google_domains"
     },
     {
@@ -5462,7 +5462,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/constants.mjs",
       "source_location": "L39",
       "id": "shared_constants_vercel_domains",
-      "community": 94,
+      "community": 62,
       "norm_label": "vercel_domains"
     },
     {
@@ -5471,7 +5471,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/constants.mjs",
       "source_location": "L40",
       "id": "shared_constants_github_domains",
-      "community": 94,
+      "community": 62,
       "norm_label": "github_domains"
     },
     {
@@ -5480,7 +5480,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/constants.mjs",
       "source_location": "L41",
       "id": "shared_constants_brand_font_domains",
-      "community": 94,
+      "community": 62,
       "norm_label": "brand_font_domains"
     },
     {
@@ -5489,7 +5489,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/constants.mjs",
       "source_location": "L51",
       "id": "shared_constants_isbrandfontonowndomain",
-      "community": 94,
+      "community": 33,
       "norm_label": "isbrandfontonowndomain()"
     },
     {
@@ -5498,7 +5498,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/constants.mjs",
       "source_location": "L59",
       "id": "shared_constants_generic_fonts",
-      "community": 94,
+      "community": 62,
       "norm_label": "generic_fonts"
     },
     {
@@ -5507,7 +5507,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/constants.mjs",
       "source_location": "L74",
       "id": "shared_constants_known_serif_fonts",
-      "community": 94,
+      "community": 62,
       "norm_label": "known_serif_fonts"
     },
     {
@@ -5516,7 +5516,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/page.mjs",
       "source_location": "L1",
       "id": "shared_page",
-      "community": 37,
+      "community": 62,
       "norm_label": "page.mjs"
     },
     {
@@ -5525,7 +5525,7 @@
       "source_file": ".claude/skills/impeccable/scripts/detector/shared/page.mjs",
       "source_location": "L2",
       "id": "shared_page_isfullpage",
-      "community": 37,
+      "community": 62,
       "norm_label": "isfullpage()"
     },
     {
@@ -5642,7 +5642,7 @@
       "source_file": ".claude/skills/impeccable/scripts/impeccable-paths.mjs",
       "source_location": "L80",
       "id": "scripts_impeccable_paths_isliveserverpidreachable",
-      "community": 74,
+      "community": 53,
       "norm_label": "isliveserverpidreachable()"
     },
     {
@@ -5723,7 +5723,7 @@
       "source_file": ".claude/skills/impeccable/scripts/is-generated.mjs",
       "source_location": "L1",
       "id": "scripts_is_generated",
-      "community": 156,
+      "community": 58,
       "norm_label": "is-generated.mjs"
     },
     {
@@ -5732,7 +5732,7 @@
       "source_file": ".claude/skills/impeccable/scripts/is-generated.mjs",
       "source_location": "L21",
       "id": "scripts_is_generated_header_markers",
-      "community": 156,
+      "community": 58,
       "norm_label": "header_markers"
     },
     {
@@ -5741,7 +5741,7 @@
       "source_file": ".claude/skills/impeccable/scripts/is-generated.mjs",
       "source_location": "L33",
       "id": "scripts_is_generated_isgeneratedfile",
-      "community": 156,
+      "community": 58,
       "norm_label": "isgeneratedfile()"
     },
     {
@@ -5750,7 +5750,7 @@
       "source_file": ".claude/skills/impeccable/scripts/is-generated.mjs",
       "source_location": "L42",
       "id": "scripts_is_generated_isgitignored",
-      "community": 156,
+      "community": 58,
       "norm_label": "isgitignored()"
     },
     {
@@ -5759,7 +5759,7 @@
       "source_file": ".claude/skills/impeccable/scripts/is-generated.mjs",
       "source_location": "L56",
       "id": "scripts_is_generated_hasgeneratedheader",
-      "community": 156,
+      "community": 58,
       "norm_label": "hasgeneratedheader()"
     },
     {
@@ -5795,7 +5795,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-accept.mjs",
       "source_location": "L183",
       "id": "scripts_live_accept_scrubmanualeditsagainstoriginalblock",
-      "community": 71,
+      "community": 49,
       "norm_label": "scrubmanualeditsagainstoriginalblock()"
     },
     {
@@ -5840,7 +5840,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-accept.mjs",
       "source_location": "L230",
       "id": "scripts_live_accept_scrubmanualeditsagainstfile",
-      "community": 71,
+      "community": 49,
       "norm_label": "scrubmanualeditsagainstfile()"
     },
     {
@@ -6110,7 +6110,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L160",
       "id": "scripts_live_browser_clearscrolly",
-      "community": 38,
+      "community": 43,
       "norm_label": "clearscrolly()"
     },
     {
@@ -6272,7 +6272,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L516",
       "id": "scripts_live_browser_updateclearchip",
-      "community": 25,
+      "community": 5,
       "norm_label": "updateclearchip()"
     },
     {
@@ -6317,7 +6317,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L564",
       "id": "scripts_live_browser_redrawstrokes",
-      "community": 25,
+      "community": 5,
       "norm_label": "redrawstrokes()"
     },
     {
@@ -6326,7 +6326,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L592",
       "id": "scripts_live_browser_localcoords",
-      "community": 25,
+      "community": 5,
       "norm_label": "localcoords()"
     },
     {
@@ -6335,7 +6335,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L597",
       "id": "scripts_live_browser_onannotdown",
-      "community": 25,
+      "community": 5,
       "norm_label": "onannotdown()"
     },
     {
@@ -6344,7 +6344,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L675",
       "id": "scripts_live_browser_onannotmove",
-      "community": 25,
+      "community": 5,
       "norm_label": "onannotmove()"
     },
     {
@@ -6362,7 +6362,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L741",
       "id": "scripts_live_browser_onannotup",
-      "community": 25,
+      "community": 5,
       "norm_label": "onannotup()"
     },
     {
@@ -6371,7 +6371,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L784",
       "id": "scripts_live_browser_renderallpins",
-      "community": 25,
+      "community": 5,
       "norm_label": "renderallpins()"
     },
     {
@@ -6389,7 +6389,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L829",
       "id": "scripts_live_browser_begineditpin",
-      "community": 25,
+      "community": 5,
       "norm_label": "begineditpin()"
     },
     {
@@ -6398,7 +6398,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L862",
       "id": "scripts_live_browser_onannotinputkey",
-      "community": 25,
+      "community": 5,
       "norm_label": "onannotinputkey()"
     },
     {
@@ -6407,7 +6407,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L875",
       "id": "scripts_live_browser_finalizeeditingpin",
-      "community": 25,
+      "community": 5,
       "norm_label": "finalizeeditingpin()"
     },
     {
@@ -6416,7 +6416,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L885",
       "id": "scripts_live_browser_canceleditingpin",
-      "community": 25,
+      "community": 5,
       "norm_label": "canceleditingpin()"
     },
     {
@@ -6470,7 +6470,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1042",
       "id": "scripts_live_browser_isusefulmanualeditcontext",
-      "community": 5,
+      "community": 88,
       "norm_label": "isusefulmanualeditcontext()"
     },
     {
@@ -6479,7 +6479,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1048",
       "id": "scripts_live_browser_collectmanualcontextpieces",
-      "community": 5,
+      "community": 88,
       "norm_label": "collectmanualcontextpieces()"
     },
     {
@@ -6569,7 +6569,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1221",
       "id": "scripts_live_browser_detectinsertaxisfromstyle",
-      "community": 38,
+      "community": 5,
       "norm_label": "detectinsertaxisfromstyle()"
     },
     {
@@ -6578,7 +6578,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1240",
       "id": "scripts_live_browser_detectinsertaxis",
-      "community": 38,
+      "community": 5,
       "norm_label": "detectinsertaxis()"
     },
     {
@@ -6659,7 +6659,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1372",
       "id": "scripts_live_browser_placeholdersizing",
-      "community": 38,
+      "community": 5,
       "norm_label": "placeholdersizing()"
     },
     {
@@ -6668,7 +6668,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1391",
       "id": "scripts_live_browser_placeholderwidthisimplicit",
-      "community": 25,
+      "community": 5,
       "norm_label": "placeholderwidthisimplicit()"
     },
     {
@@ -6677,7 +6677,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1395",
       "id": "scripts_live_browser_applyplaceholdersizingstyles",
-      "community": 38,
+      "community": 5,
       "norm_label": "applyplaceholdersizingstyles()"
     },
     {
@@ -6686,7 +6686,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1412",
       "id": "scripts_live_browser_materializeplaceholderwidth",
-      "community": 25,
+      "community": 5,
       "norm_label": "materializeplaceholderwidth()"
     },
     {
@@ -6749,7 +6749,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1497",
       "id": "scripts_live_browser_showinsertline",
-      "community": 34,
+      "community": 38,
       "norm_label": "showinsertline()"
     },
     {
@@ -6785,7 +6785,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1580",
       "id": "scripts_live_browser_removeinsertplaceholderdom",
-      "community": 38,
+      "community": 43,
       "norm_label": "removeinsertplaceholderdom()"
     },
     {
@@ -6794,7 +6794,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1589",
       "id": "scripts_live_browser_finalizeinsertsession",
-      "community": 38,
+      "community": 43,
       "norm_label": "finalizeinsertsession()"
     },
     {
@@ -6812,7 +6812,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1612",
       "id": "scripts_live_browser_findinsertanchorindom",
-      "community": 43,
+      "community": 5,
       "norm_label": "findinsertanchorindom()"
     },
     {
@@ -6821,7 +6821,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1629",
       "id": "scripts_live_browser_isinsertgeneratingsession",
-      "community": 43,
+      "community": 5,
       "norm_label": "isinsertgeneratingsession()"
     },
     {
@@ -6830,7 +6830,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1636",
       "id": "scripts_live_browser_ensureinsertplaceholder",
-      "community": 43,
+      "community": 5,
       "norm_label": "ensureinsertplaceholder()"
     },
     {
@@ -6839,7 +6839,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1664",
       "id": "scripts_live_browser_applyplaceholderdimensions",
-      "community": 25,
+      "community": 5,
       "norm_label": "applyplaceholderdimensions()"
     },
     {
@@ -6875,7 +6875,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1722",
       "id": "scripts_live_browser_startplaceholderedgeresize",
-      "community": 25,
+      "community": 5,
       "norm_label": "startplaceholderedgeresize()"
     },
     {
@@ -6884,7 +6884,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1744",
       "id": "scripts_live_browser_createinsertplaceholder",
-      "community": 38,
+      "community": 5,
       "norm_label": "createinsertplaceholder()"
     },
     {
@@ -7082,7 +7082,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L2586",
       "id": "scripts_live_browser_recoveremptycycling",
-      "community": 34,
+      "community": 43,
       "norm_label": "recoveremptycycling()"
     },
     {
@@ -7280,7 +7280,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L3127",
       "id": "scripts_live_browser_sourcehintforelement",
-      "community": 5,
+      "community": 88,
       "norm_label": "sourcehintforelement()"
     },
     {
@@ -7289,7 +7289,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L3143",
       "id": "scripts_live_browser_parsesourceloc",
-      "community": 5,
+      "community": 88,
       "norm_label": "parsesourceloc()"
     },
     {
@@ -7577,7 +7577,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L3606",
       "id": "scripts_live_browser_maybeshowfirstsavetoast",
-      "community": 55,
+      "community": 88,
       "norm_label": "maybeshowfirstsavetoast()"
     },
     {
@@ -8036,7 +8036,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L4525",
       "id": "scripts_live_browser_findliveelementforsveltemanifest",
-      "community": 43,
+      "community": 5,
       "norm_label": "findliveelementforsveltemanifest()"
     },
     {
@@ -8243,7 +8243,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L5210",
       "id": "scripts_live_browser_stopscrolllock",
-      "community": 38,
+      "community": 43,
       "norm_label": "stopscrolllock()"
     },
     {
@@ -8603,7 +8603,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L6574",
       "id": "scripts_live_browser_compileshader",
-      "community": 34,
+      "community": 5,
       "norm_label": "compileshader()"
     },
     {
@@ -8630,7 +8630,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L6607",
       "id": "scripts_live_browser_showshaderbitmapfallback",
-      "community": 34,
+      "community": 5,
       "norm_label": "showshaderbitmapfallback()"
     },
     {
@@ -8639,7 +8639,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L6626",
       "id": "scripts_live_browser_showshaderoverlay",
-      "community": 34,
+      "community": 5,
       "norm_label": "showshaderoverlay()"
     },
     {
@@ -8648,7 +8648,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L6738",
       "id": "scripts_live_browser_handleaccept",
-      "community": 5,
+      "community": 38,
       "norm_label": "handleaccept()"
     },
     {
@@ -8729,7 +8729,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L6893",
       "id": "scripts_live_browser_cleanupacceptedsession",
-      "community": 38,
+      "community": 43,
       "norm_label": "cleanupacceptedsession()"
     },
     {
@@ -8909,7 +8909,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L7123",
       "id": "scripts_live_browser_cleanup",
-      "community": 38,
+      "community": 43,
       "norm_label": "cleanup()"
     },
     {
@@ -9089,7 +9089,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L7673",
       "id": "scripts_live_browser_steerfocusdebugenabled",
-      "community": 5,
+      "community": 54,
       "norm_label": "steerfocusdebugenabled()"
     },
     {
@@ -9107,7 +9107,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L7690",
       "id": "scripts_live_browser_attachsteerfocusdebug",
-      "community": 5,
+      "community": 54,
       "norm_label": "attachsteerfocusdebug()"
     },
     {
@@ -9314,7 +9314,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L8107",
       "id": "scripts_live_browser_configurevoicecontext",
-      "community": 54,
+      "community": 34,
       "norm_label": "configurevoicecontext()"
     },
     {
@@ -9476,7 +9476,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L8941",
       "id": "scripts_live_browser_requestdetectscan",
-      "community": 5,
+      "community": 38,
       "norm_label": "requestdetectscan()"
     },
     {
@@ -9485,7 +9485,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L8952",
       "id": "scripts_live_browser_toggledetect",
-      "community": 5,
+      "community": 38,
       "norm_label": "toggledetect()"
     },
     {
@@ -9512,7 +9512,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L9023",
       "id": "scripts_live_browser_loaddetectscript",
-      "community": 5,
+      "community": 38,
       "norm_label": "loaddetectscript()"
     },
     {
@@ -9521,7 +9521,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L9032",
       "id": "scripts_live_browser_ondetectmessage",
-      "community": 5,
+      "community": 38,
       "norm_label": "ondetectmessage()"
     },
     {
@@ -10943,7 +10943,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-inject.mjs",
       "source_location": "L63",
       "id": "scripts_live_inject_injectcli",
-      "community": 24,
+      "community": 46,
       "norm_label": "injectcli()"
     },
     {
@@ -11006,7 +11006,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-inject.mjs",
       "source_location": "L327",
       "id": "scripts_live_inject_validateconfig",
-      "community": 24,
+      "community": 46,
       "norm_label": "validateconfig()"
     },
     {
@@ -12050,7 +12050,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L114",
       "id": "scripts_live_server_tombstonetimedoutapplyid",
-      "community": 26,
+      "community": 32,
       "norm_label": "tombstonetimedoutapplyid()"
     },
     {
@@ -12086,7 +12086,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L144",
       "id": "scripts_live_server_pushapplyeventandwait",
-      "community": 66,
+      "community": 32,
       "norm_label": "pushapplyeventandwait()"
     },
     {
@@ -12095,7 +12095,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L189",
       "id": "scripts_live_server_writemanualapplyevidence",
-      "community": 26,
+      "community": 32,
       "norm_label": "writemanualapplyevidence()"
     },
     {
@@ -12104,7 +12104,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L197",
       "id": "scripts_live_server_manualapplyevidencedir",
-      "community": 26,
+      "community": 32,
       "norm_label": "manualapplyevidencedir()"
     },
     {
@@ -12113,7 +12113,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L201",
       "id": "scripts_live_server_normalizemanualapplyevidencepath",
-      "community": 26,
+      "community": 32,
       "norm_label": "normalizemanualapplyevidencepath()"
     },
     {
@@ -12122,7 +12122,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L211",
       "id": "scripts_live_server_removemanualapplyevidence",
-      "community": 26,
+      "community": 32,
       "norm_label": "removemanualapplyevidence()"
     },
     {
@@ -12131,7 +12131,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L222",
       "id": "scripts_live_server_referencedmanualapplyevidencepaths",
-      "community": 26,
+      "community": 32,
       "norm_label": "referencedmanualapplyevidencepaths()"
     },
     {
@@ -12140,7 +12140,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L233",
       "id": "scripts_live_server_prunestalemanualapplyevidence",
-      "community": 26,
+      "community": 32,
       "norm_label": "prunestalemanualapplyevidence()"
     },
     {
@@ -12149,7 +12149,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L253",
       "id": "scripts_live_server_compactmanualapplybatch",
-      "community": 66,
+      "community": 32,
       "norm_label": "compactmanualapplybatch()"
     },
     {
@@ -12158,7 +12158,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L274",
       "id": "scripts_live_server_compactmanualapplycandidates",
-      "community": 66,
+      "community": 32,
       "norm_label": "compactmanualapplycandidates()"
     },
     {
@@ -12329,7 +12329,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L680",
       "id": "scripts_live_server_resolveapplydeferred",
-      "community": 26,
+      "community": 32,
       "norm_label": "resolveapplydeferred()"
     },
     {
@@ -12338,7 +12338,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L690",
       "id": "scripts_live_server_rejectapplydeferred",
-      "community": 26,
+      "community": 32,
       "norm_label": "rejectapplydeferred()"
     },
     {
@@ -12347,7 +12347,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L700",
       "id": "scripts_live_server_snapshotapplyeventfiles",
-      "community": 66,
+      "community": 32,
       "norm_label": "snapshotapplyeventfiles()"
     },
     {
@@ -12401,7 +12401,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L818",
       "id": "scripts_live_server_collectmanualapplyfiles",
-      "community": 66,
+      "community": 32,
       "norm_label": "collectmanualapplyfiles()"
     },
     {
@@ -12419,7 +12419,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L844",
       "id": "scripts_live_server_rollbackapplysnapshot",
-      "community": 26,
+      "community": 32,
       "norm_label": "rollbackapplysnapshot()"
     },
     {
@@ -12428,7 +12428,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L867",
       "id": "scripts_live_server_rollbacktimedoutapplyreply",
-      "community": 26,
+      "community": 32,
       "norm_label": "rollbacktimedoutapplyreply()"
     },
     {
@@ -12491,7 +12491,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L928",
       "id": "scripts_live_server_manualapplyreplycommand",
-      "community": 66,
+      "community": 32,
       "norm_label": "manualapplyreplycommand()"
     },
     {
@@ -12500,7 +12500,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L933",
       "id": "scripts_live_server_buildmanualapplyagentaction",
-      "community": 66,
+      "community": 32,
       "norm_label": "buildmanualapplyagentaction()"
     },
     {
@@ -12509,7 +12509,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L942",
       "id": "scripts_live_server_summarizemanualapplyevent",
-      "community": 66,
+      "community": 32,
       "norm_label": "summarizemanualapplyevent()"
     },
     {
@@ -12518,7 +12518,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L954",
       "id": "scripts_live_server_summarizependingeventforstatus",
-      "community": 66,
+      "community": 32,
       "norm_label": "summarizependingeventforstatus()"
     },
     {
@@ -12554,7 +12554,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L1009",
       "id": "scripts_live_server_cancelpendingmanualapplyevents",
-      "community": 26,
+      "community": 32,
       "norm_label": "cancelpendingmanualapplyevents()"
     },
     {
@@ -12626,7 +12626,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L1141",
       "id": "scripts_live_server_summarizependingmanualeditbatch",
-      "community": 71,
+      "community": 32,
       "norm_label": "summarizependingmanualeditbatch()"
     },
     {
@@ -12752,7 +12752,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-server.mjs",
       "source_location": "L2164",
       "id": "scripts_live_server_applylegacydeferredacceptsonstartup",
-      "community": 154,
+      "community": 40,
       "norm_label": "applylegacydeferredacceptsonstartup()"
     },
     {
@@ -13112,7 +13112,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-svelte-component.mjs",
       "source_location": "L236",
       "id": "scripts_live_svelte_component_findsveltecomponentmanifest",
-      "community": 154,
+      "community": 40,
       "norm_label": "findsveltecomponentmanifest()"
     },
     {
@@ -13121,7 +13121,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-svelte-component.mjs",
       "source_location": "L255",
       "id": "scripts_live_svelte_component_readmanifest",
-      "community": 154,
+      "community": 40,
       "norm_label": "readmanifest()"
     },
     {
@@ -13346,7 +13346,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-svelte-component.mjs",
       "source_location": "L744",
       "id": "scripts_live_svelte_component_deferredacceptspath",
-      "community": 154,
+      "community": 40,
       "norm_label": "deferredacceptspath()"
     },
     {
@@ -13355,7 +13355,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-svelte-component.mjs",
       "source_location": "L749",
       "id": "scripts_live_svelte_component_readdeferredaccepts",
-      "community": 154,
+      "community": 40,
       "norm_label": "readdeferredaccepts()"
     },
     {
@@ -13364,7 +13364,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-svelte-component.mjs",
       "source_location": "L758",
       "id": "scripts_live_svelte_component_writedeferredaccept",
-      "community": 154,
+      "community": 40,
       "norm_label": "writedeferredaccept()"
     },
     {
@@ -13373,7 +13373,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-svelte-component.mjs",
       "source_location": "L767",
       "id": "scripts_live_svelte_component_applydeferredsveltecomponentaccepts",
-      "community": 154,
+      "community": 40,
       "norm_label": "applydeferredsveltecomponentaccepts()"
     },
     {
@@ -14660,7 +14660,7 @@
       "source_file": "Sources/HermesVoice/App.swift",
       "source_location": "L1",
       "id": "hermesvoice_app",
-      "community": 119,
+      "community": 0,
       "norm_label": "app.swift"
     },
     {
@@ -14669,7 +14669,7 @@
       "source_file": "Sources/HermesVoice/App.swift",
       "source_location": "L3",
       "id": "hermesvoice_app_hermesvoiceapp",
-      "community": 119,
+      "community": 0,
       "norm_label": "hermesvoiceapp"
     },
     {
@@ -14678,34 +14678,34 @@
       "source_file": "Sources/HermesVoice/App.swift",
       "source_location": "L5",
       "id": "hermesvoice_app_hermesvoiceapp_main",
-      "community": 119,
+      "community": 0,
       "norm_label": ".main()"
     },
     {
       "label": ".makeMainMenu()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/App.swift",
-      "source_location": "L51",
+      "source_location": "L38",
       "id": "hermesvoice_app_hermesvoiceapp_makemainmenu",
-      "community": 119,
+      "community": 0,
       "norm_label": ".makemainmenu()"
     },
     {
       "label": "AppDelegate",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/App.swift",
-      "source_location": "L51",
+      "source_location": "L38",
       "id": "appdelegate",
-      "community": 119,
+      "community": 0,
       "norm_label": "appdelegate"
     },
     {
       "label": "NSMenu",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/App.swift",
-      "source_location": "L51",
-      "id": "nsmenu",
-      "community": 119,
+      "source_location": "L38",
+      "id": "sources_hermesvoice_app_swift_nsmenu",
+      "community": 0,
       "norm_label": "nsmenu"
     },
     {
@@ -14754,6 +14754,15 @@
       "norm_label": "nsapplicationdelegate"
     },
     {
+      "label": "NSMenuDelegate",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "id": "nsmenudelegate",
+      "community": 0,
+      "norm_label": "nsmenudelegate"
+    },
+    {
       "label": "NSStatusItem",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
@@ -14790,10 +14799,19 @@
       "norm_label": "any"
     },
     {
-      "label": "AnyCancellable",
+      "label": "NSMenu",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
       "source_location": "L24",
+      "id": "sources_hermesvoice_appdelegate_swift_nsmenu",
+      "community": 0,
+      "norm_label": "nsmenu"
+    },
+    {
+      "label": "AnyCancellable",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L31",
       "id": "anycancellable",
       "community": 0,
       "norm_label": "anycancellable"
@@ -14802,7 +14820,7 @@
       "label": "AppSettings",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L25",
+      "source_location": "L32",
       "id": "sources_hermesvoice_appdelegate_swift_appsettings",
       "community": 0,
       "norm_label": "appsettings"
@@ -14811,7 +14829,7 @@
       "label": "NSRunningApplication",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L33",
+      "source_location": "L40",
       "id": "nsrunningapplication",
       "community": 0,
       "norm_label": "nsrunningapplication"
@@ -14820,7 +14838,7 @@
       "label": "Int32",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L45",
+      "source_location": "L52",
       "id": "int32",
       "community": 0,
       "norm_label": "int32"
@@ -14829,7 +14847,7 @@
       "label": ".applicationDidFinishLaunching()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L47",
+      "source_location": "L54",
       "id": "hermesvoice_appdelegate_appdelegate_applicationdidfinishlaunching",
       "community": 0,
       "norm_label": ".applicationdidfinishlaunching()"
@@ -14838,7 +14856,7 @@
       "label": "Notification",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L47",
+      "source_location": "L54",
       "id": "notification",
       "community": 0,
       "norm_label": "notification"
@@ -14847,7 +14865,7 @@
       "label": ".cleanupBeforeTerminate()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L81",
+      "source_location": "L89",
       "id": "hermesvoice_appdelegate_appdelegate_cleanupbeforeterminate",
       "community": 0,
       "norm_label": ".cleanupbeforeterminate()"
@@ -14856,7 +14874,7 @@
       "label": ".deinit()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L85",
+      "source_location": "L93",
       "id": "hermesvoice_appdelegate_appdelegate_deinit",
       "community": 0,
       "norm_label": ".deinit()"
@@ -14865,7 +14883,7 @@
       "label": ".claimSingleInstanceLock()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L100",
+      "source_location": "L108",
       "id": "hermesvoice_appdelegate_appdelegate_claimsingleinstancelock",
       "community": 0,
       "norm_label": ".claimsingleinstancelock()"
@@ -14874,7 +14892,7 @@
       "label": "Bool",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L100",
+      "source_location": "L108",
       "id": "sources_hermesvoice_appdelegate_swift_bool",
       "community": 0,
       "norm_label": "bool"
@@ -14883,7 +14901,7 @@
       "label": ".releaseSingleInstanceLock()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L136",
+      "source_location": "L144",
       "id": "hermesvoice_appdelegate_appdelegate_releasesingleinstancelock",
       "community": 0,
       "norm_label": ".releasesingleinstancelock()"
@@ -14892,7 +14910,7 @@
       "label": ".setupOverlayPanel()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L145",
+      "source_location": "L153",
       "id": "hermesvoice_appdelegate_appdelegate_setupoverlaypanel",
       "community": 0,
       "norm_label": ".setupoverlaypanel()"
@@ -14901,7 +14919,7 @@
       "label": ".setupHotKey()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L152",
+      "source_location": "L160",
       "id": "hermesvoice_appdelegate_appdelegate_setuphotkey",
       "community": 0,
       "norm_label": ".setuphotkey()"
@@ -14910,7 +14928,7 @@
       "label": ".subscribeToSettings()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L168",
+      "source_location": "L176",
       "id": "hermesvoice_appdelegate_appdelegate_subscribetosettings",
       "community": 0,
       "norm_label": ".subscribetosettings()"
@@ -14919,7 +14937,7 @@
       "label": ".applySettingsChange()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L182",
+      "source_location": "L190",
       "id": "hermesvoice_appdelegate_appdelegate_applysettingschange",
       "community": 0,
       "norm_label": ".applysettingschange()"
@@ -14928,7 +14946,7 @@
       "label": ".applyAppearance()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L212",
+      "source_location": "L220",
       "id": "hermesvoice_appdelegate_appdelegate_applyappearance",
       "community": 0,
       "norm_label": ".applyappearance()"
@@ -14937,7 +14955,7 @@
       "label": "AppearanceMode",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L212",
+      "source_location": "L220",
       "id": "appearancemode",
       "community": 0,
       "norm_label": "appearancemode"
@@ -14946,7 +14964,7 @@
       "label": ".applyLaunchAtLogin()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L220",
+      "source_location": "L228",
       "id": "hermesvoice_appdelegate_appdelegate_applylaunchatlogin",
       "community": 0,
       "norm_label": ".applylaunchatlogin()"
@@ -14955,7 +14973,7 @@
       "label": ".showHotKeyConflictAlert()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L233",
+      "source_location": "L241",
       "id": "hermesvoice_appdelegate_appdelegate_showhotkeyconflictalert",
       "community": 0,
       "norm_label": ".showhotkeyconflictalert()"
@@ -14964,7 +14982,7 @@
       "label": ".togglePanel()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L243",
+      "source_location": "L251",
       "id": "hermesvoice_appdelegate_appdelegate_togglepanel",
       "community": 0,
       "norm_label": ".togglepanel()"
@@ -14973,7 +14991,7 @@
       "label": ".newChat()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L262",
+      "source_location": "L270",
       "id": "hermesvoice_appdelegate_appdelegate_newchat",
       "community": 0,
       "norm_label": ".newchat()"
@@ -14982,7 +15000,7 @@
       "label": ".searchHistory()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L268",
+      "source_location": "L276",
       "id": "hermesvoice_appdelegate_appdelegate_searchhistory",
       "community": 0,
       "norm_label": ".searchhistory()"
@@ -14991,7 +15009,7 @@
       "label": ".smartPaste()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L276",
+      "source_location": "L284",
       "id": "hermesvoice_appdelegate_appdelegate_smartpaste",
       "community": 0,
       "norm_label": ".smartpaste()"
@@ -15000,7 +15018,7 @@
       "label": ".menuBarNewChat()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L291",
+      "source_location": "L299",
       "id": "hermesvoice_appdelegate_appdelegate_menubarnewchat",
       "community": 0,
       "norm_label": ".menubarnewchat()"
@@ -15009,16 +15027,88 @@
       "label": ".openSettings()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L297",
+      "source_location": "L305",
       "id": "hermesvoice_appdelegate_appdelegate_opensettings",
       "community": 0,
       "norm_label": ".opensettings()"
     },
     {
+      "label": ".openRecentConversation()",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L310",
+      "id": "hermesvoice_appdelegate_appdelegate_openrecentconversation",
+      "community": 0,
+      "norm_label": ".openrecentconversation()"
+    },
+    {
+      "label": "NSMenuItem",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L310",
+      "id": "nsmenuitem",
+      "community": 0,
+      "norm_label": "nsmenuitem"
+    },
+    {
+      "label": ".showOnboardingIfNeeded()",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L320",
+      "id": "hermesvoice_appdelegate_appdelegate_showonboardingifneeded",
+      "community": 0,
+      "norm_label": ".showonboardingifneeded()"
+    },
+    {
+      "label": ".configureStatusMenu()",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L331",
+      "id": "hermesvoice_appdelegate_appdelegate_configurestatusmenu",
+      "community": 0,
+      "norm_label": ".configurestatusmenu()"
+    },
+    {
+      "label": ".menuNeedsUpdate()",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L338",
+      "id": "hermesvoice_appdelegate_appdelegate_menuneedsupdate",
+      "community": 0,
+      "norm_label": ".menuneedsupdate()"
+    },
+    {
+      "label": ".rebuildStatusMenu()",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L347",
+      "id": "hermesvoice_appdelegate_appdelegate_rebuildstatusmenu",
+      "community": 0,
+      "norm_label": ".rebuildstatusmenu()"
+    },
+    {
+      "label": ".connectionStatusTitle()",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L395",
+      "id": "hermesvoice_appdelegate_appdelegate_connectionstatustitle",
+      "community": 0,
+      "norm_label": ".connectionstatustitle()"
+    },
+    {
+      "label": "String",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L395",
+      "id": "sources_hermesvoice_appdelegate_swift_string",
+      "community": 0,
+      "norm_label": "string"
+    },
+    {
       "label": ".closeFrontWindow()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L303",
+      "source_location": "L405",
       "id": "hermesvoice_appdelegate_appdelegate_closefrontwindow",
       "community": 0,
       "norm_label": ".closefrontwindow()"
@@ -15027,7 +15117,7 @@
       "label": ".showPanel()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L315",
+      "source_location": "L417",
       "id": "hermesvoice_appdelegate_appdelegate_showpanel",
       "community": 0,
       "norm_label": ".showpanel()"
@@ -15036,7 +15126,7 @@
       "label": ".hidePanel()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L341",
+      "source_location": "L443",
       "id": "hermesvoice_appdelegate_appdelegate_hidepanel",
       "community": 0,
       "norm_label": ".hidepanel()"
@@ -15045,7 +15135,7 @@
       "label": ".installClickOutsideMonitor()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L370",
+      "source_location": "L472",
       "id": "hermesvoice_appdelegate_appdelegate_installclickoutsidemonitor",
       "community": 0,
       "norm_label": ".installclickoutsidemonitor()"
@@ -15054,7 +15144,7 @@
       "label": ".removeClickOutsideMonitor()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
-      "source_location": "L381",
+      "source_location": "L483",
       "id": "hermesvoice_appdelegate_appdelegate_removeclickoutsidemonitor",
       "community": 0,
       "norm_label": ".removeclickoutsidemonitor()"
@@ -15181,8 +15271,8 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/ButtonStyles.swift",
       "source_location": "L11",
-      "id": "configuration",
-      "community": 85,
+      "id": "sources_hermesvoice_buttonstyles_swift_configuration",
+      "community": 15,
       "norm_label": "configuration"
     },
     {
@@ -15191,7 +15281,7 @@
       "source_file": "Sources/HermesVoice/ButtonStyles.swift",
       "source_location": "L11",
       "id": "sources_hermesvoice_buttonstyles_swift_view",
-      "community": 85,
+      "community": 25,
       "norm_label": "view"
     },
     {
@@ -15218,7 +15308,7 @@
       "source_file": "Sources/HermesVoice/ButtonStyles.swift",
       "source_location": "L33",
       "id": "hermesvoice_buttonstyles_circlebuttonstyle_makebody",
-      "community": 85,
+      "community": 15,
       "norm_label": ".makebody()"
     },
     {
@@ -15236,7 +15326,7 @@
       "source_file": "Sources/HermesVoice/ButtonStyles.swift",
       "source_location": "L65",
       "id": "hermesvoice_buttonstyles_sendbuttonstyle_makebody",
-      "community": 85,
+      "community": 15,
       "norm_label": ".makebody()"
     },
     {
@@ -15299,7 +15389,7 @@
       "source_file": "Sources/HermesVoice/ConversationFileStore.swift",
       "source_location": "L1",
       "id": "hermesvoice_conversationfilestore",
-      "community": 2,
+      "community": 26,
       "norm_label": "conversationfilestore.swift"
     },
     {
@@ -15308,7 +15398,7 @@
       "source_file": "Sources/HermesVoice/ConversationFileStore.swift",
       "source_location": "L11",
       "id": "hermesvoice_conversationfilestore_conversationfilestore",
-      "community": 2,
+      "community": 26,
       "norm_label": "conversationfilestore"
     },
     {
@@ -15317,7 +15407,7 @@
       "source_file": "Sources/HermesVoice/ConversationFileStore.swift",
       "source_location": "L12",
       "id": "sources_hermesvoice_conversationfilestore_swift_url",
-      "community": 2,
+      "community": 26,
       "norm_label": "url"
     },
     {
@@ -15326,7 +15416,7 @@
       "source_file": "Sources/HermesVoice/ConversationFileStore.swift",
       "source_location": "L18",
       "id": "hermesvoice_conversationfilestore_conversationfilestore_init",
-      "community": 2,
+      "community": 26,
       "norm_label": ".init()"
     },
     {
@@ -15335,7 +15425,7 @@
       "source_file": "Sources/HermesVoice/ConversationFileStore.swift",
       "source_location": "L28",
       "id": "hermesvoice_conversationfilestore_conversationfilestore_loadindex",
-      "community": 2,
+      "community": 26,
       "norm_label": ".loadindex()"
     },
     {
@@ -15344,7 +15434,7 @@
       "source_file": "Sources/HermesVoice/ConversationFileStore.swift",
       "source_location": "L28",
       "id": "sources_hermesvoice_conversationfilestore_swift_sessionmeta",
-      "community": 2,
+      "community": 26,
       "norm_label": "sessionmeta"
     },
     {
@@ -15353,7 +15443,7 @@
       "source_file": "Sources/HermesVoice/ConversationFileStore.swift",
       "source_location": "L33",
       "id": "hermesvoice_conversationfilestore_conversationfilestore_saveindex",
-      "community": 2,
+      "community": 26,
       "norm_label": ".saveindex()"
     },
     {
@@ -15362,7 +15452,7 @@
       "source_file": "Sources/HermesVoice/ConversationFileStore.swift",
       "source_location": "L40",
       "id": "hermesvoice_conversationfilestore_conversationfilestore_transcripturl",
-      "community": 2,
+      "community": 26,
       "norm_label": ".transcripturl()"
     },
     {
@@ -15371,7 +15461,7 @@
       "source_file": "Sources/HermesVoice/ConversationFileStore.swift",
       "source_location": "L40",
       "id": "sources_hermesvoice_conversationfilestore_swift_string",
-      "community": 2,
+      "community": 26,
       "norm_label": "string"
     },
     {
@@ -15380,7 +15470,7 @@
       "source_file": "Sources/HermesVoice/ConversationFileStore.swift",
       "source_location": "L44",
       "id": "hermesvoice_conversationfilestore_conversationfilestore_loadtranscript",
-      "community": 2,
+      "community": 26,
       "norm_label": ".loadtranscript()"
     },
     {
@@ -15389,7 +15479,7 @@
       "source_file": "Sources/HermesVoice/ConversationFileStore.swift",
       "source_location": "L44",
       "id": "transcriptrecord",
-      "community": 2,
+      "community": 26,
       "norm_label": "transcriptrecord"
     },
     {
@@ -15398,7 +15488,7 @@
       "source_file": "Sources/HermesVoice/ConversationFileStore.swift",
       "source_location": "L51",
       "id": "hermesvoice_conversationfilestore_conversationfilestore_loadpreview",
-      "community": 2,
+      "community": 26,
       "norm_label": ".loadpreview()"
     },
     {
@@ -15407,7 +15497,7 @@
       "source_file": "Sources/HermesVoice/ConversationFileStore.swift",
       "source_location": "L57",
       "id": "hermesvoice_conversationfilestore_conversationfilestore_appendrecord",
-      "community": 2,
+      "community": 26,
       "norm_label": ".appendrecord()"
     },
     {
@@ -15416,7 +15506,7 @@
       "source_file": "Sources/HermesVoice/ConversationFileStore.swift",
       "source_location": "L71",
       "id": "hermesvoice_conversationfilestore_conversationfilestore_rewritetranscript",
-      "community": 2,
+      "community": 26,
       "norm_label": ".rewritetranscript()"
     },
     {
@@ -15425,7 +15515,7 @@
       "source_file": "Sources/HermesVoice/ConversationFileStore.swift",
       "source_location": "L78",
       "id": "hermesvoice_conversationfilestore_conversationfilestore_deleteconversation",
-      "community": 2,
+      "community": 26,
       "norm_label": ".deleteconversation()"
     },
     {
@@ -15434,7 +15524,7 @@
       "source_file": "Sources/HermesVoice/ConversationFileStore.swift",
       "source_location": "L87",
       "id": "hermesvoice_conversationfilestore_conversationfilestore_atomicwrite",
-      "community": 2,
+      "community": 26,
       "norm_label": ".atomicwrite()"
     },
     {
@@ -15443,7 +15533,7 @@
       "source_file": "Sources/HermesVoice/ConversationFileStore.swift",
       "source_location": "L87",
       "id": "sources_hermesvoice_conversationfilestore_swift_data",
-      "community": 2,
+      "community": 26,
       "norm_label": "data"
     },
     {
@@ -15614,7 +15704,7 @@
       "source_file": "",
       "source_location": "",
       "id": "equatable",
-      "community": 59,
+      "community": 6,
       "norm_label": "equatable"
     },
     {
@@ -16028,7 +16118,7 @@
       "source_file": "Sources/HermesVoice/ImageAttachment.swift",
       "source_location": "L1",
       "id": "hermesvoice_imageattachment",
-      "community": 78,
+      "community": 1,
       "norm_label": "imageattachment.swift"
     },
     {
@@ -16037,7 +16127,7 @@
       "source_file": "Sources/HermesVoice/ImageAttachment.swift",
       "source_location": "L6",
       "id": "hermesvoice_imageattachment_imageattachment",
-      "community": 78,
+      "community": 1,
       "norm_label": "imageattachment"
     },
     {
@@ -16055,7 +16145,7 @@
       "source_file": "Sources/HermesVoice/ImageAttachment.swift",
       "source_location": "L7",
       "id": "sources_hermesvoice_imageattachment_swift_uuid",
-      "community": 78,
+      "community": 1,
       "norm_label": "uuid"
     },
     {
@@ -16064,7 +16154,7 @@
       "source_file": "Sources/HermesVoice/ImageAttachment.swift",
       "source_location": "L8",
       "id": "sources_hermesvoice_imageattachment_swift_nsimage",
-      "community": 78,
+      "community": 1,
       "norm_label": "nsimage"
     },
     {
@@ -16073,7 +16163,7 @@
       "source_file": "Sources/HermesVoice/ImageAttachment.swift",
       "source_location": "L9",
       "id": "sources_hermesvoice_imageattachment_swift_string",
-      "community": 78,
+      "community": 1,
       "norm_label": "string"
     },
     {
@@ -16082,7 +16172,7 @@
       "source_file": "Sources/HermesVoice/ImageAttachment.swift",
       "source_location": "L11",
       "id": "hermesvoice_imageattachment_imageattachment_init",
-      "community": 78,
+      "community": 1,
       "norm_label": ".init()"
     },
     {
@@ -16091,7 +16181,7 @@
       "source_file": "Sources/HermesVoice/ImageAttachment.swift",
       "source_location": "L26",
       "id": "sources_hermesvoice_imageattachment_swift_bool",
-      "community": 78,
+      "community": 1,
       "norm_label": "bool"
     },
     {
@@ -16100,7 +16190,7 @@
       "source_file": "Sources/HermesVoice/ImageAttachment.swift",
       "source_location": "L33",
       "id": "hermesvoice_imageattachment_imageencoder",
-      "community": 78,
+      "community": 1,
       "norm_label": "imageencoder"
     },
     {
@@ -16109,7 +16199,7 @@
       "source_file": "Sources/HermesVoice/ImageAttachment.swift",
       "source_location": "L36",
       "id": "sources_hermesvoice_imageattachment_swift_cgfloat",
-      "community": 78,
+      "community": 1,
       "norm_label": "cgfloat"
     },
     {
@@ -16118,7 +16208,7 @@
       "source_file": "Sources/HermesVoice/ImageAttachment.swift",
       "source_location": "L39",
       "id": "hermesvoice_imageattachment_imageencoder_pngdataurl",
-      "community": 78,
+      "community": 1,
       "norm_label": ".pngdataurl()"
     },
     {
@@ -16127,7 +16217,7 @@
       "source_file": "Sources/HermesVoice/ImageAttachment.swift",
       "source_location": "L44",
       "id": "hermesvoice_imageattachment_imageencoder_pngdata",
-      "community": 78,
+      "community": 1,
       "norm_label": ".pngdata()"
     },
     {
@@ -16136,7 +16226,7 @@
       "source_file": "Sources/HermesVoice/ImageAttachment.swift",
       "source_location": "L44",
       "id": "sources_hermesvoice_imageattachment_swift_data",
-      "community": 78,
+      "community": 1,
       "norm_label": "data"
     },
     {
@@ -16145,7 +16235,7 @@
       "source_file": "Sources/HermesVoice/ImageAttachment.swift",
       "source_location": "L54",
       "id": "hermesvoice_imageattachment_imageencoder_image",
-      "community": 78,
+      "community": 1,
       "norm_label": ".image()"
     },
     {
@@ -16154,7 +16244,7 @@
       "source_file": "Sources/HermesVoice/ImageAttachment.swift",
       "source_location": "L64",
       "id": "hermesvoice_imageattachment_imageencoder_downscaled",
-      "community": 78,
+      "community": 1,
       "norm_label": ".downscaled()"
     },
     {
@@ -16208,7 +16298,7 @@
       "source_file": "Sources/HermesVoice/MarkdownMessageView.swift",
       "source_location": "L59",
       "id": "hermesvoice_markdownmessageview_hermescodeblockview",
-      "community": 23,
+      "community": 85,
       "norm_label": "hermescodeblockview"
     },
     {
@@ -16217,7 +16307,7 @@
       "source_file": "Sources/HermesVoice/MarkdownMessageView.swift",
       "source_location": "L60",
       "id": "codeblockconfiguration",
-      "community": 23,
+      "community": 85,
       "norm_label": "codeblockconfiguration"
     },
     {
@@ -16226,7 +16316,7 @@
       "source_file": "Sources/HermesVoice/MarkdownMessageView.swift",
       "source_location": "L105",
       "id": "hermesvoice_markdownmessageview_hermescodeblockview_copy",
-      "community": 23,
+      "community": 85,
       "norm_label": ".copy()"
     },
     {
@@ -16311,12 +16401,255 @@
       "norm_label": ".applythemeforappearance()"
     },
     {
+      "label": "OnboardingView.swift",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L1",
+      "id": "hermesvoice_onboardingview",
+      "community": 25,
+      "norm_label": "onboardingview.swift"
+    },
+    {
+      "label": "OnboardingView",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L10",
+      "id": "hermesvoice_onboardingview_onboardingview",
+      "community": 25,
+      "norm_label": "onboardingview"
+    },
+    {
+      "label": "Void",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L11",
+      "id": "sources_hermesvoice_onboardingview_swift_void",
+      "community": 25,
+      "norm_label": "void"
+    },
+    {
+      "label": "Step",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L13",
+      "id": "hermesvoice_onboardingview_step",
+      "community": 25,
+      "norm_label": "step"
+    },
+    {
+      "label": "Int",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "id": "int",
+      "community": 25,
+      "norm_label": "int"
+    },
+    {
+      "label": "CaseIterable",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "id": "caseiterable",
+      "community": 25,
+      "norm_label": "caseiterable"
+    },
+    {
+      "label": "welcome",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L14",
+      "id": "hermesvoice_onboardingview_step_welcome",
+      "community": 25,
+      "norm_label": "welcome"
+    },
+    {
+      "label": "permissions",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L14",
+      "id": "hermesvoice_onboardingview_step_permissions",
+      "community": 25,
+      "norm_label": "permissions"
+    },
+    {
+      "label": "hotkey",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L14",
+      "id": "hermesvoice_onboardingview_step_hotkey",
+      "community": 25,
+      "norm_label": "hotkey"
+    },
+    {
+      "label": "AVAuthorizationStatus",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L18",
+      "id": "avauthorizationstatus",
+      "community": 25,
+      "norm_label": "avauthorizationstatus"
+    },
+    {
+      "label": "SFSpeechRecognizerAuthorizationStatus",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L19",
+      "id": "sources_hermesvoice_onboardingview_swift_sfspeechrecognizerauthorizationstatus",
+      "community": 25,
+      "norm_label": "sfspeechrecognizerauthorizationstatus"
+    },
+    {
+      "label": "String",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L138",
+      "id": "sources_hermesvoice_onboardingview_swift_string",
+      "community": 25,
+      "norm_label": "string"
+    },
+    {
+      "label": ".advance()",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L146",
+      "id": "hermesvoice_onboardingview_onboardingview_advance",
+      "community": 25,
+      "norm_label": ".advance()"
+    },
+    {
+      "label": "Bool",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L163",
+      "id": "sources_hermesvoice_onboardingview_swift_bool",
+      "community": 25,
+      "norm_label": "bool"
+    },
+    {
+      "label": ".requestPermissions()",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L173",
+      "id": "hermesvoice_onboardingview_onboardingview_requestpermissions",
+      "community": 25,
+      "norm_label": ".requestpermissions()"
+    },
+    {
+      "label": ".iconBadge()",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L188",
+      "id": "hermesvoice_onboardingview_onboardingview_iconbadge",
+      "community": 25,
+      "norm_label": ".iconbadge()"
+    },
+    {
+      "label": ".permissionRow()",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L199",
+      "id": "hermesvoice_onboardingview_onboardingview_permissionrow",
+      "community": 25,
+      "norm_label": ".permissionrow()"
+    },
+    {
+      "label": ".keycap()",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L221",
+      "id": "hermesvoice_onboardingview_onboardingview_keycap",
+      "community": 25,
+      "norm_label": ".keycap()"
+    },
+    {
+      "label": "OnboardingPrimaryButtonStyle",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L238",
+      "id": "hermesvoice_onboardingview_onboardingprimarybuttonstyle",
+      "community": 25,
+      "norm_label": "onboardingprimarybuttonstyle"
+    },
+    {
+      "label": ".makeBody()",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L239",
+      "id": "hermesvoice_onboardingview_onboardingprimarybuttonstyle_makebody",
+      "community": 25,
+      "norm_label": ".makebody()"
+    },
+    {
+      "label": "Configuration",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L239",
+      "id": "sources_hermesvoice_onboardingview_swift_configuration",
+      "community": 25,
+      "norm_label": "configuration"
+    },
+    {
+      "label": "OnboardingWindowController.swift",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingWindowController.swift",
+      "source_location": "L1",
+      "id": "hermesvoice_onboardingwindowcontroller",
+      "community": 94,
+      "norm_label": "onboardingwindowcontroller.swift"
+    },
+    {
+      "label": "OnboardingWindowController",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingWindowController.swift",
+      "source_location": "L7",
+      "id": "hermesvoice_onboardingwindowcontroller_onboardingwindowcontroller",
+      "community": 94,
+      "norm_label": "onboardingwindowcontroller"
+    },
+    {
+      "label": "NSWindow",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingWindowController.swift",
+      "source_location": "L9",
+      "id": "sources_hermesvoice_onboardingwindowcontroller_swift_nswindow",
+      "community": 94,
+      "norm_label": "nswindow"
+    },
+    {
+      "label": "Void",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingWindowController.swift",
+      "source_location": "L10",
+      "id": "sources_hermesvoice_onboardingwindowcontroller_swift_void",
+      "community": 94,
+      "norm_label": "void"
+    },
+    {
+      "label": ".show()",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingWindowController.swift",
+      "source_location": "L14",
+      "id": "hermesvoice_onboardingwindowcontroller_onboardingwindowcontroller_show",
+      "community": 94,
+      "norm_label": ".show()"
+    },
+    {
+      "label": ".finish()",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OnboardingWindowController.swift",
+      "source_location": "L39",
+      "id": "hermesvoice_onboardingwindowcontroller_onboardingwindowcontroller_finish",
+      "community": 94,
+      "norm_label": ".finish()"
+    },
+    {
       "label": "OverlayPanel.swift",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayPanel.swift",
       "source_location": "L1",
       "id": "hermesvoice_overlaypanel",
-      "community": 15,
+      "community": 0,
       "norm_label": "overlaypanel.swift"
     },
     {
@@ -16469,7 +16802,7 @@
       "source_file": "Sources/HermesVoice/OverlayPanel.swift",
       "source_location": "L159",
       "id": "panelstatemachine",
-      "community": 8,
+      "community": 104,
       "norm_label": "panelstatemachine"
     },
     {
@@ -16712,7 +17045,7 @@
       "source_file": "Sources/HermesVoice/OverlayView.swift",
       "source_location": "L781",
       "id": "hermesvoice_overlayview_pendingimagechip",
-      "community": 85,
+      "community": 9,
       "norm_label": "pendingimagechip"
     },
     {
@@ -16730,7 +17063,7 @@
       "source_file": "Sources/HermesVoice/OverlayView.swift",
       "source_location": "L783",
       "id": "sources_hermesvoice_overlayview_swift_void",
-      "community": 85,
+      "community": 9,
       "norm_label": "void"
     },
     {
@@ -17355,10 +17688,19 @@
       "norm_label": ".closehistory()"
     },
     {
+      "label": ".recentSessions()",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
+      "source_location": "L596",
+      "id": "hermesvoice_overlayviewmodel_overlayviewmodel_recentsessions",
+      "community": 1,
+      "norm_label": ".recentsessions()"
+    },
+    {
       "label": ".reloadHistory()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
-      "source_location": "L594",
+      "source_location": "L601",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_reloadhistory",
       "community": 1,
       "norm_label": ".reloadhistory()"
@@ -17367,7 +17709,7 @@
       "label": ".openConversation()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
-      "source_location": "L601",
+      "source_location": "L608",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_openconversation",
       "community": 1,
       "norm_label": ".openconversation()"
@@ -17376,7 +17718,7 @@
       "label": ".deleteConversation()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
-      "source_location": "L626",
+      "source_location": "L633",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_deleteconversation",
       "community": 1,
       "norm_label": ".deleteconversation()"
@@ -17385,7 +17727,7 @@
       "label": ".cleanup()",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
-      "source_location": "L634",
+      "source_location": "L641",
       "id": "hermesvoice_overlayviewmodel_overlayviewmodel_cleanup",
       "community": 1,
       "norm_label": ".cleanup()"
@@ -17486,7 +17828,7 @@
       "source_file": "Sources/HermesVoice/SettingsWindowController.swift",
       "source_location": "L1",
       "id": "hermesvoice_settingswindowcontroller",
-      "community": 117,
+      "community": 85,
       "norm_label": "settingswindowcontroller.swift"
     },
     {
@@ -17495,7 +17837,7 @@
       "source_file": "Sources/HermesVoice/SettingsWindowController.swift",
       "source_location": "L6",
       "id": "hermesvoice_settingswindowcontroller_settingswindowcontroller",
-      "community": 117,
+      "community": 85,
       "norm_label": "settingswindowcontroller"
     },
     {
@@ -17503,8 +17845,8 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/SettingsWindowController.swift",
       "source_location": "L8",
-      "id": "nswindow",
-      "community": 117,
+      "id": "sources_hermesvoice_settingswindowcontroller_swift_nswindow",
+      "community": 85,
       "norm_label": "nswindow"
     },
     {
@@ -17513,7 +17855,7 @@
       "source_file": "Sources/HermesVoice/SettingsWindowController.swift",
       "source_location": "L10",
       "id": "hermesvoice_settingswindowcontroller_settingswindowcontroller_show",
-      "community": 117,
+      "community": 85,
       "norm_label": ".show()"
     },
     {
@@ -17558,7 +17900,7 @@
       "source_file": "Sources/HermesVoice/Theme.swift",
       "source_location": "L77",
       "id": "hermesvoice_theme_gradients",
-      "community": 11,
+      "community": 15,
       "norm_label": "gradients"
     },
     {
@@ -17567,7 +17909,7 @@
       "source_file": "Sources/HermesVoice/Theme.swift",
       "source_location": "L94",
       "id": "lineargradient",
-      "community": 11,
+      "community": 15,
       "norm_label": "lineargradient"
     },
     {
@@ -17845,7 +18187,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/VoiceEngine.swift",
       "source_location": "L38",
-      "id": "sfspeechrecognizerauthorizationstatus",
+      "id": "sources_hermesvoice_voiceengine_swift_sfspeechrecognizerauthorizationstatus",
       "community": 12,
       "norm_label": "sfspeechrecognizerauthorizationstatus"
     },
@@ -18053,7 +18395,7 @@
       "source_file": "",
       "source_location": "",
       "id": "string",
-      "community": 6,
+      "community": 59,
       "norm_label": "string"
     },
     {
@@ -18062,7 +18404,7 @@
       "source_file": "",
       "source_location": "",
       "id": "codable",
-      "community": 3,
+      "community": 6,
       "norm_label": "codable"
     },
     {
@@ -18073,15 +18415,6 @@
       "id": "sendable",
       "community": 6,
       "norm_label": "sendable"
-    },
-    {
-      "label": "CaseIterable",
-      "file_type": "code",
-      "source_file": "",
-      "source_location": "",
-      "id": "caseiterable",
-      "community": 59,
-      "norm_label": "caseiterable"
     },
     {
       "label": "reviewSend",
@@ -18125,7 +18458,7 @@
       "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
       "source_location": "L27",
       "id": "hermesvoicekit_appsettings_transcriptoutcome",
-      "community": 59,
+      "community": 153,
       "norm_label": "transcriptoutcome"
     },
     {
@@ -18134,7 +18467,7 @@
       "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
       "source_location": "L29",
       "id": "hermesvoicekit_appsettings_transcriptoutcome_ignore",
-      "community": 59,
+      "community": 153,
       "norm_label": "ignore"
     },
     {
@@ -18143,7 +18476,7 @@
       "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
       "source_location": "L31",
       "id": "hermesvoicekit_appsettings_transcriptoutcome_fill",
-      "community": 59,
+      "community": 153,
       "norm_label": "fill"
     },
     {
@@ -18152,7 +18485,7 @@
       "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
       "source_location": "L33",
       "id": "hermesvoicekit_appsettings_transcriptoutcome_send",
-      "community": 59,
+      "community": 153,
       "norm_label": "send"
     },
     {
@@ -18215,7 +18548,7 @@
       "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
       "source_location": "L69",
       "id": "sources_hermesvoicekit_appsettings_swift_uint32",
-      "community": 153,
+      "community": 59,
       "norm_label": "uint32"
     },
     {
@@ -18368,7 +18701,7 @@
       "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
       "source_location": "L168",
       "id": "hermesvoicekit_appsettings_appsettings_decode",
-      "community": 59,
+      "community": 117,
       "norm_label": ".decode()"
     },
     {
@@ -18377,7 +18710,7 @@
       "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
       "source_location": "L168",
       "id": "sources_hermesvoicekit_appsettings_swift_data",
-      "community": 59,
+      "community": 117,
       "norm_label": "data"
     },
     {
@@ -18386,7 +18719,7 @@
       "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
       "source_location": "L175",
       "id": "hermesvoicekit_appsettings_appsettings_encode",
-      "community": 59,
+      "community": 117,
       "norm_label": ".encode()"
     },
     {
@@ -18395,7 +18728,7 @@
       "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
       "source_location": "L185",
       "id": "hermesvoicekit_appsettings_hotkeyformatter",
-      "community": 153,
+      "community": 59,
       "norm_label": "hotkeyformatter"
     },
     {
@@ -18404,7 +18737,7 @@
       "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
       "source_location": "L194",
       "id": "hermesvoicekit_appsettings_hotkeyformatter_modifiersymbols",
-      "community": 153,
+      "community": 59,
       "norm_label": ".modifiersymbols()"
     },
     {
@@ -18413,7 +18746,7 @@
       "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
       "source_location": "L205",
       "id": "hermesvoicekit_appsettings_hotkeyformatter_hasmodifier",
-      "community": 153,
+      "community": 59,
       "norm_label": ".hasmodifier()"
     },
     {
@@ -18422,7 +18755,7 @@
       "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
       "source_location": "L210",
       "id": "hermesvoicekit_appsettings_hotkeyformatter_displaystring",
-      "community": 153,
+      "community": 59,
       "norm_label": ".displaystring()"
     },
     {
@@ -18431,7 +18764,7 @@
       "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
       "source_location": "L215",
       "id": "hermesvoicekit_appsettings_hotkeyformatter_keyname",
-      "community": 153,
+      "community": 59,
       "norm_label": ".keyname()"
     },
     {
@@ -18647,7 +18980,7 @@
       "source_file": "Sources/HermesVoiceKit/Debouncer.swift",
       "source_location": "L1",
       "id": "hermesvoicekit_debouncer",
-      "community": 8,
+      "community": 78,
       "norm_label": "debouncer.swift"
     },
     {
@@ -18656,7 +18989,7 @@
       "source_file": "Sources/HermesVoiceKit/Debouncer.swift",
       "source_location": "L8",
       "id": "hermesvoicekit_debouncer_debouncer",
-      "community": 8,
+      "community": 78,
       "norm_label": "debouncer"
     },
     {
@@ -18665,7 +18998,7 @@
       "source_file": "Sources/HermesVoiceKit/Debouncer.swift",
       "source_location": "L9",
       "id": "sources_hermesvoicekit_debouncer_swift_timeinterval",
-      "community": 8,
+      "community": 78,
       "norm_label": "timeinterval"
     },
     {
@@ -18674,7 +19007,7 @@
       "source_file": "Sources/HermesVoiceKit/Debouncer.swift",
       "source_location": "L10",
       "id": "sources_hermesvoicekit_debouncer_swift_date",
-      "community": 8,
+      "community": 78,
       "norm_label": "date"
     },
     {
@@ -18683,7 +19016,7 @@
       "source_file": "Sources/HermesVoiceKit/Debouncer.swift",
       "source_location": "L12",
       "id": "hermesvoicekit_debouncer_debouncer_init",
-      "community": 8,
+      "community": 78,
       "norm_label": ".init()"
     },
     {
@@ -18692,7 +19025,7 @@
       "source_file": "Sources/HermesVoiceKit/Debouncer.swift",
       "source_location": "L19",
       "id": "hermesvoicekit_debouncer_debouncer_shouldfire",
-      "community": 8,
+      "community": 78,
       "norm_label": ".shouldfire()"
     },
     {
@@ -18701,7 +19034,7 @@
       "source_file": "Sources/HermesVoiceKit/Debouncer.swift",
       "source_location": "L19",
       "id": "sources_hermesvoicekit_debouncer_swift_bool",
-      "community": 8,
+      "community": 78,
       "norm_label": "bool"
     },
     {
@@ -18827,7 +19160,7 @@
       "source_file": "Sources/HermesVoiceKit/PanelStateMachine.swift",
       "source_location": "L1",
       "id": "hermesvoicekit_panelstatemachine",
-      "community": 8,
+      "community": 30,
       "norm_label": "panelstatemachine.swift"
     },
     {
@@ -18836,7 +19169,7 @@
       "source_file": "Sources/HermesVoiceKit/PanelStateMachine.swift",
       "source_location": "L5",
       "id": "hermesvoicekit_panelstatemachine_panelphase",
-      "community": 8,
+      "community": 30,
       "norm_label": "panelphase"
     },
     {
@@ -18845,7 +19178,7 @@
       "source_file": "Sources/HermesVoiceKit/PanelStateMachine.swift",
       "source_location": "L6",
       "id": "hermesvoicekit_panelstatemachine_panelphase_hidden",
-      "community": 8,
+      "community": 30,
       "norm_label": "hidden"
     },
     {
@@ -18854,7 +19187,7 @@
       "source_file": "Sources/HermesVoiceKit/PanelStateMachine.swift",
       "source_location": "L7",
       "id": "hermesvoicekit_panelstatemachine_panelphase_showing",
-      "community": 8,
+      "community": 30,
       "norm_label": "showing"
     },
     {
@@ -18863,7 +19196,7 @@
       "source_file": "Sources/HermesVoiceKit/PanelStateMachine.swift",
       "source_location": "L8",
       "id": "hermesvoicekit_panelstatemachine_panelphase_visible",
-      "community": 8,
+      "community": 30,
       "norm_label": "visible"
     },
     {
@@ -18872,7 +19205,7 @@
       "source_file": "Sources/HermesVoiceKit/PanelStateMachine.swift",
       "source_location": "L9",
       "id": "hermesvoicekit_panelstatemachine_panelphase_hiding",
-      "community": 8,
+      "community": 30,
       "norm_label": "hiding"
     },
     {
@@ -18881,7 +19214,7 @@
       "source_file": "Sources/HermesVoiceKit/PanelStateMachine.swift",
       "source_location": "L22",
       "id": "hermesvoicekit_panelstatemachine_panelstatemachine",
-      "community": 8,
+      "community": 30,
       "norm_label": "panelstatemachine"
     },
     {
@@ -18890,7 +19223,7 @@
       "source_file": "Sources/HermesVoiceKit/PanelStateMachine.swift",
       "source_location": "L25",
       "id": "hermesvoicekit_panelstatemachine_panelstatemachine_init",
-      "community": 8,
+      "community": 30,
       "norm_label": ".init()"
     },
     {
@@ -18899,7 +19232,7 @@
       "source_file": "Sources/HermesVoiceKit/PanelStateMachine.swift",
       "source_location": "L31",
       "id": "hermesvoicekit_panelstatemachine_panelstatemachine_beginshow",
-      "community": 8,
+      "community": 30,
       "norm_label": ".beginshow()"
     },
     {
@@ -18908,7 +19241,7 @@
       "source_file": "Sources/HermesVoiceKit/PanelStateMachine.swift",
       "source_location": "L31",
       "id": "sources_hermesvoicekit_panelstatemachine_swift_bool",
-      "community": 8,
+      "community": 30,
       "norm_label": "bool"
     },
     {
@@ -18917,7 +19250,7 @@
       "source_file": "Sources/HermesVoiceKit/PanelStateMachine.swift",
       "source_location": "L39",
       "id": "hermesvoicekit_panelstatemachine_panelstatemachine_finishshow",
-      "community": 8,
+      "community": 30,
       "norm_label": ".finishshow()"
     },
     {
@@ -18926,7 +19259,7 @@
       "source_file": "Sources/HermesVoiceKit/PanelStateMachine.swift",
       "source_location": "L44",
       "id": "hermesvoicekit_panelstatemachine_panelstatemachine_beginhide",
-      "community": 8,
+      "community": 30,
       "norm_label": ".beginhide()"
     },
     {
@@ -18935,7 +19268,7 @@
       "source_file": "Sources/HermesVoiceKit/PanelStateMachine.swift",
       "source_location": "L52",
       "id": "hermesvoicekit_panelstatemachine_panelstatemachine_finishhide",
-      "community": 8,
+      "community": 30,
       "norm_label": ".finishhide()"
     },
     {
@@ -18944,7 +19277,7 @@
       "source_file": "Sources/HermesVoiceKit/PanelStateMachine.swift",
       "source_location": "L57",
       "id": "hermesvoicekit_panelstatemachine_panelstatemachine_forcehidden",
-      "community": 8,
+      "community": 30,
       "norm_label": ".forcehidden()"
     },
     {
@@ -19142,7 +19475,7 @@
       "source_file": "Tests/HermesVoiceTests/APIKeyParserTests.swift",
       "source_location": "L1",
       "id": "hermesvoicetests_apikeyparsertests",
-      "community": 4,
+      "community": 119,
       "norm_label": "apikeyparsertests.swift"
     },
     {
@@ -19151,7 +19484,7 @@
       "source_file": "Tests/HermesVoiceTests/APIKeyParserTests.swift",
       "source_location": "L3",
       "id": "hermesvoicetests_apikeyparsertests_apikeyparsertests",
-      "community": 4,
+      "community": 119,
       "norm_label": "apikeyparsertests"
     },
     {
@@ -19160,7 +19493,7 @@
       "source_file": "Tests/HermesVoiceTests/APIKeyParserTests.swift",
       "source_location": "L4",
       "id": "tests_hermesvoicetests_apikeyparsertests_swift_testcase",
-      "community": 4,
+      "community": 119,
       "norm_label": "testcase"
     },
     {
@@ -19223,7 +19556,7 @@
       "source_file": "Tests/HermesVoiceTests/DebouncerTests.swift",
       "source_location": "L1",
       "id": "hermesvoicetests_debouncertests",
-      "community": 4,
+      "community": 154,
       "norm_label": "debouncertests.swift"
     },
     {
@@ -19232,7 +19565,7 @@
       "source_file": "Tests/HermesVoiceTests/DebouncerTests.swift",
       "source_location": "L4",
       "id": "hermesvoicetests_debouncertests_debouncertests",
-      "community": 4,
+      "community": 154,
       "norm_label": "debouncertests"
     },
     {
@@ -19241,7 +19574,7 @@
       "source_file": "Tests/HermesVoiceTests/DebouncerTests.swift",
       "source_location": "L5",
       "id": "tests_hermesvoicetests_debouncertests_swift_testcase",
-      "community": 4,
+      "community": 154,
       "norm_label": "testcase"
     },
     {
@@ -19277,7 +19610,7 @@
       "source_file": "Tests/HermesVoiceTests/PanelStateMachineTests.swift",
       "source_location": "L1",
       "id": "hermesvoicetests_panelstatemachinetests",
-      "community": 8,
+      "community": 104,
       "norm_label": "panelstatemachinetests.swift"
     },
     {
@@ -19286,7 +19619,7 @@
       "source_file": "Tests/HermesVoiceTests/PanelStateMachineTests.swift",
       "source_location": "L3",
       "id": "hermesvoicetests_panelstatemachinetests_panelstatemachinetests",
-      "community": 8,
+      "community": 104,
       "norm_label": "panelstatemachinetests"
     },
     {
@@ -19295,7 +19628,7 @@
       "source_file": "Tests/HermesVoiceTests/PanelStateMachineTests.swift",
       "source_location": "L4",
       "id": "tests_hermesvoicetests_panelstatemachinetests_swift_testcase",
-      "community": 8,
+      "community": 104,
       "norm_label": "testcase"
     },
     {
@@ -19331,7 +19664,7 @@
       "source_file": "Tests/HermesVoiceTests/TestHarness.swift",
       "source_location": "L1",
       "id": "hermesvoicetests_testharness",
-      "community": 4,
+      "community": 31,
       "norm_label": "testharness.swift"
     },
     {
@@ -19340,7 +19673,7 @@
       "source_file": "Tests/HermesVoiceTests/TestHarness.swift",
       "source_location": "L10",
       "id": "hermesvoicetests_testharness_check",
-      "community": 4,
+      "community": 31,
       "norm_label": "check()"
     },
     {
@@ -19349,7 +19682,7 @@
       "source_file": "Tests/HermesVoiceTests/TestHarness.swift",
       "source_location": "L10",
       "id": "tests_hermesvoicetests_testharness_swift_bool",
-      "community": 4,
+      "community": 31,
       "norm_label": "bool"
     },
     {
@@ -19358,7 +19691,7 @@
       "source_file": "Tests/HermesVoiceTests/TestHarness.swift",
       "source_location": "L10",
       "id": "tests_hermesvoicetests_testharness_swift_string",
-      "community": 4,
+      "community": 31,
       "norm_label": "string"
     },
     {
@@ -19367,7 +19700,7 @@
       "source_file": "Tests/HermesVoiceTests/TestHarness.swift",
       "source_location": "L10",
       "id": "staticstring",
-      "community": 4,
+      "community": 31,
       "norm_label": "staticstring"
     },
     {
@@ -19376,7 +19709,7 @@
       "source_file": "Tests/HermesVoiceTests/TestHarness.swift",
       "source_location": "L10",
       "id": "uint",
-      "community": 4,
+      "community": 31,
       "norm_label": "uint"
     },
     {
@@ -19385,7 +19718,7 @@
       "source_file": "Tests/HermesVoiceTests/TestHarness.swift",
       "source_location": "L18",
       "id": "hermesvoicetests_testharness_checkequal",
-      "community": 4,
+      "community": 31,
       "norm_label": "checkequal()"
     },
     {
@@ -19394,7 +19727,7 @@
       "source_file": "Tests/HermesVoiceTests/TestHarness.swift",
       "source_location": "L18",
       "id": "t",
-      "community": 4,
+      "community": 31,
       "norm_label": "t"
     },
     {
@@ -19403,7 +19736,7 @@
       "source_file": "Tests/HermesVoiceTests/TestHarness.swift",
       "source_location": "L26",
       "id": "hermesvoicetests_testharness_testcase",
-      "community": 4,
+      "community": 31,
       "norm_label": "testcase"
     },
     {
@@ -19412,7 +19745,7 @@
       "source_file": "Tests/HermesVoiceTests/TestHarness.swift",
       "source_location": "L28",
       "id": "tests_hermesvoicetests_testharness_swift_void",
-      "community": 4,
+      "community": 31,
       "norm_label": "void"
     },
     {
@@ -19421,7 +19754,7 @@
       "source_file": "Tests/HermesVoiceTests/TestHarness.swift",
       "source_location": "L31",
       "id": "hermesvoicetests_testharness_runalltests",
-      "community": 4,
+      "community": 31,
       "norm_label": "runalltests()"
     },
     {
@@ -19430,7 +19763,7 @@
       "source_file": "Tests/HermesVoiceTests/TestHarness.swift",
       "source_location": "L31",
       "id": "tests_hermesvoicetests_testharness_swift_never",
-      "community": 4,
+      "community": 31,
       "norm_label": "never"
     },
     {
@@ -19494,6 +19827,81 @@
       "id": "users_fahmidhasantaohid_projects_hermesvoice_build_app_sh__entry",
       "community": 18,
       "norm_label": "build-app.sh script"
+    },
+    {
+      "label": "generate-icns.sh",
+      "file_type": "code",
+      "source_file": "tools/generate-icns.sh",
+      "source_location": "L1",
+      "metadata": {
+        "language": "bash",
+        "kind": "file"
+      },
+      "id": "tools_generate_icns",
+      "community": 155,
+      "norm_label": "generate-icns.sh"
+    },
+    {
+      "label": "generate-icns.sh script",
+      "file_type": "code",
+      "source_file": "tools/generate-icns.sh",
+      "source_location": "L1",
+      "metadata": {
+        "language": "bash",
+        "kind": "bash_entrypoint"
+      },
+      "id": "users_fahmidhasantaohid_projects_hermesvoice_tools_generate_icns_sh__entry",
+      "community": 155,
+      "norm_label": "generate-icns.sh script"
+    },
+    {
+      "label": "render()",
+      "file_type": "code",
+      "source_file": "tools/generate-icns.sh",
+      "source_location": "L17",
+      "metadata": {
+        "language": "bash",
+        "kind": "bash_function"
+      },
+      "id": "tools_generate_icns_render",
+      "community": 155,
+      "norm_label": "render()"
+    },
+    {
+      "label": "make-icon.swift",
+      "file_type": "code",
+      "source_file": "tools/make-icon.swift",
+      "source_location": "L1",
+      "id": "tools_make_icon",
+      "community": 113,
+      "norm_label": "make-icon.swift"
+    },
+    {
+      "label": "rgb()",
+      "file_type": "code",
+      "source_file": "tools/make-icon.swift",
+      "source_location": "L24",
+      "id": "tools_make_icon_rgb",
+      "community": 113,
+      "norm_label": "rgb()"
+    },
+    {
+      "label": "CGFloat",
+      "file_type": "code",
+      "source_file": "tools/make-icon.swift",
+      "source_location": "L24",
+      "id": "tools_make_icon_swift_cgfloat",
+      "community": 113,
+      "norm_label": "cgfloat"
+    },
+    {
+      "label": "CGColor",
+      "file_type": "code",
+      "source_file": "tools/make-icon.swift",
+      "source_location": "L24",
+      "id": "cgcolor",
+      "community": 113,
+      "norm_label": "cgcolor"
     },
     {
       "label": "SKILL.md",
@@ -24707,22 +25115,22 @@
       "norm_label": "6. open items to verify during implementation"
     },
     {
-      "label": "View",
+      "label": "Configuration",
       "file_type": "code",
-      "source_file": "",
-      "source_location": "",
-      "community": 85,
-      "norm_label": "view",
-      "id": "view"
+      "source_file": "Sources/HermesVoice/ButtonStyles.swift",
+      "source_location": "L11",
+      "community": 15,
+      "norm_label": "configuration",
+      "id": "configuration"
     },
     {
-      "label": "OverlayViewModel",
+      "label": "NSEvent",
       "file_type": "code",
-      "source_file": "Sources/HermesVoice/OverlayView.swift",
-      "source_location": "L15",
-      "community": 9,
-      "norm_label": "overlayviewmodel",
-      "id": "overlayviewmodel"
+      "source_file": "Sources/HermesVoice/OverlayPanel.swift",
+      "source_location": "L175",
+      "community": 97,
+      "norm_label": "nsevent",
+      "id": "nsevent"
     },
     {
       "label": "OverlayPanel",
@@ -24734,13 +25142,85 @@
       "id": "overlaypanel"
     },
     {
-      "label": "Color",
+      "label": "Date",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayView.swift",
-      "source_location": "L196",
+      "source_location": "L696",
       "community": 81,
-      "norm_label": "color",
-      "id": "color"
+      "norm_label": "date",
+      "id": "date"
+    },
+    {
+      "label": "ToolActivity",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OverlayView.swift",
+      "source_location": "L738",
+      "community": 81,
+      "norm_label": "toolactivity",
+      "id": "toolactivity"
+    },
+    {
+      "label": "NSImage",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/OverlayView.swift",
+      "source_location": "L782",
+      "community": 9,
+      "norm_label": "nsimage",
+      "id": "nsimage"
+    },
+    {
+      "label": "AppSettings",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/SettingsView.swift",
+      "source_location": "L32",
+      "community": 85,
+      "norm_label": "appsettings",
+      "id": "appsettings"
+    },
+    {
+      "label": "Double",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/WaveformView.swift",
+      "source_location": "L35",
+      "community": 3,
+      "norm_label": "double",
+      "id": "double"
+    },
+    {
+      "label": "NSMenu",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/App.swift",
+      "source_location": "L51",
+      "community": 0,
+      "norm_label": "nsmenu",
+      "id": "nsmenu"
+    },
+    {
+      "label": "NSWindow",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/SettingsWindowController.swift",
+      "source_location": "L8",
+      "community": 85,
+      "norm_label": "nswindow",
+      "id": "nswindow"
+    },
+    {
+      "label": "SFSpeechRecognizerAuthorizationStatus",
+      "file_type": "code",
+      "source_file": "Sources/HermesVoice/VoiceEngine.swift",
+      "source_location": "L38",
+      "community": 12,
+      "norm_label": "sfspeechrecognizerauthorizationstatus",
+      "id": "sfspeechrecognizerauthorizationstatus"
+    },
+    {
+      "label": "View",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "community": 85,
+      "norm_label": "view",
+      "id": "view"
     },
     {
       "label": "UUID",
@@ -24756,7 +25236,7 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L79",
-      "community": 1,
+      "community": 26,
       "norm_label": "sessionmeta",
       "id": "sessionmeta"
     },
@@ -24768,15 +25248,6 @@
       "community": 1,
       "norm_label": "never",
       "id": "never"
-    },
-    {
-      "label": "AppSettings",
-      "file_type": "code",
-      "source_file": "Sources/HermesVoice/SettingsView.swift",
-      "source_location": "L29",
-      "community": 85,
-      "norm_label": "appsettings",
-      "id": "appsettings"
     },
     {
       "label": "TimeInterval",
@@ -24792,25 +25263,16 @@
       "file_type": "code",
       "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
       "source_location": "L69",
-      "community": 153,
+      "community": 59,
       "norm_label": "uint32",
       "id": "uint32"
-    },
-    {
-      "label": "Double",
-      "file_type": "code",
-      "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
-      "source_location": "L86",
-      "community": 3,
-      "norm_label": "double",
-      "id": "double"
     },
     {
       "label": "Data",
       "file_type": "code",
       "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
       "source_location": "L168",
-      "community": 59,
+      "community": 117,
       "norm_label": "data",
       "id": "data"
     },
@@ -24824,70 +25286,13 @@
       "id": "testcase"
     },
     {
-      "label": "Phase 7 \u2014 Expressive visual redesign  *(warm & expressive)*",
-      "file_type": "document",
-      "source_file": "tasks/overhaul-plan.md",
-      "source_location": "L541",
-      "community": 7,
-      "norm_label": "phase 7 \u2014 expressive visual redesign  *(warm & expressive)*",
-      "id": "tasks_overhaul_plan_phase_7_expressive_visual_redesign_warm_expressive"
-    },
-    {
       "label": "URL",
       "file_type": "code",
       "source_file": "Sources/HermesVoice/HermesAPIClient.swift",
       "source_location": "L42",
-      "community": 2,
+      "community": 26,
       "norm_label": "url",
       "id": "url"
-    },
-    {
-      "label": "NSEvent",
-      "file_type": "code",
-      "source_file": "Sources/HermesVoice/HotKeyRecorder.swift",
-      "source_location": "L78",
-      "community": 97,
-      "norm_label": "nsevent",
-      "id": "nsevent"
-    },
-    {
-      "label": "IconButtonStyle",
-      "file_type": "code",
-      "source_file": "Sources/HermesVoice/ButtonStyles.swift",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 15,
-      "norm_label": "iconbuttonstyle",
-      "id": "buttonstyles_iconbuttonstyle"
-    },
-    {
-      "label": "CircleButtonStyle (mic toggle)",
-      "file_type": "code",
-      "source_file": "Sources/HermesVoice/ButtonStyles.swift",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 15,
-      "norm_label": "circlebuttonstyle (mic toggle)",
-      "id": "buttonstyles_circlebuttonstyle"
-    },
-    {
-      "label": "SendButtonStyle",
-      "file_type": "code",
-      "source_file": "Sources/HermesVoice/ButtonStyles.swift",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 15,
-      "norm_label": "sendbuttonstyle",
-      "id": "buttonstyles_sendbuttonstyle"
     },
     {
       "label": "Config (endpoints + API key)",
@@ -24924,7 +25329,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 2,
+      "community": 26,
       "norm_label": "conversationfilestore (disk io)",
       "id": "conversationfilestore_conversationfilestore"
     },
@@ -24937,74 +25342,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 2,
+      "community": 26,
       "norm_label": "conversationfilestore.atomicwrite",
       "id": "conversationfilestore_atomicwrite"
-    },
-    {
-      "label": "OverlayPanel.updateHeight",
-      "file_type": "code",
-      "source_file": "Sources/HermesVoice/OverlayPanel.swift",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 30,
-      "norm_label": "overlaypanel.updateheight",
-      "id": "overlaypanel_updateheight"
-    },
-    {
-      "label": "OverlayPanel.transition (state machine guard)",
-      "file_type": "code",
-      "source_file": "Sources/HermesVoice/OverlayPanel.swift",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 21,
-      "norm_label": "overlaypanel.transition (state machine guard)",
-      "id": "overlaypanel_transition"
-    },
-    {
-      "label": "Theme design tokens",
-      "file_type": "code",
-      "source_file": "Sources/HermesVoice/Theme.swift",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 15,
-      "norm_label": "theme design tokens",
-      "id": "theme_theme"
-    },
-    {
-      "label": "Theme.Motion.ifMotion (reduce-motion gate)",
-      "file_type": "code",
-      "source_file": "Sources/HermesVoice/Theme.swift",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 31,
-      "norm_label": "theme.motion.ifmotion (reduce-motion gate)",
-      "id": "theme_motion_ifmotion"
-    },
-    {
-      "label": "WaveformView",
-      "file_type": "code",
-      "source_file": "Sources/HermesVoice/WaveformView.swift",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "community": 123,
-      "norm_label": "waveformview",
-      "id": "waveformview_waveformview"
     },
     {
       "label": "APIKeyParser.parse(env:)",
@@ -25015,7 +25355,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 4,
+      "community": 119,
       "norm_label": "apikeyparser.parse(env:)",
       "id": "hermesvoicekit_apikeyparser_parse"
     },
@@ -25028,7 +25368,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 4,
+      "community": 154,
       "norm_label": "debouncer.shouldfire(at:)",
       "id": "hermesvoicekit_debouncer_shouldfire"
     },
@@ -25067,7 +25407,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 8,
+      "community": 104,
       "norm_label": "panelstatemachine.beginshow",
       "id": "hermesvoicekit_panelstatemachine_beginshow"
     },
@@ -25080,7 +25420,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 8,
+      "community": 104,
       "norm_label": "panelstatemachine.beginhide",
       "id": "hermesvoicekit_panelstatemachine_beginhide"
     },
@@ -66779,6 +67119,28 @@
       "target": "nsmenu"
     },
     {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "Sources/HermesVoice/App.swift",
+      "source_location": "L43",
+      "weight": 1.0,
+      "source": "hermesvoice_app_hermesvoiceapp_makemainmenu",
+      "target": "nsmenuitem"
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/App.swift",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "hermesvoice_app_hermesvoiceapp_makemainmenu",
+      "target": "sources_hermesvoice_app_swift_nsmenu",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
@@ -66915,6 +67277,26 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L331",
+      "weight": 1.0,
+      "source": "hermesvoice_appdelegate_appdelegate",
+      "target": "hermesvoice_appdelegate_appdelegate_configurestatusmenu",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L395",
+      "weight": 1.0,
+      "source": "hermesvoice_appdelegate_appdelegate",
+      "target": "hermesvoice_appdelegate_appdelegate_connectionstatustitle",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
       "source_location": "L75",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -66955,6 +67337,16 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L338",
+      "weight": 1.0,
+      "source": "hermesvoice_appdelegate_appdelegate",
+      "target": "hermesvoice_appdelegate_appdelegate_menuneedsupdate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
       "source_location": "L172",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -66965,11 +67357,31 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L310",
+      "weight": 1.0,
+      "source": "hermesvoice_appdelegate_appdelegate",
+      "target": "hermesvoice_appdelegate_appdelegate_openrecentconversation",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
       "source_location": "L297",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "hermesvoice_appdelegate_appdelegate",
       "target": "hermesvoice_appdelegate_appdelegate_opensettings"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L347",
+      "weight": 1.0,
+      "source": "hermesvoice_appdelegate_appdelegate",
+      "target": "hermesvoice_appdelegate_appdelegate_rebuildstatusmenu",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -67030,6 +67442,16 @@
       "confidence_score": 1.0,
       "source": "hermesvoice_appdelegate_appdelegate",
       "target": "hermesvoice_appdelegate_appdelegate_showhotkeyconflictalert"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L320",
+      "weight": 1.0,
+      "source": "hermesvoice_appdelegate_appdelegate",
+      "target": "hermesvoice_appdelegate_appdelegate_showonboardingifneeded",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -67104,6 +67526,16 @@
       "target": "nsapplicationdelegate"
     },
     {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "hermesvoice_appdelegate_appdelegate",
+      "target": "nsmenudelegate",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "inherits",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
@@ -67172,6 +67604,17 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L24",
+      "weight": 1.0,
+      "context": "field",
+      "source": "hermesvoice_appdelegate_appdelegate",
+      "target": "sources_hermesvoice_appdelegate_swift_nsmenu",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
       "source_location": "L15",
       "weight": 1.0,
       "context": "field",
@@ -67221,6 +67664,39 @@
       "confidence_score": 1.0,
       "source": "hermesvoice_appdelegate_appdelegate_smartpaste",
       "target": "sources_hermesvoice_appdelegate_swift_any"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L332",
+      "weight": 1.0,
+      "source": "hermesvoice_appdelegate_appdelegate_configurestatusmenu",
+      "target": "sources_hermesvoice_appdelegate_swift_nsmenu",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L338",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "hermesvoice_appdelegate_appdelegate_menuneedsupdate",
+      "target": "sources_hermesvoice_appdelegate_swift_nsmenu",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L347",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "hermesvoice_appdelegate_appdelegate_rebuildstatusmenu",
+      "target": "sources_hermesvoice_appdelegate_swift_nsmenu",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -67276,6 +67752,17 @@
       "confidence_score": 1.0,
       "source": "hermesvoice_appdelegate_appdelegate_applicationdidfinishlaunching",
       "target": "hermesvoice_appdelegate_appdelegate_setupoverlaypanel"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L66",
+      "weight": 1.0,
+      "source": "hermesvoice_appdelegate_appdelegate_applicationdidfinishlaunching",
+      "target": "hermesvoice_appdelegate_appdelegate_showonboardingifneeded",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -67507,6 +67994,94 @@
       "confidence_score": 1.0,
       "source": "hermesvoice_appdelegate_appdelegate_menubarnewchat",
       "target": "hermesvoice_appdelegate_appdelegate_showpanel"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L312",
+      "weight": 1.0,
+      "source": "hermesvoice_appdelegate_appdelegate_openrecentconversation",
+      "target": "hermesvoice_appdelegate_appdelegate_showpanel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L310",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "hermesvoice_appdelegate_appdelegate_openrecentconversation",
+      "target": "nsmenuitem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L374",
+      "weight": 1.0,
+      "source": "hermesvoice_appdelegate_appdelegate_rebuildstatusmenu",
+      "target": "hermesvoice_appdelegate_appdelegate_openrecentconversation",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L351",
+      "weight": 1.0,
+      "source": "hermesvoice_appdelegate_appdelegate_rebuildstatusmenu",
+      "target": "nsmenuitem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L324",
+      "weight": 1.0,
+      "source": "hermesvoice_appdelegate_appdelegate_showonboardingifneeded",
+      "target": "hermesvoice_appdelegate_appdelegate_showpanel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L341",
+      "weight": 1.0,
+      "source": "hermesvoice_appdelegate_appdelegate_menuneedsupdate",
+      "target": "hermesvoice_appdelegate_appdelegate_rebuildstatusmenu",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L351",
+      "weight": 1.0,
+      "source": "hermesvoice_appdelegate_appdelegate_rebuildstatusmenu",
+      "target": "hermesvoice_appdelegate_appdelegate_connectionstatustitle",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/AppDelegate.swift",
+      "source_location": "L395",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "hermesvoice_appdelegate_appdelegate_connectionstatustitle",
+      "target": "sources_hermesvoice_appdelegate_swift_string",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -67775,26 +68350,6 @@
       "relation": "implements",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/ButtonStyles.swift",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "buttonstyles_iconbuttonstyle",
-      "target": "buttonstyle"
-    },
-    {
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "source_file": "Sources/HermesVoice/ButtonStyles.swift",
-      "source_location": "L52",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "buttonstyles_sendbuttonstyle",
-      "target": "buttonstyle"
-    },
-    {
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "source_file": "Sources/HermesVoice/ButtonStyles.swift",
       "source_location": "L25",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -67812,26 +68367,14 @@
       "target": "buttonstyle"
     },
     {
-      "relation": "references",
+      "relation": "implements",
       "confidence": "EXTRACTED",
-      "source_file": "Sources/HermesVoice/ButtonStyles.swift",
-      "source_location": "L6",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L238",
       "weight": 1.0,
-      "context": "field",
-      "confidence_score": 1.0,
-      "source": "buttonstyles_iconbuttonstyle",
-      "target": "sources_hermesvoice_buttonstyles_swift_cgfloat"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Sources/HermesVoice/ButtonStyles.swift",
-      "source_location": "L54",
-      "weight": 1.0,
-      "context": "field",
-      "confidence_score": 1.0,
-      "source": "buttonstyles_sendbuttonstyle",
-      "target": "sources_hermesvoice_buttonstyles_swift_cgfloat"
+      "source": "hermesvoice_onboardingview_onboardingprimarybuttonstyle",
+      "target": "buttonstyle",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -67859,28 +68402,6 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/ButtonStyles.swift",
-      "source_location": "L8",
-      "weight": 1.0,
-      "context": "field",
-      "confidence_score": 1.0,
-      "source": "buttonstyles_iconbuttonstyle",
-      "target": "sources_hermesvoice_buttonstyles_swift_color"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Sources/HermesVoice/ButtonStyles.swift",
-      "source_location": "L57",
-      "weight": 1.0,
-      "context": "field",
-      "confidence_score": 1.0,
-      "source": "buttonstyles_sendbuttonstyle",
-      "target": "sources_hermesvoice_buttonstyles_swift_color"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Sources/HermesVoice/ButtonStyles.swift",
       "source_location": "L31",
       "weight": 1.0,
       "context": "field",
@@ -67903,26 +68424,6 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/ButtonStyles.swift",
-      "source_location": "L10",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "buttonstyles_iconbuttonstyle",
-      "target": "hermesvoice_buttonstyles_iconbuttonstyle_makebody"
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "Sources/HermesVoice/ButtonStyles.swift",
-      "source_location": "L63",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "buttonstyles_sendbuttonstyle",
-      "target": "hermesvoice_buttonstyles_iconbuttonstyle_makebody"
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "Sources/HermesVoice/ButtonStyles.swift",
       "source_location": "L37",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -67944,6 +68445,17 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/ButtonStyles.swift",
+      "source_location": "L11",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "hermesvoice_buttonstyles_iconbuttonstyle_makebody",
+      "target": "sources_hermesvoice_buttonstyles_swift_configuration",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/ButtonStyles.swift",
       "source_location": "L63",
       "weight": 1.0,
       "context": "return_type",
@@ -67955,23 +68467,23 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/ButtonStyles.swift",
-      "source_location": "L37",
+      "source_location": "L33",
       "weight": 1.0,
       "context": "parameter_type",
-      "confidence_score": 1.0,
       "source": "hermesvoice_buttonstyles_circlebuttonstyle_makebody",
-      "target": "configuration"
+      "target": "sources_hermesvoice_buttonstyles_swift_configuration",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/ButtonStyles.swift",
-      "source_location": "L63",
+      "source_location": "L65",
       "weight": 1.0,
       "context": "parameter_type",
-      "confidence_score": 1.0,
       "source": "hermesvoice_buttonstyles_sendbuttonstyle_makebody",
-      "target": "configuration"
+      "target": "sources_hermesvoice_buttonstyles_swift_configuration",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -68049,6 +68561,61 @@
       "confidence_score": 1.0,
       "source": "hermesvoice_markdownmessageview_markdownmessageview",
       "target": "sources_hermesvoice_buttonstyles_swift_view"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L239",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "hermesvoice_onboardingview_onboardingprimarybuttonstyle_makebody",
+      "target": "sources_hermesvoice_buttonstyles_swift_view",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L112",
+      "weight": 1.0,
+      "context": "field",
+      "source": "hermesvoice_onboardingview_onboardingview",
+      "target": "sources_hermesvoice_buttonstyles_swift_view",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L188",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "hermesvoice_onboardingview_onboardingview_iconbadge",
+      "target": "sources_hermesvoice_buttonstyles_swift_view",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L221",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "hermesvoice_onboardingview_onboardingview_keycap",
+      "target": "sources_hermesvoice_buttonstyles_swift_view",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L199",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "hermesvoice_onboardingview_onboardingview_permissionrow",
+      "target": "sources_hermesvoice_buttonstyles_swift_view",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -68161,17 +68728,6 @@
       "target": "sources_hermesvoice_buttonstyles_swift_view"
     },
     {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Sources/HermesVoice/WaveformView.swift",
-      "source_location": "L7",
-      "weight": 1.0,
-      "context": "field",
-      "confidence_score": 1.0,
-      "source": "waveformview_waveformview",
-      "target": "sources_hermesvoice_buttonstyles_swift_view"
-    },
-    {
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/ButtonStyles.swift",
@@ -68200,19 +68756,19 @@
       "weight": 1.0,
       "context": "field",
       "confidence_score": 1.0,
-      "source": "buttonstyles_sendbuttonstyle",
+      "source": "hermesvoice_buttonstyles_sendbuttonstyle",
       "target": "sources_hermesvoice_buttonstyles_swift_bool"
     },
     {
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/ButtonStyles.swift",
-      "source_location": "L55",
+      "source_location": "L37",
       "weight": 1.0,
-      "context": "field",
+      "context": "parameter_type",
       "confidence_score": 1.0,
-      "source": "hermesvoice_buttonstyles_sendbuttonstyle",
-      "target": "sources_hermesvoice_buttonstyles_swift_bool"
+      "source": "hermesvoice_buttonstyles_circlebuttonstyle_makebody",
+      "target": "configuration"
     },
     {
       "relation": "method",
@@ -68223,6 +68779,17 @@
       "confidence_score": 1.0,
       "source": "hermesvoice_buttonstyles_sendbuttonstyle",
       "target": "hermesvoice_buttonstyles_sendbuttonstyle_makebody"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/ButtonStyles.swift",
+      "source_location": "L63",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "hermesvoice_buttonstyles_sendbuttonstyle_makebody",
+      "target": "configuration"
     },
     {
       "relation": "calls",
@@ -70563,6 +71130,28 @@
       "target": "sources_hermesvoice_imageattachment_swift_data"
     },
     {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L193",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingview_onboardingview_iconbadge",
+      "target": "hermesvoice_imageattachment_imageencoder_image"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L201",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingview_onboardingview_permissionrow",
+      "target": "hermesvoice_imageattachment_imageencoder_image"
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/MarkdownMessageView.swift",
@@ -70851,6 +71440,416 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L238",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingview",
+      "target": "hermesvoice_onboardingview_onboardingprimarybuttonstyle",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingview",
+      "target": "hermesvoice_onboardingview_onboardingview",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingview",
+      "target": "hermesvoice_onboardingview_step",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingview",
+      "target": "swiftui",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L18",
+      "weight": 1.0,
+      "context": "field",
+      "source": "hermesvoice_onboardingview_onboardingview",
+      "target": "avauthorizationstatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L146",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingview_onboardingview",
+      "target": "hermesvoice_onboardingview_onboardingview_advance",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L188",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingview_onboardingview",
+      "target": "hermesvoice_onboardingview_onboardingview_iconbadge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L221",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingview_onboardingview",
+      "target": "hermesvoice_onboardingview_onboardingview_keycap",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L199",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingview_onboardingview",
+      "target": "hermesvoice_onboardingview_onboardingview_permissionrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L173",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingview_onboardingview",
+      "target": "hermesvoice_onboardingview_onboardingview_requestpermissions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L17",
+      "weight": 1.0,
+      "context": "field",
+      "source": "hermesvoice_onboardingview_onboardingview",
+      "target": "hermesvoice_onboardingview_step",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L169",
+      "weight": 1.0,
+      "context": "field",
+      "source": "hermesvoice_onboardingview_onboardingview",
+      "target": "sources_hermesvoice_onboardingview_swift_bool",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L19",
+      "weight": 1.0,
+      "context": "field",
+      "source": "hermesvoice_onboardingview_onboardingview",
+      "target": "sources_hermesvoice_onboardingview_swift_sfspeechrecognizerauthorizationstatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L138",
+      "weight": 1.0,
+      "context": "field",
+      "source": "hermesvoice_onboardingview_onboardingview",
+      "target": "sources_hermesvoice_onboardingview_swift_string",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L11",
+      "weight": 1.0,
+      "context": "field",
+      "source": "hermesvoice_onboardingview_onboardingview",
+      "target": "sources_hermesvoice_onboardingview_swift_void",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "Sources/HermesVoice/OnboardingWindowController.swift",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingwindowcontroller_onboardingwindowcontroller_show",
+      "target": "hermesvoice_onboardingview_onboardingview"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingview_step",
+      "target": "caseiterable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "case_of",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingview_step",
+      "target": "hermesvoice_onboardingview_step_hotkey",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "case_of",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingview_step",
+      "target": "hermesvoice_onboardingview_step_permissions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "case_of",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingview_step",
+      "target": "hermesvoice_onboardingview_step_welcome",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingview_step",
+      "target": "int",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
+      "source_location": "L23",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "hermesvoicekit_appsettings_appearancemode",
+      "target": "caseiterable"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "hermesvoicekit_appsettings_voiceflow",
+      "target": "caseiterable"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L188",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "hermesvoice_onboardingview_onboardingview_iconbadge",
+      "target": "sources_hermesvoice_onboardingview_swift_string",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L221",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "hermesvoice_onboardingview_onboardingview_keycap",
+      "target": "sources_hermesvoice_onboardingview_swift_string",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L199",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "hermesvoice_onboardingview_onboardingview_permissionrow",
+      "target": "sources_hermesvoice_onboardingview_swift_string",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L154",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingview_onboardingview_advance",
+      "target": "hermesvoice_onboardingview_onboardingview_requestpermissions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L199",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "hermesvoice_onboardingview_onboardingview_permissionrow",
+      "target": "sources_hermesvoice_onboardingview_swift_bool",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L239",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingview_onboardingprimarybuttonstyle",
+      "target": "hermesvoice_onboardingview_onboardingprimarybuttonstyle_makebody",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingView.swift",
+      "source_location": "L239",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "hermesvoice_onboardingview_onboardingprimarybuttonstyle_makebody",
+      "target": "sources_hermesvoice_onboardingview_swift_configuration",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingWindowController.swift",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingwindowcontroller",
+      "target": "hermesvoice_onboardingwindowcontroller_onboardingwindowcontroller",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingWindowController.swift",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingwindowcontroller",
+      "target": "swiftui",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingWindowController.swift",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingwindowcontroller_onboardingwindowcontroller",
+      "target": "hermesvoice_onboardingwindowcontroller_onboardingwindowcontroller_finish",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingWindowController.swift",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingwindowcontroller_onboardingwindowcontroller",
+      "target": "hermesvoice_onboardingwindowcontroller_onboardingwindowcontroller_show",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingWindowController.swift",
+      "source_location": "L9",
+      "weight": 1.0,
+      "context": "field",
+      "source": "hermesvoice_onboardingwindowcontroller_onboardingwindowcontroller",
+      "target": "sources_hermesvoice_onboardingwindowcontroller_swift_nswindow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingWindowController.swift",
+      "source_location": "L10",
+      "weight": 1.0,
+      "context": "field",
+      "source": "hermesvoice_onboardingwindowcontroller_onboardingwindowcontroller",
+      "target": "sources_hermesvoice_onboardingwindowcontroller_swift_void",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingWindowController.swift",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingwindowcontroller_onboardingwindowcontroller_show",
+      "target": "sources_hermesvoice_onboardingwindowcontroller_swift_nswindow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingWindowController.swift",
+      "source_location": "L14",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "hermesvoice_onboardingwindowcontroller_onboardingwindowcontroller_show",
+      "target": "sources_hermesvoice_onboardingwindowcontroller_swift_void",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OnboardingWindowController.swift",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "hermesvoice_onboardingwindowcontroller_onboardingwindowcontroller_show",
+      "target": "hermesvoice_onboardingwindowcontroller_onboardingwindowcontroller_finish",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/OverlayPanel.swift",
       "source_location": "L5",
       "weight": 1.0,
@@ -70868,16 +71867,6 @@
       "confidence_score": 1.0,
       "source": "hermesvoice_overlaypanel",
       "target": "swiftui"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "Sources/HermesVoice/OverlayPanel.swift",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "hermesvoice_overlaypanel",
-      "target": "theme_theme"
     },
     {
       "relation": "method",
@@ -71273,12 +72262,12 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/OverlayPanel.swift",
-      "source_location": "L170",
+      "source_location": "L175",
       "weight": 1.0,
       "context": "parameter_type",
-      "confidence_score": 1.0,
       "source": "hermesvoice_overlaypanel_overlaypanel_keydown",
-      "target": "sources_hermesvoice_overlaypanel_swift_nsevent"
+      "target": "sources_hermesvoice_overlaypanel_swift_nsevent",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -71384,17 +72373,6 @@
       "target": "sources_hermesvoice_overlayview_swift_cgfloat"
     },
     {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Sources/HermesVoice/OverlayView.swift",
-      "source_location": "L154",
-      "weight": 1.0,
-      "context": "field",
-      "confidence_score": 1.0,
-      "source": "hermesvoice_overlayview_overlayview",
-      "target": "color"
-    },
-    {
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/OverlayView.swift",
@@ -71434,17 +72412,6 @@
       "context": "field",
       "confidence_score": 1.0,
       "source": "hermesvoice_overlayview_overlayview",
-      "target": "overlayviewmodel"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Sources/HermesVoice/OverlayView.swift",
-      "source_location": "L15",
-      "weight": 1.0,
-      "context": "field",
-      "confidence_score": 1.0,
-      "source": "hermesvoice_overlayview_overlayview",
       "target": "sources_hermesvoice_overlayview_swift_bool"
     },
     {
@@ -71454,9 +72421,9 @@
       "source_location": "L209",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "hermesvoice_overlayview_overlayview",
-      "target": "sources_hermesvoice_overlayview_swift_color",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoice_overlayview_swift_color"
     },
     {
       "relation": "references",
@@ -71487,9 +72454,9 @@
       "source_location": "L15",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "hermesvoice_overlayview_overlayview",
-      "target": "sources_hermesvoice_overlayview_swift_overlayviewmodel",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoice_overlayview_swift_overlayviewmodel"
     },
     {
       "relation": "references",
@@ -71509,9 +72476,9 @@
       "source_location": "L23",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "hermesvoice_overlayview_overlayview_init",
-      "target": "sources_hermesvoice_overlayview_swift_overlayviewmodel",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoice_overlayview_swift_overlayviewmodel"
     },
     {
       "relation": "references",
@@ -71547,15 +72514,15 @@
       "target": "overlaypanel"
     },
     {
-      "relation": "references",
+      "relation": "calls",
+      "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/OverlayView.swift",
-      "source_location": "L21",
+      "source_location": "L105",
       "weight": 1.0,
-      "context": "parameter_type",
       "confidence_score": 1.0,
-      "source": "hermesvoice_overlayview_overlayview_init",
-      "target": "overlayviewmodel"
+      "source": "hermesvoice_overlayview_overlayview_handleimagedrop",
+      "target": "nsimage"
     },
     {
       "relation": "references",
@@ -71573,11 +72540,11 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/OverlayView.swift",
-      "source_location": "L103",
+      "source_location": "L105",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "hermesvoice_overlayview_overlayview_handleimagedrop",
-      "target": "sources_hermesvoice_overlayview_swift_nsimage"
+      "target": "sources_hermesvoice_overlayview_swift_nsimage",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -71597,9 +72564,9 @@
       "source_location": "L723",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "hermesvoice_overlayview_messagebubble",
-      "target": "sources_hermesvoice_overlayview_swift_color",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoice_overlayview_swift_color"
     },
     {
       "relation": "references",
@@ -71608,9 +72575,9 @@
       "source_location": "L715",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "hermesvoice_overlayview_messagebubble",
-      "target": "anyshapestyle",
-      "confidence_score": 1.0
+      "target": "anyshapestyle"
     },
     {
       "relation": "references",
@@ -71622,17 +72589,6 @@
       "confidence_score": 1.0,
       "source": "hermesvoice_overlayview_messagebubble",
       "target": "chatmessage"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Sources/HermesVoice/OverlayView.swift",
-      "source_location": "L608",
-      "weight": 1.0,
-      "context": "field",
-      "confidence_score": 1.0,
-      "source": "hermesvoice_overlayview_messagebubble",
-      "target": "color"
     },
     {
       "relation": "method",
@@ -71669,12 +72625,23 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/OverlayView.swift",
-      "source_location": "L499",
+      "source_location": "L696",
       "weight": 1.0,
       "context": "parameter_type",
       "confidence_score": 1.0,
       "source": "hermesvoice_overlayview_messagebubble_formattimestamp",
-      "target": "sources_hermesvoice_overlayview_swift_date"
+      "target": "date"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OverlayView.swift",
+      "source_location": "L696",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "hermesvoice_overlayview_messagebubble_formattimestamp",
+      "target": "sources_hermesvoice_overlayview_swift_date",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -71702,12 +72669,23 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/OverlayView.swift",
-      "source_location": "L626",
+      "source_location": "L738",
+      "weight": 1.0,
+      "context": "field",
+      "source": "hermesvoice_overlayview_toolactivityrow",
+      "target": "sources_hermesvoice_overlayview_swift_toolactivity",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OverlayView.swift",
+      "source_location": "L738",
       "weight": 1.0,
       "context": "field",
       "confidence_score": 1.0,
       "source": "hermesvoice_overlayview_toolactivityrow",
-      "target": "sources_hermesvoice_overlayview_swift_toolactivity"
+      "target": "toolactivity"
     },
     {
       "relation": "references",
@@ -71724,12 +72702,23 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/OverlayView.swift",
-      "source_location": "L664",
+      "source_location": "L782",
       "weight": 1.0,
       "context": "field",
       "confidence_score": 1.0,
       "source": "hermesvoice_overlayview_pendingimagechip",
-      "target": "sources_hermesvoice_overlayview_swift_nsimage"
+      "target": "nsimage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OverlayView.swift",
+      "source_location": "L782",
+      "weight": 1.0,
+      "context": "field",
+      "source": "hermesvoice_overlayview_pendingimagechip",
+      "target": "sources_hermesvoice_overlayview_swift_nsimage",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -72007,9 +72996,9 @@
       "source_location": "L24",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "hermesvoice_overlayviewmodel_chatmessage",
-      "target": "sources_hermesvoice_overlayviewmodel_swift_uuid",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoice_overlayviewmodel_swift_uuid"
     },
     {
       "relation": "references",
@@ -72095,9 +73084,9 @@
       "source_location": "L34",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "hermesvoice_overlayviewmodel_chatmessage_init",
-      "target": "sources_hermesvoice_overlayviewmodel_swift_uuid",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoice_overlayviewmodel_swift_uuid"
     },
     {
       "relation": "calls",
@@ -72106,9 +73095,9 @@
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L125",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "hermesvoice_overlayviewmodel_overlayviewmodel_init",
-      "target": "sources_hermesvoice_overlayviewmodel_swift_uuid",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoice_overlayviewmodel_swift_uuid"
     },
     {
       "relation": "references",
@@ -72117,9 +73106,9 @@
       "source_location": "L269",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "hermesvoice_overlayviewmodel_overlayviewmodel_removependingimage",
-      "target": "sources_hermesvoice_overlayviewmodel_swift_uuid",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoice_overlayviewmodel_swift_uuid"
     },
     {
       "relation": "calls",
@@ -72128,9 +73117,9 @@
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L572",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "hermesvoice_overlayviewmodel_overlayviewmodel_startblankconversation",
-      "target": "sources_hermesvoice_overlayviewmodel_swift_uuid",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoice_overlayviewmodel_swift_uuid"
     },
     {
       "relation": "references",
@@ -72681,6 +73670,16 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
+      "source_location": "L596",
+      "weight": 1.0,
+      "source": "hermesvoice_overlayviewmodel_overlayviewmodel",
+      "target": "hermesvoice_overlayviewmodel_overlayviewmodel_recentsessions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L417",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -72867,9 +73866,9 @@
       "source_location": "L105",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "hermesvoice_overlayviewmodel_overlayviewmodel",
-      "target": "sources_hermesvoice_overlayviewmodel_swift_never",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoice_overlayviewmodel_swift_never"
     },
     {
       "relation": "references",
@@ -72977,9 +73976,9 @@
       "source_location": "L79",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "hermesvoice_overlayviewmodel_historyentry",
-      "target": "sources_hermesvoice_overlayviewmodel_swift_sessionmeta",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoice_overlayviewmodel_swift_sessionmeta"
     },
     {
       "relation": "calls",
@@ -72993,13 +73992,13 @@
       "target": "hermesvoice_overlayviewmodel_historyentry"
     },
     {
-      "relation": "calls",
-      "context": "call",
+      "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
-      "source_location": "L447",
+      "source_location": "L596",
       "weight": 1.0,
-      "source": "hermesvoice_overlayviewmodel_overlayviewmodel_registerconversationifneeded",
+      "context": "return_type",
+      "source": "hermesvoice_overlayviewmodel_overlayviewmodel_recentsessions",
       "target": "sources_hermesvoice_overlayviewmodel_swift_sessionmeta",
       "confidence_score": 1.0
     },
@@ -73008,11 +74007,22 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
+      "source_location": "L447",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "hermesvoice_overlayviewmodel_overlayviewmodel_registerconversationifneeded",
+      "target": "sources_hermesvoice_overlayviewmodel_swift_sessionmeta"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
       "source_location": "L480",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "hermesvoice_overlayviewmodel_overlayviewmodel_updateindexmeta",
-      "target": "sources_hermesvoice_overlayviewmodel_swift_sessionmeta",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoice_overlayviewmodel_swift_sessionmeta"
     },
     {
       "relation": "calls",
@@ -73441,6 +74451,17 @@
       "confidence_score": 1.0,
       "source": "hermesvoice_overlayviewmodel_overlayviewmodel_handlestreamfailure",
       "target": "sources_hermesvoice_overlayviewmodel_swift_int"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/OverlayViewModel.swift",
+      "source_location": "L596",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "hermesvoice_overlayviewmodel_overlayviewmodel_recentsessions",
+      "target": "sources_hermesvoice_overlayviewmodel_swift_int",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -73996,6 +75017,28 @@
       "target": "nswindow"
     },
     {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/SettingsWindowController.swift",
+      "source_location": "L8",
+      "weight": 1.0,
+      "context": "field",
+      "source": "hermesvoice_settingswindowcontroller_settingswindowcontroller",
+      "target": "sources_hermesvoice_settingswindowcontroller_swift_nswindow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/SettingsWindowController.swift",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "hermesvoice_settingswindowcontroller_settingswindowcontroller_show",
+      "target": "sources_hermesvoice_settingswindowcontroller_swift_nswindow",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -74032,9 +75075,9 @@
       "source_file": "Sources/HermesVoice/Theme.swift",
       "source_location": "L136",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "hermesvoice_theme",
-      "target": "hermesvoice_theme_depth",
-      "confidence_score": 1.0
+      "target": "hermesvoice_theme_depth"
     },
     {
       "relation": "contains",
@@ -74052,9 +75095,9 @@
       "source_file": "Sources/HermesVoice/Theme.swift",
       "source_location": "L77",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "hermesvoice_theme",
-      "target": "hermesvoice_theme_gradients",
-      "confidence_score": 1.0
+      "target": "hermesvoice_theme_gradients"
     },
     {
       "relation": "contains",
@@ -74082,9 +75125,9 @@
       "source_file": "Sources/HermesVoice/Theme.swift",
       "source_location": "L183",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "hermesvoice_theme",
-      "target": "hermesvoice_theme_radius",
-      "confidence_score": 1.0
+      "target": "hermesvoice_theme_radius"
     },
     {
       "relation": "contains",
@@ -74134,9 +75177,9 @@
       "source_location": "L118",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "hermesvoice_theme_gradients",
-      "target": "lineargradient",
-      "confidence_score": 1.0
+      "target": "lineargradient"
     },
     {
       "relation": "method",
@@ -74144,9 +75187,9 @@
       "source_file": "Sources/HermesVoice/Theme.swift",
       "source_location": "L141",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "hermesvoice_theme_depth",
-      "target": "hermesvoice_theme_depth_actionglow",
-      "confidence_score": 1.0
+      "target": "hermesvoice_theme_depth_actionglow"
     },
     {
       "relation": "references",
@@ -74155,9 +75198,9 @@
       "source_location": "L143",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "hermesvoice_theme_depth",
-      "target": "sources_hermesvoice_theme_swift_cgfloat",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoice_theme_swift_cgfloat"
     },
     {
       "relation": "references",
@@ -74243,9 +75286,9 @@
       "source_location": "L186",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "hermesvoice_theme_radius",
-      "target": "sources_hermesvoice_theme_swift_cgfloat",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoice_theme_swift_cgfloat"
     },
     {
       "relation": "references",
@@ -74265,9 +75308,9 @@
       "source_location": "L141",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "hermesvoice_theme_depth_actionglow",
-      "target": "sources_hermesvoice_theme_swift_color",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoice_theme_swift_color"
     },
     {
       "relation": "references",
@@ -74456,9 +75499,9 @@
       "source_location": "L230",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "hermesvoice_theme_motion",
-      "target": "sources_hermesvoice_theme_swift_bool",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoice_theme_swift_bool"
     },
     {
       "relation": "contains",
@@ -74631,6 +75674,17 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/VoiceEngine.swift",
+      "source_location": "L38",
+      "weight": 1.0,
+      "context": "field",
+      "source": "hermesvoice_voiceengine_voiceengine",
+      "target": "sources_hermesvoice_voiceengine_swift_sfspeechrecognizerauthorizationstatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Sources/HermesVoice/VoiceEngine.swift",
       "source_location": "L8",
       "weight": 1.0,
       "context": "field",
@@ -74645,9 +75699,9 @@
       "source_location": "L20",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "hermesvoice_voiceengine_voiceengine",
-      "target": "sources_hermesvoice_voiceengine_swift_timeinterval",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoice_voiceengine_swift_timeinterval"
     },
     {
       "relation": "references",
@@ -74836,24 +75890,14 @@
       "target": "hermesvoice_waveformview_waveformview"
     },
     {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Sources/HermesVoice/WaveformView.swift",
-      "source_location": "L3",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "hermesvoice_waveformview",
-      "target": "waveformview_waveformview"
-    },
-    {
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/WaveformView.swift",
       "source_location": "L35",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "hermesvoice_waveformview_waveformview",
-      "target": "hermesvoice_waveformview_waveformview_edgefade",
-      "confidence_score": 1.0
+      "target": "hermesvoice_waveformview_waveformview_edgefade"
     },
     {
       "relation": "references",
@@ -74879,25 +75923,14 @@
     },
     {
       "relation": "references",
+      "context": "return_type",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoice/WaveformView.swift",
-      "source_location": "L4",
+      "source_location": "L35",
       "weight": 1.0,
-      "context": "field",
       "confidence_score": 1.0,
-      "source": "waveformview_waveformview",
-      "target": "sources_hermesvoice_waveformview_swift_overlayviewmodel"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Sources/HermesVoice/WaveformView.swift",
-      "source_location": "L5",
-      "weight": 1.0,
-      "context": "field",
-      "confidence_score": 1.0,
-      "source": "waveformview_waveformview",
-      "target": "sources_hermesvoice_waveformview_swift_cgfloat"
+      "source": "hermesvoice_waveformview_waveformview_edgefade",
+      "target": "double"
     },
     {
       "relation": "references",
@@ -74917,9 +75950,9 @@
       "source_location": "L35",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "hermesvoice_waveformview_waveformview_edgefade",
-      "target": "sources_hermesvoice_waveformview_swift_int",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoice_waveformview_swift_int"
     },
     {
       "relation": "contains",
@@ -75043,16 +76076,6 @@
       "confidence_score": 1.0,
       "source": "hermesvoicekit_appsettings_appsettings_init",
       "target": "hermesvoicekit_appsettings_voiceflow"
-    },
-    {
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "hermesvoicekit_appsettings_voiceflow",
-      "target": "caseiterable"
     },
     {
       "relation": "implements",
@@ -75492,16 +76515,6 @@
       "target": "sendable"
     },
     {
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
-      "source_location": "L23",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "hermesvoicekit_appsettings_appearancemode",
-      "target": "caseiterable"
-    },
-    {
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
@@ -75677,9 +76690,9 @@
       "source_location": "L86",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "hermesvoicekit_appsettings_appsettings",
-      "target": "sources_hermesvoicekit_appsettings_swift_double",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoicekit_appsettings_swift_double"
     },
     {
       "relation": "references",
@@ -75699,9 +76712,9 @@
       "source_location": "L71",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "hermesvoicekit_appsettings_appsettings",
-      "target": "sources_hermesvoicekit_appsettings_swift_uint32",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoicekit_appsettings_swift_uint32"
     },
     {
       "relation": "references",
@@ -75721,9 +76734,9 @@
       "source_location": "L90",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "hermesvoicekit_appsettings_appsettings_init",
-      "target": "sources_hermesvoicekit_appsettings_swift_uint32",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoicekit_appsettings_swift_uint32"
     },
     {
       "relation": "references",
@@ -75732,9 +76745,9 @@
       "source_location": "L220",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "hermesvoicekit_appsettings_hotkeyformatter",
-      "target": "sources_hermesvoicekit_appsettings_swift_uint32",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoicekit_appsettings_swift_uint32"
     },
     {
       "relation": "references",
@@ -75743,9 +76756,9 @@
       "source_location": "L210",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "hermesvoicekit_appsettings_hotkeyformatter_displaystring",
-      "target": "sources_hermesvoicekit_appsettings_swift_uint32",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoicekit_appsettings_swift_uint32"
     },
     {
       "relation": "references",
@@ -75754,9 +76767,9 @@
       "source_location": "L205",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "hermesvoicekit_appsettings_hotkeyformatter_hasmodifier",
-      "target": "sources_hermesvoicekit_appsettings_swift_uint32",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoicekit_appsettings_swift_uint32"
     },
     {
       "relation": "references",
@@ -75765,9 +76778,9 @@
       "source_location": "L215",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "hermesvoicekit_appsettings_hotkeyformatter_keyname",
-      "target": "sources_hermesvoicekit_appsettings_swift_uint32",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoicekit_appsettings_swift_uint32"
     },
     {
       "relation": "references",
@@ -75776,9 +76789,9 @@
       "source_location": "L194",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "hermesvoicekit_appsettings_hotkeyformatter_modifiersymbols",
-      "target": "sources_hermesvoicekit_appsettings_swift_uint32",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoicekit_appsettings_swift_uint32"
     },
     {
       "relation": "references",
@@ -75798,9 +76811,9 @@
       "source_location": "L90",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "hermesvoicekit_appsettings_appsettings_init",
-      "target": "sources_hermesvoicekit_appsettings_swift_double",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoicekit_appsettings_swift_double"
     },
     {
       "relation": "references",
@@ -75963,9 +76976,9 @@
       "source_location": "L168",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "hermesvoicekit_appsettings_appsettings_decode",
-      "target": "sources_hermesvoicekit_appsettings_swift_data",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoicekit_appsettings_swift_data"
     },
     {
       "relation": "references",
@@ -75974,9 +76987,9 @@
       "source_file": "Sources/HermesVoiceKit/AppSettings.swift",
       "source_location": "L175",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "hermesvoicekit_appsettings_appsettings_encode",
-      "target": "sources_hermesvoicekit_appsettings_swift_data",
-      "confidence_score": 1.0
+      "target": "sources_hermesvoicekit_appsettings_swift_data"
     },
     {
       "relation": "references",
@@ -78258,9 +79271,9 @@
       "source_location": "L5",
       "weight": 1.0,
       "context": "field",
+      "confidence_score": 1.0,
       "source": "hermesvoicetests_voiceflowtests_voiceflowtests",
-      "target": "tests_hermesvoicetests_voiceflowtests_swift_testcase",
-      "confidence_score": 1.0
+      "target": "tests_hermesvoicetests_voiceflowtests_swift_testcase"
     },
     {
       "relation": "contains",
@@ -78271,6 +79284,69 @@
       "confidence_score": 1.0,
       "source": "build_app",
       "target": "users_fahmidhasantaohid_projects_hermesvoice_build_app_sh__entry"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/generate-icns.sh",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "tools_generate_icns",
+      "target": "tools_generate_icns_render",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/generate-icns.sh",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "tools_generate_icns",
+      "target": "users_fahmidhasantaohid_projects_hermesvoice_tools_generate_icns_sh__entry",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/generate-icns.sh",
+      "source_location": "L20",
+      "weight": 1.0,
+      "context": "call",
+      "source": "users_fahmidhasantaohid_projects_hermesvoice_tools_generate_icns_sh__entry",
+      "target": "tools_generate_icns_render",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/make-icon.swift",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "tools_make_icon",
+      "target": "tools_make_icon_rgb",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/make-icon.swift",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "tools_make_icon_rgb",
+      "target": "cgcolor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/make-icon.swift",
+      "source_location": "L24",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "tools_make_icon_rgb",
+      "target": "tools_make_icon_swift_cgfloat",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -83736,21 +84812,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tasks/overhaul-plan.md",
-      "source_location": "L350",
+      "source_location": "L541",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "tasks_overhaul_plan_4_phased_implementation_plan",
-      "target": "tasks_overhaul_plan_phase_7_expressive_visual_redesign_warm_expressive"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tasks/overhaul-plan.md",
-      "source_location": "L541",
-      "weight": 1.0,
-      "source": "tasks_overhaul_plan_4_phased_implementation_plan",
-      "target": "tasks_overhaul_plan_phase_7_expressive_visual_redesign_warm_expressive_done_2026_06_07",
-      "confidence_score": 1.0
+      "target": "tasks_overhaul_plan_phase_7_expressive_visual_redesign_warm_expressive_done_2026_06_07"
     },
     {
       "relation": "contains",
@@ -83773,36 +84839,6 @@
       "target": "tasks_overhaul_plan_phase_9_qa_tests_verification"
     },
     {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "Sources/HermesVoice/ButtonStyles.swift",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "buttonstyles_iconbuttonstyle",
-      "target": "theme_theme"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "Sources/HermesVoice/ButtonStyles.swift",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "buttonstyles_circlebuttonstyle",
-      "target": "theme_theme"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "Sources/HermesVoice/ButtonStyles.swift",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "buttonstyles_sendbuttonstyle",
-      "target": "theme_theme"
-    },
-    {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -83821,16 +84857,6 @@
       "weight": 1.0,
       "source": "conversationfilestore_conversationfilestore",
       "target": "conversationfilestore_atomicwrite"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "Sources/HermesVoice/WaveformView.swift",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "waveformview_waveformview",
-      "target": "theme_theme"
     },
     {
       "relation": "calls",
@@ -83906,5 +84932,5 @@
       "source_file": "Sources/HermesVoiceKit/ConversationStore.swift"
     }
   ],
-  "built_at_commit": "695073fd45bf8349ec442d461bb02ef70ae5c954"
+  "built_at_commit": "f319155e5a779edade9dee04e82ffdc7a333b8d4"
 }

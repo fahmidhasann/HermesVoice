@@ -23,24 +23,11 @@ struct HermesVoiceApp {
             button.image = image
         }
 
-        let menu = NSMenu()
-        let newChatItem = NSMenuItem(title: "New Chat", action: #selector(AppDelegate.menuBarNewChat), keyEquivalent: "")
-        newChatItem.target = delegate
-        menu.addItem(newChatItem)
-        let activateItem = NSMenuItem(title: "Activate (⌃⇧H)", action: #selector(AppDelegate.togglePanel), keyEquivalent: "")
-        activateItem.target = delegate
-        menu.addItem(activateItem)
-        menu.addItem(NSMenuItem.separator())
-        let settingsBarItem = NSMenuItem(title: "Settings…", action: #selector(AppDelegate.openSettings), keyEquivalent: "")
-        settingsBarItem.target = delegate
-        menu.addItem(settingsBarItem)
-        menu.addItem(NSMenuItem.separator())
-        let quitItem = NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
-        quitItem.target = NSApp
-        menu.addItem(quitItem)
-        statusItem.menu = menu
-
         delegate.statusItem = statusItem
+        // The menu (New Chat · Open · Recents · Settings… · status · Quit) is
+        // owned by AppDelegate, which rebuilds its dynamic parts — recent
+        // conversations and the live connection line — each time it opens.
+        delegate.configureStatusMenu()
 
         app.run()
     }

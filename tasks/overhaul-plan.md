@@ -70,7 +70,7 @@ committed (`63861e9`).
 | **5 — Settings + keyboard control** | ✅ **Done (2026-06-07)** |
 | **6 — Voice flow change** | ✅ **Done (2026-06-07)** |
 | **7 — Expressive visual redesign** | ✅ **Done (2026-06-07)** |
-| 8 — Native packaging & onboarding | ⬜ Not started |
+| **8 — Native packaging & onboarding** | ✅ **Done (2026-06-07)** |
 | 9 — QA, tests, verification | ⬜ Not started |
 
 ---
@@ -613,8 +613,54 @@ all new views.
 
 </details>
 
-### Phase 8 — Native packaging & onboarding
+### Phase 8 — Native packaging & onboarding  ✅ DONE (2026-06-07)
 **Goal:** Feels installed and first-class.
+
+**What shipped:**
+- **8a. App icon** — a programmatic renderer (`tools/make-icon.swift`, CoreGraphics)
+  draws the warm-amber identity: a macOS squircle with a diagonal amber gradient + a
+  cream **waveform** motif (the same voice language as the menu-bar glyph / empty state).
+  `tools/generate-icns.sh` renders every iconset size sharply (16→1024, incl. @2x) and
+  packs `Resources/AppIcon.icns` via `iconutil` (committed, so a normal build needs no
+  render step). `Info.plist` gained `CFBundleIconFile`/`CFBundleIconName = AppIcon`;
+  `build-app.sh` embeds the `.icns` → shows in Dock / Cmd-Tab / About.
+- **8b. First-run onboarding** — new `OnboardingView.swift` (3 steps: welcome → mic +
+  speech permission prompts with live granted/denied status → "your hotkey is ⌃⇧H")
+  hosted in `OnboardingWindowController` (borderless titlebar, no close button so the
+  flag is only ever set via Skip/Done). Gated by the `hermesVoiceHasOnboarded`
+  UserDefaults flag; `AppDelegate.showOnboardingIfNeeded()` runs it once on first launch,
+  then opens the panel. Permission prompts go through `AVCaptureDevice.requestAccess` +
+  `SFSpeechRecognizer.requestAuthorization`; a denial still lets the flow continue.
+- **8c. Menu-bar menu** — menu construction moved from `App.swift` into `AppDelegate`,
+  which is now the menu's `NSMenuDelegate` and **rebuilds it on every open**
+  (`menuNeedsUpdate`): a live **connection line** (●/○ from `connectionState`, refreshed
+  each open), **New Chat ⌘N**, Open HermesVoice (⌃⇧H), a **Recent** section (last 5 via
+  new `OverlayViewModel.recentSessions(limit:)`, click → show panel + `openConversation`),
+  **Settings… ⌘,**, and **Quit ⌘Q** — all with key-equivalent glyphs.
+- **8d. Build/install polish** — `build-app.sh` now starts from a clean bundle
+  (reproducible; fixes stale read-only SwiftPM `.bundle` copy failures), embeds the icon,
+  stamps `CFBundleVersion` from the git commit count (marketing version stays in
+  `CFBundleShortVersionString`), and **validates** the result (`plutil -lint` + `codesign
+  --verify --strict` + icon-present check) before declaring success. Keeps ad-hoc sign +
+  entitlements. Documents install/update (replace-then-copy). Autostart fully migrated to
+  `SMAppService` (Phase 5) — the redundant `com.hermes.voice.plist` launchd file was
+  **removed**.
+
+**New files:** `tools/make-icon.swift`, `tools/generate-icns.sh`, `Resources/AppIcon.icns`,
+`Sources/HermesVoice/{OnboardingView,OnboardingWindowController}.swift`.
+**Files changed:** `build-app.sh`, `Resources/Info.plist`, `App.swift`, `AppDelegate.swift`,
+`OverlayViewModel.swift`. **Removed:** `com.hermes.voice.plist`.
+
+**Verification:** `swift build -c release` ✅ · `swift run HermesVoiceTests` → 145 checks,
+0 failures ✅ · `./build-app.sh` (clean) — icon embedded, `CFBundleVersion` stamped (build
+13), `plutil`/`codesign` validation pass ✅ · launch smoke test via `open` (launches, lock
+acquired, no crash, clean quit + lock released) ✅.
+⚠️ **Still needs a manual on-device pass:** confirm the Dock/Cmd-Tab/About icon renders;
+walk the first-run onboarding (grant mic + speech, reach the hotkey step); open the
+menu-bar menu and check the connection line, recents (open one), New Chat, Settings, Quit.
+
+<details><summary>Original task list</summary>
+
 **Tasks:**
 - **8a. App icon** — design an `.icns` (warm-amber, waveform motif) at all sizes; embed in
   the bundle (`CFBundleIconFile` / AppIcon); shows in Dock/Cmd-Tab/About.
@@ -629,6 +675,8 @@ all new views.
 **Files:** `build-app.sh`, `Resources/Info.plist`, new AppIcon assets,
 `OnboardingView.swift`, `App.swift`, `com.hermes.voice.plist`.
 **Acceptance:** real Dock icon; clean first-run; rich menu; reproducible versioned bundle.
+
+</details>
 
 ### Phase 9 — QA, tests, verification
 **Goal:** Lock it in.

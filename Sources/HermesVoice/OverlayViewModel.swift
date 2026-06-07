@@ -590,6 +590,13 @@ class OverlayViewModel: ObservableObject {
         pulseInputFocus()
     }
 
+    /// Most-recent conversations for the menu-bar recents list. The index is
+    /// kept most-recent-first, but sort defensively so ordering never depends on
+    /// write order.
+    func recentSessions(limit: Int) -> [SessionMeta] {
+        Array(store.loadIndex().sorted { $0.lastActiveAt > $1.lastActiveAt }.prefix(limit))
+    }
+
     /// Re-read the on-disk index and build preview snippets for each row.
     func reloadHistory() {
         historyEntries = store.loadIndex().map { meta in
