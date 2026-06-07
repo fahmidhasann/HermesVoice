@@ -190,12 +190,10 @@ struct Theme {
 
     struct Layout {
         static let panelWidth: CGFloat = 540
-        static let panelMinHeight: CGFloat = 220
-        static let panelMaxHeight: CGFloat = 540
-        /// Height the panel window is created at before SwiftUI reports the
-        /// content's real height. Chosen ≥ the empty-state natural height so the
-        /// first frame never clips the input row.
-        static let panelInitialHeight: CGFloat = 300
+        /// Fixed panel height. The window no longer resizes to fit content; the
+        /// conversation/history scroll inside this constant frame. This severs the
+        /// content→window-height coupling that caused the resize-jitter.
+        static let panelHeight: CGFloat = 540
         static let cornerRadius: CGFloat = 16
         static let screenTopOffset: CGFloat = 0.18
 
@@ -206,7 +204,6 @@ struct Theme {
         // Animation durations (used by AppDelegate)
         static let appearDuration: CGFloat = 0.22
         static let disappearDuration: CGFloat = 0.16
-        static let heightDuration: CGFloat = 0.28
     }
 
     // MARK: - Motion

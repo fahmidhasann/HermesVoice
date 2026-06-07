@@ -2,15 +2,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 import HermesVoiceKit
 
-/// Carries the overlay content's measured natural height up to the panel so
-/// the NSPanel can size itself to fit (preventing the input row from clipping).
-private struct ContentHeightKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = max(value, nextValue())
-    }
-}
-
 struct OverlayView: View {
     @ObservedObject var viewModel: OverlayViewModel
     @ObservedObject private var settingsStore = AppSettingsStore.shared
@@ -18,11 +9,9 @@ struct OverlayView: View {
     @State private var isDropTargeted = false
     @State private var micHovering = false
     @FocusState private var inputFocused: Bool
-    weak var panelRef: OverlayPanel?
 
-    init(viewModel: OverlayViewModel, panelRef: OverlayPanel? = nil) {
+    init(viewModel: OverlayViewModel) {
         self.viewModel = viewModel
-        self.panelRef = panelRef
     }
 
     var body: some View {
@@ -33,20 +22,10 @@ struct OverlayView: View {
                 chatContent
             }
         }
-        .frame(width: Theme.Layout.panelWidth)
-        // Take the content's *natural* height rather than being forced into the
-        // panel's proposed height. Without this the bottom input row was being
-        // clipped whenever the content was taller than the panel window.
-        .fixedSize(horizontal: false, vertical: true)
-        .background(
-            GeometryReader { proxy in
-                Color.clear.preference(key: ContentHeightKey.self, value: proxy.size.height)
-            }
-        )
-        .onPreferenceChange(ContentHeightKey.self) { height in
-            let clamped = min(max(height, Theme.Layout.panelMinHeight), Theme.Layout.panelMaxHeight)
-            panelRef?.updateHeight(clamped)
-        }
+        // Fixed window: fill the panel's constant frame exactly. Content no longer
+        // drives window height (that coupling caused resize-jitter); the
+        // conversation/history scroll inside this fixed size instead.
+        .frame(width: Theme.Layout.panelWidth, height: Theme.Layout.panelHeight)
         .background(Color.clear)
         .animation(Theme.Motion.ifMotion(.easeInOut(duration: 0.2)), value: viewModel.isRecording)
         .onAppear {
@@ -250,7 +229,9 @@ struct OverlayView: View {
                 chatThreadView
             }
         }
-        .frame(maxHeight: Theme.Layout.panelMaxHeight - 160)
+        // Fill the gap between header and input in the fixed window; the inner
+        // ScrollView handles overflow. The empty state centers within this.
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var emptyStateView: some View {
@@ -284,7 +265,7 @@ struct OverlayView: View {
                     Capsule(style: .continuous).fill(Theme.Colors.textPrimary.opacity(0.05))
                 )
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.vertical, Theme.Spacing.xxl + Theme.Spacing.sm)
     }
 
