@@ -26,7 +26,15 @@ struct OverlayView: View {
         // drives window height (that coupling caused resize-jitter); the
         // conversation/history scroll inside this fixed size instead.
         .frame(width: Theme.Layout.panelWidth, height: Theme.Layout.panelHeight)
-        .background(Color.clear)
+        // Fully solid panel: an opaque warm surface so text and edges read on any
+        // wallpaper, plus a crisp appearance-aware rim. The drop shadow lives on
+        // the AppKit wrapper (OverlayPanel). This supersedes ADR 0001's
+        // translucent-chrome clause in favour of maximum legibility.
+        .background(Theme.Colors.baseTint)
+        .overlay(
+            RoundedRectangle(cornerRadius: Theme.Radius.panel, style: .continuous)
+                .strokeBorder(Theme.Colors.hairline, lineWidth: 0.5)
+        )
         .animation(Theme.Motion.ifMotion(Theme.Motion.content), value: viewModel.isRecording)
         .onAppear {
             inputFocused = true
@@ -156,7 +164,7 @@ struct OverlayView: View {
         .padding(.vertical, Theme.Spacing.xs2)
         .background(
             Capsule(style: .continuous)
-                .fill(statusColor.opacity(0.12))
+                .fill(statusColor.opacity(0.14))
                 .overlay(
                     Capsule(style: .continuous)
                         .strokeBorder(statusColor.opacity(0.18), lineWidth: 0.5)
@@ -243,7 +251,7 @@ struct OverlayView: View {
                     .frame(width: 64, height: 64)
                     .blur(radius: 6)
                 Circle()
-                    .fill(Theme.Gradients.accent.opacity(0.16))
+                    .fill(Theme.Gradients.accent.opacity(0.22))
                     .overlay(Circle().strokeBorder(Theme.Colors.accent.opacity(0.22), lineWidth: 1))
                     .frame(width: 54, height: 54)
 
@@ -254,15 +262,15 @@ struct OverlayView: View {
 
             Text("Click the mic or type to begin")
                 .font(Theme.Font.messageEmphasized(size: 13.5))
-                .foregroundColor(Theme.Colors.textPrimary.opacity(0.75))
+                .foregroundColor(Theme.Colors.textPrimary)
 
             Text("⌃⇧H to toggle  ·  Enter to send")
                 .font(Theme.Font.hint())
-                .foregroundColor(Theme.Colors.textSecondary.opacity(0.7))
+                .foregroundColor(Theme.Colors.textSecondary)
                 .padding(.horizontal, Theme.Spacing.sm2)
                 .padding(.vertical, Theme.Spacing.xs)
                 .background(
-                    Capsule(style: .continuous).fill(Theme.Colors.textPrimary.opacity(0.05))
+                    Capsule(style: .continuous).fill(Theme.Colors.textPrimary.opacity(0.07))
                 )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -433,7 +441,7 @@ struct OverlayView: View {
                     Circle().fill(Theme.Gradients.recording)
                 } else {
                     Circle().fill(micHovering ? Theme.Colors.textPrimary.opacity(0.13)
-                                              : Theme.Colors.textPrimary.opacity(0.06))
+                                              : Theme.Colors.textPrimary.opacity(0.08))
                 }
             }
             .overlay(Circle().strokeBorder(Theme.Colors.hairline, lineWidth: active ? 0 : 0.5))
@@ -547,7 +555,7 @@ struct OverlayView: View {
             .disabled(viewModel.state == .sending || viewModel.state == .responding)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
-                    .fill(Theme.Colors.textPrimary.opacity(0.045))
+                    .fill(Theme.Colors.textPrimary.opacity(0.06))
                     .overlay(
                         RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
                             .strokeBorder(inputFocused ? Theme.Colors.accent.opacity(0.55)

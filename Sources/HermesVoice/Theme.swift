@@ -304,7 +304,12 @@ struct Theme {
 /// Returns `light` in light mode, `dark` in dark mode.
 private func resolvedColor(light: Color, dark: Color) -> Color {
     Color(nsColor: NSColor(name: nil, dynamicProvider: { appearance in
-        let isDark = appearance.bestMatch(from: [.darkAqua, .vibrantDark, .aqua]) == .darkAqua
+        // Match only against [.aqua, .darkAqua] so any *vibrant* appearance the
+        // NSVisualEffectView imposes on the hosting view (e.g. .vibrantDark)
+        // resolves to its nearest base appearance. Listing .vibrantDark made it
+        // match itself (≠ .darkAqua) and silently fall through to the light
+        // colour — which kept the solid panel light while in dark mode.
+        let isDark = appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
         return isDark ? NSColor(dark) : NSColor(light)
     }))
 }

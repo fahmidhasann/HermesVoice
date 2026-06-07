@@ -39,7 +39,7 @@ struct CircleButtonStyle: ButtonStyle {
                 } else {
                     Circle().fill(isHovered
                                   ? Theme.Colors.textPrimary.opacity(0.13)
-                                  : Theme.Colors.textPrimary.opacity(0.06))
+                                  : Theme.Colors.textPrimary.opacity(0.08))
                 }
             }
             .overlay(
