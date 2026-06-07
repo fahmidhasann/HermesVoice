@@ -5,12 +5,12 @@
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2746 nodes · 5494 edges · 152 communities (142 shown, 10 thin omitted)
+- 2746 nodes · 5495 edges · 153 communities (143 shown, 10 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 52 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `393d06fb`
+- Built from commit: `9a4d7a67`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -138,6 +138,7 @@
 - [[_COMMUNITY_Community 122|Community 122]]
 - [[_COMMUNITY_Community 123|Community 123]]
 - [[_COMMUNITY_Community 124|Community 124]]
+- [[_COMMUNITY_Community 125|Community 125]]
 - [[_COMMUNITY_Community 126|Community 126]]
 - [[_COMMUNITY_Community 127|Community 127]]
 - [[_COMMUNITY_Community 128|Community 128]]
@@ -166,7 +167,7 @@
 - [[_COMMUNITY_Community 151|Community 151]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `_()` - 53 edges
+1. `_()` - 55 edges
 2. `OverlayViewModel` - 48 edges
 3. `AppDelegate` - 34 edges
 4. `handleClick()` - 26 edges
@@ -197,7 +198,7 @@
 - **In-panel history browser feature** — hermesvoice_historyview_historyview, hermesvoice_overlayviewmodel_filteredhistory, hermesvoice_overlayviewmodel_openconversation, hermesvoicekit_conversationstore_conversationstore [INFERRED 0.75]
 - **Persisted local data model (SessionMeta + TranscriptRecord)** — hermesvoicekit_conversationstore_sessionmeta, hermesvoicekit_conversationstore_transcriptrecord, hermesvoice_conversationfilestore_conversationfilestore, hermesvoice_overlayviewmodel_overlayviewmodel [INFERRED 0.75]
 
-## Communities (152 total, 10 thin omitted)
+## Communities (153 total, 10 thin omitted)
 
 ### Community 0 - "App Lifecycle & Hotkeys"
 Cohesion: 0.07
@@ -208,12 +209,12 @@ Cohesion: 0.06
 Nodes (39): HermesAPIError, ChatMessage, ConnectionState, offline, online, unknown, HistoryEntry, OverlayState (+31 more)
 
 ### Community 2 - "API Client & Streaming"
-Cohesion: 0.09
-Nodes (31): AsyncThrowingStream, ConversationFileStore.atomicWrite, ConversationFileStore (disk IO), Error, HermesErrorKind, ConversationFileStore, HermesAPIClient, HermesAPIError (+23 more)
+Cohesion: 0.11
+Nodes (22): AsyncThrowingStream, Error, HermesErrorKind, HermesAPIClient, HermesAPIError, auth, http, invalidResponse (+14 more)
 
 ### Community 3 - "Conversation Storage & History"
-Cohesion: 0.16
-Nodes (17): Codable, Double, ConversationFileStore.appendRecord, ConversationFileStore.deleteConversation, ConversationFileStore.loadIndex, ConversationFileStore.loadPreview, ConversationFileStore.loadTranscript, ConversationFileStore.rewriteTranscript (+9 more)
+Cohesion: 0.17
+Nodes (16): Double, ConversationFileStore.appendRecord, ConversationFileStore.deleteConversation, ConversationFileStore.loadIndex, ConversationFileStore.loadPreview, ConversationFileStore.loadTranscript, ConversationFileStore.rewriteTranscript, ConversationStore (+8 more)
 
 ### Community 4 - "Error Handling & Utilities"
 Cohesion: 0.07
@@ -225,7 +226,7 @@ Nodes (74): acceptedDomAlreadyClean(), attachSteerFocusDebug(), averageRgb01(), 
 
 ### Community 6 - "SSE Parsing"
 Cohesion: 0.13
-Nodes (21): Decodable, Equatable, Choice, Chunk, Delta, SSEParser.parse(line:), SSEParser.parseContent(payload:), SSEEvent (+13 more)
+Nodes (22): Codable, Decodable, Equatable, Choice, Chunk, Delta, SSEParser.parse(line:), SSEParser.parseContent(payload:) (+14 more)
 
 ### Community 7 - "Overhaul Plan & Design Decisions"
 Cohesion: 0.11
@@ -651,6 +652,10 @@ Nodes (4): WaveformView, CGFloat, OverlayViewModel, WaveformView
 Cohesion: 0.67
 Nodes (4): postSerializedFindings(), renderBrowserFindings(), scanResultMeta(), serializeFindings()
 
+### Community 125 - "Community 125"
+Cohesion: 0.29
+Nodes (9): ConversationFileStore.atomicWrite, ConversationFileStore (disk IO), ConversationFileStore, Data, SessionMeta, String, URL, TranscriptRecord (+1 more)
+
 ### Community 126 - "Community 126"
 Cohesion: 0.50
 Nodes (4): Heuristics Scoring Guide, Issue Severity (P0–P3), Reference Material, Score Summary
@@ -756,7 +761,7 @@ Cohesion: 0.67
 Nodes (3): typeset, argumentHint, description
 
 ## Knowledge Gaps
-- **729 isolated node(s):** `Notification.Name`, `NSStatusItem`, `AnyCancellable`, `NSRunningApplication`, `Int32` (+724 more)
+- **729 isolated node(s):** `Setup`, `Color`, `Typography`, `Layout`, `Motion` (+724 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **10 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -764,16 +769,16 @@ Nodes (3): typeset, argumentHint, description
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `confirm()` connect `Community 62` to `Community 55`?**
-  _High betweenness centrality (0.094) - this node is a cross-community bridge._
+  _High betweenness centrality (0.117) - this node is a cross-community bridge._
 - **Why does `pickVariantContent()` connect `Community 70` to `Community 45`, `Community 43`, `History & Overlay UI`?**
-  _High betweenness centrality (0.092) - this node is a cross-community bridge._
+  _High betweenness centrality (0.081) - this node is a cross-community bridge._
 - **Why does `resolveInsertSessionAnchor()` connect `Community 45` to `Community 70`?**
-  _High betweenness centrality (0.092) - this node is a cross-community bridge._
-- **What connects `Notification.Name`, `NSStatusItem`, `AnyCancellable` to the rest of the system?**
+  _High betweenness centrality (0.081) - this node is a cross-community bridge._
+- **What connects `Setup`, `Color`, `Typography` to the rest of the system?**
   _729 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `App Lifecycle & Hotkeys` be split into smaller, more focused modules?**
   _Cohesion score 0.07020408163265306 - nodes in this community are weakly interconnected._
 - **Should `Conversation View Model` be split into smaller, more focused modules?**
   _Cohesion score 0.06416275430359937 - nodes in this community are weakly interconnected._
 - **Should `API Client & Streaming` be split into smaller, more focused modules?**
-  _Cohesion score 0.08599290780141844 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10846560846560846 - nodes in this community are weakly interconnected._
