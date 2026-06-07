@@ -11,6 +11,50 @@
 
 ---
 
+## Progress checklist (update after each phase)
+
+> **For the next session:** find the first unchecked phase below, read its section in
+> §5, and implement it. Build + test + `graphify update .` after, then tick its boxes and
+> add a short "Done" note. Phases are dependency-ordered — do not skip ahead.
+
+- [x] **Phase 0 — Pure, testable algorithms** *(done 2026-06-08)*
+  - [x] `ActivityRefCounter` — `Sources/HermesVoiceKit/ActivityRefCounter.swift` (`begin()`/`end()` ref-count, clamps at 0)
+  - [x] `PartialReconciler` — `Sources/HermesVoiceKit/PartialReconciler.swift` (`.fold`/`.deleteOnly`/`.ignore` per §4.7)
+  - [x] `EvictionPolicy` + `SessionLifecycleState` — `Sources/HermesVoiceKit/EvictionPolicy.swift` (per §4.10)
+  - [x] Tests added (`ActivityRefCounterTests`/`PartialReconcilerTests`/`EvictionPolicyTests`) + registered in `Tests/HermesVoiceTests/main.swift`
+  - [x] Verified: `swift build -c release` OK; `swift run HermesVoiceTests` → 249 checks, 0 failures (21 new); app behavior unchanged
+  - _Note: `SessionLifecycleState` is a toolchain-pure mirror of `OverlayState`; the app maps onto it 1:1 when calling `EvictionPolicy`. These types are NOT wired into the app yet — wiring starts Phase 1+._
+- [x] **Phase 1 — id-based streaming target** (single VM, behavior-preserving) — §5, traps §4.4 *(done 2026-06-08)*
+  - [x] Replace positional `assistantIndex` with stored `streamingMessageId: UUID?` in `OverlayViewModel`
+  - [x] Re-resolve `firstIndex(where:{$0.id==streamingMessageId})` fresh at every access in `runStream`/`finishAssistant`/`handleStreamFailure`/`cancelStreaming`/`retryLast`; clear id on every terminal path
+  - [x] Verify by hand in the running app: stream / Stop / Retry / failure-retry behave identically
+  - _Note: added `streamingMessageId: UUID?` + private `streamingIndex()` helper. `generateResponse` captures the placeholder's id (no longer passes an index into the Task); `runStream`/`finishAssistant`/`handleStreamFailure`/`cancelStreaming` all resolve the index fresh via `streamingIndex()` and bail if absent. Id cleared on every terminal path (finish/fail/cancel) and in `startBlankConversation`/`retryLast`; deliberately NOT cleared on `Task.isCancelled` returns since `generateResponse` cancels the old task only after setting the new id. `swift build -c release` OK; `swift run HermesVoiceTests` → 249 checks, 0 failures (unchanged — VM layer is not CLT-unit-testable); `./build-app.sh` OK; `graphify update .` done. Manual in-app verification still pending a live gateway run._
+- [ ] **Phase 2 — Extract `ChatSession`; VM becomes a facade over ONE session** — §5, traps §4.1/§4.9
+  - [ ] New `@MainActor ChatSession: ObservableObject` owns per-session state + `runStream`/`generateResponse`/`persist` keyed off its OWN immutable `conversationId` (fixes `:464`)
+  - [ ] VM facade mirrors foreground session via explicit `.sink` + synchronous pre-copy + `sessionCancellables` teardown
+  - [ ] Serialize `sessions.json` writes through one `@MainActor` helper
+  - [ ] Verify: `OverlayView.swift` unchanged; app behaves exactly as before; tests pass
+- [ ] **Phase 3 — `SessionManager` + non-destructive hide/switch (THE behavior change)** — §5, traps §4.2/§4.3/§4.6
+  - [ ] Add `SessionManager` (`[id: ChatSession]`, owned by `AppDelegate`)
+  - [ ] Remove `streamTask?.cancel()` from `cleanup()`; reduce `reset()` to global-only
+  - [ ] Non-destructive `newChat()`/`openConversation()` (re-point to live session if present, §4.11)
+  - [ ] Wire ref-counted `ProcessInfo.beginActivity(.userInitiated)` via `ActivityRefCounter`, bracket network loop only
+  - [ ] Per-target-session `send`/`retry` guards; pin voice transcripts to record-start session
+  - [ ] Verify acceptance criteria §0 #1–4 by hand
+- [ ] **Phase 4 — Durability + delete/evict safety** — §5, traps §4.5/§4.7/§4.10
+  - [ ] `writePartial`/`readPartial`/`clearPartial` on `ConversationFileStore` (`.partial` side file)
+  - [ ] Debounce-write in-flight partial; `clearPartial` at `generateResponse` entry + `retryLast` + every terminal path
+  - [ ] On launch, fold leftover `.partial` via `PartialReconciler`
+  - [ ] `deleteConversation` safe cancel+evict (`isDeleted`, invalidate timer, remove from manager, THEN delete disk)
+  - [ ] Optional eviction via `EvictionPolicy`
+  - [ ] Verify acceptance criterion §0 #5 (⌘Q mid-stream → relaunch recovers); delete-while-streaming leaves no resurrected files
+- [ ] **Phase 5 — UX surfacing of background activity** — §5, traps §4.8
+  - [ ] `SessionManager` publishes "any session streaming" flag + one-shot `didFinish(id)`
+  - [ ] Animated menu-bar status item reflects background activity; in-panel pill stays foreground-only
+  - [ ] Verify: panel hidden + background stream → menu-bar shows activity; finish posts a cue
+
+---
+
 ## 0. The goal (read first)
 
 **What the user wants.** Today, when a chat response is streaming and the user hides

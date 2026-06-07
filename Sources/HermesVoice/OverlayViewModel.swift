@@ -104,6 +104,19 @@ class OverlayViewModel: ObservableObject {
     private let store = ConversationFileStore()
     private var streamTask: Task<Void, Never>?
 
+    /// Stable id of the assistant message currently being streamed into. The
+    /// positional index is invalid across the async boundary and across
+    /// in-session mutations (retry removes a row), so we resolve the index fresh
+    /// from this id at every access and clear it on every terminal path.
+    private var streamingMessageId: UUID?
+
+    /// Resolve the live index of the streaming target, fresh at each access.
+    /// Returns nil if the target was removed (reset/retry/delete).
+    private func streamingIndex() -> Int? {
+        guard let id = streamingMessageId else { return nil }
+        return chatMessages.firstIndex(where: { $0.id == id })
+    }
+
     /// Local id of the conversation currently shown. Stable for the life of the
     /// conversation; the server derives its own session id from the first message.
     private(set) var conversationId: String
@@ -285,6 +298,9 @@ class OverlayViewModel: ObservableObject {
         if let lastIndex = chatMessages.indices.last,
            chatMessages[lastIndex].role == .assistant,
            chatMessages[lastIndex].isIncomplete {
+            // Drop the kept partial. Clear any stale streaming target pointing at
+            // it so the row removal can't be mis-resolved by a late access.
+            if streamingMessageId == chatMessages[lastIndex].id { streamingMessageId = nil }
             chatMessages.remove(at: lastIndex)
             rewritePersistedTranscript()
         }
@@ -304,28 +320,27 @@ class OverlayViewModel: ObservableObject {
                                    text: $0.content,
                                    imageDataURLs: $0.imageDataURLs) }
 
-        chatMessages.append(ChatMessage(role: .assistant, content: "", isStreaming: true))
-        let assistantIndex = chatMessages.count - 1
+        let placeholder = ChatMessage(role: .assistant, content: "", isStreaming: true)
+        chatMessages.append(placeholder)
+        streamingMessageId = placeholder.id
         activeTools = []
 
         state = .sending
         streamTask?.cancel()
         streamTask = Task { [weak self] in
-            await self?.runStream(messages: messages, assistantIndex: assistantIndex)
+            await self?.runStream(messages: messages)
         }
     }
 
-    private func runStream(messages: [OutgoingMessage], assistantIndex: Int) async {
+    private func runStream(messages: [OutgoingMessage]) async {
         var attempt = 0
         while true {
             attempt += 1
-            var receivedContent = chatMessages.indices.contains(assistantIndex)
-                ? !chatMessages[assistantIndex].content.isEmpty
-                : false
+            var receivedContent = streamingIndex().map { !chatMessages[$0].content.isEmpty } ?? false
             do {
                 state = .responding
-                if chatMessages.indices.contains(assistantIndex) {
-                    chatMessages[assistantIndex].isIncomplete = false
+                if let index = streamingIndex() {
+                    chatMessages[index].isIncomplete = false
                 }
 
                 let stream = try await apiClient.streamCompletion(messages: messages)
@@ -336,15 +351,15 @@ class OverlayViewModel: ObservableObject {
                     switch event {
                     case .text(let chunk):
                         receivedContent = true
-                        if chatMessages.indices.contains(assistantIndex) {
-                            chatMessages[assistantIndex].content += chunk
+                        if let index = streamingIndex() {
+                            chatMessages[index].content += chunk
                         }
                     case .tool(let activity):
                         applyToolActivity(activity)
                     }
                 }
 
-                finishAssistant(at: assistantIndex)
+                finishAssistant()
                 state = .done
                 try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5s
                 if state == .done { state = .idle }
@@ -361,7 +376,7 @@ class OverlayViewModel: ObservableObject {
                     continue
                 }
 
-                handleStreamFailure(apiError, assistantIndex: assistantIndex, hadContent: receivedContent)
+                handleStreamFailure(apiError, hadContent: receivedContent)
                 return
             }
         }
@@ -369,9 +384,10 @@ class OverlayViewModel: ObservableObject {
 
     /// Finalize a fully-streamed assistant message: stop the spinner and persist
     /// it, or drop an empty placeholder if nothing arrived.
-    private func finishAssistant(at index: Int) {
-        guard chatMessages.indices.contains(index) else { return }
+    private func finishAssistant() {
         activeTools = []
+        defer { streamingMessageId = nil }
+        guard let index = streamingIndex() else { return }
         chatMessages[index].isStreaming = false
         chatMessages[index].isIncomplete = false
         if chatMessages[index].content.isEmpty {
@@ -381,24 +397,24 @@ class OverlayViewModel: ObservableObject {
         }
     }
 
-    private func handleStreamFailure(_ error: HermesAPIError, assistantIndex: Int, hadContent: Bool) {
+    private func handleStreamFailure(_ error: HermesAPIError, hadContent: Bool) {
         activeTools = []
         if error.kind == .offline { connectionState = .offline }
 
-        if hadContent,
-           chatMessages.indices.contains(assistantIndex),
-           !chatMessages[assistantIndex].content.isEmpty {
-            // Keep the partial response, mark it incomplete, and offer a retry.
-            chatMessages[assistantIndex].isStreaming = false
-            chatMessages[assistantIndex].isIncomplete = true
-            persist(chatMessages[assistantIndex])
-        } else if chatMessages.indices.contains(assistantIndex),
-                  chatMessages[assistantIndex].role == .assistant,
-                  chatMessages[assistantIndex].content.isEmpty {
-            // Nothing useful arrived — drop the empty placeholder.
-            chatMessages.remove(at: assistantIndex)
+        if let index = streamingIndex() {
+            if hadContent, !chatMessages[index].content.isEmpty {
+                // Keep the partial response, mark it incomplete, and offer a retry.
+                chatMessages[index].isStreaming = false
+                chatMessages[index].isIncomplete = true
+                persist(chatMessages[index])
+            } else if chatMessages[index].role == .assistant,
+                      chatMessages[index].content.isEmpty {
+                // Nothing useful arrived — drop the empty placeholder.
+                chatMessages.remove(at: index)
+            }
         }
 
+        streamingMessageId = nil
         errorMessage = error.errorDescription ?? "Something went wrong."
         state = .error
     }
@@ -423,17 +439,17 @@ class OverlayViewModel: ObservableObject {
         streamTask?.cancel()
         streamTask = nil
         activeTools = []
-        if let lastIndex = chatMessages.indices.last,
-           chatMessages[lastIndex].isStreaming {
-            chatMessages[lastIndex].isStreaming = false
-            if chatMessages[lastIndex].content.isEmpty {
+        if let index = streamingIndex(), chatMessages[index].isStreaming {
+            chatMessages[index].isStreaming = false
+            if chatMessages[index].content.isEmpty {
                 // Drop an empty assistant placeholder so the thread isn't blank.
-                chatMessages.remove(at: lastIndex)
+                chatMessages.remove(at: index)
             } else {
-                chatMessages[lastIndex].isIncomplete = true
-                persist(chatMessages[lastIndex])
+                chatMessages[index].isIncomplete = true
+                persist(chatMessages[index])
             }
         }
+        streamingMessageId = nil
         state = .idle
     }
 
@@ -560,6 +576,7 @@ class OverlayViewModel: ObservableObject {
     /// conversation. Shared by New Chat and "deleted the open conversation".
     private func startBlankConversation() {
         streamTask?.cancel()
+        streamingMessageId = nil
         voiceEngine?.stopRecording()
         chatMessages.removeAll()
         inputText = ""
