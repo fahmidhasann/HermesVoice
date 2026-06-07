@@ -9,6 +9,9 @@ let allCases =
     ConversationStoreTests.cases +
     HermesErrorTests.cases +
     AppSettingsTests.cases +
-    VoiceFlowTests.cases
+    VoiceFlowTests.cases +
+    ActivityRefCounterTests.cases +
+    PartialReconcilerTests.cases +
+    EvictionPolicyTests.cases
 
 runAllTests(allCases)
