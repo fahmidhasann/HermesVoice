@@ -31,5 +31,54 @@ enum SSEParserTests {
             let line = #"data: {"choices":[{"delta":{"content":" world"}}]}"#
             checkEqual(SSEParser.parse(line: line), .content(" world"))
         },
+
+        // MARK: - Stateful stream parser (named events + content)
+
+        TestCase(name: "stream parser handles content") {
+            var parser = SSEStreamParser()
+            let line = #"data: {"choices":[{"delta":{"content":"Hi"}}]}"#
+            checkEqual(parser.parse(line: line), .content("Hi"))
+        },
+        TestCase(name: "stream parser handles done") {
+            var parser = SSEStreamParser()
+            checkEqual(parser.parse(line: "data: [DONE]"), .done)
+        },
+        TestCase(name: "tool progress running event paired") {
+            var parser = SSEStreamParser()
+            checkEqual(parser.parse(line: "event: hermes.tool.progress"), .ignore)
+            let data = #"data: {"tool":"search","emoji":"🔍","label":"Searching","toolCallId":"c1","status":"running"}"#
+            let expected = ToolActivity(tool: "search", emoji: "🔍", label: "Searching",
+                                        toolCallId: "c1", status: .running)
+            checkEqual(parser.parse(line: data), .toolActivity(expected))
+        },
+        TestCase(name: "tool progress completed event paired") {
+            var parser = SSEStreamParser()
+            _ = parser.parse(line: "event: hermes.tool.progress")
+            let data = #"data: {"tool":"search","toolCallId":"c1","status":"completed"}"#
+            let expected = ToolActivity(tool: "search", toolCallId: "c1", status: .completed)
+            checkEqual(parser.parse(line: data), .toolActivity(expected))
+        },
+        TestCase(name: "event does not bleed into next data line") {
+            var parser = SSEStreamParser()
+            _ = parser.parse(line: "event: hermes.tool.progress")
+            let toolData = #"data: {"tool":"search","toolCallId":"c1","status":"running"}"#
+            _ = parser.parse(line: toolData)
+            // The following content line must be treated as content, not a tool event.
+            let contentLine = #"data: {"choices":[{"delta":{"content":"hi"}}]}"#
+            checkEqual(parser.parse(line: contentLine), .content("hi"))
+        },
+        TestCase(name: "blank line clears pending event") {
+            var parser = SSEStreamParser()
+            _ = parser.parse(line: "event: hermes.tool.progress")
+            checkEqual(parser.parse(line: ""), .ignore)
+            // After the blank line the event is cleared, so this parses as content.
+            let contentLine = #"data: {"choices":[{"delta":{"content":"x"}}]}"#
+            checkEqual(parser.parse(line: contentLine), .content("x"))
+        },
+        TestCase(name: "malformed tool progress ignored") {
+            var parser = SSEStreamParser()
+            _ = parser.parse(line: "event: hermes.tool.progress")
+            checkEqual(parser.parse(line: "data: {not json"), .ignore)
+        },
     ]
 }

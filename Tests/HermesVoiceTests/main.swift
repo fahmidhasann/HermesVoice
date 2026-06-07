@@ -5,6 +5,8 @@ let allCases =
     PanelStateMachineTests.cases +
     DebouncerTests.cases +
     SSEParserTests.cases +
-    APIKeyParserTests.cases
+    APIKeyParserTests.cases +
+    ConversationStoreTests.cases +
+    HermesErrorTests.cases
 
 runAllTests(allCases)

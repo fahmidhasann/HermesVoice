@@ -64,7 +64,7 @@ committed (`63861e9`).
 | Phase | Status |
 |---|---|
 | **1 — Quick-win bug fixes** | ✅ **Done (2026-06-07)** — commit `63861e9` |
-| 2 — Data & API foundation | ⬜ Not started |
+| **2 — Data & API foundation** | ✅ **Done (2026-06-07)** |
 | 3 — Conversation features | ⬜ Not started |
 | 4 — Rich content | ⬜ Not started |
 | 5 — Settings + keyboard control | ⬜ Not started |
@@ -201,9 +201,48 @@ item + hotkey registered, no crash, clean quit + lock released) ✅.
 typing Cmd+V/C/X/A/Z in the field, clicking outside to dismiss, ⌃⇧H toggle, and watching
 for smooth resize while streaming.
 
-### Phase 2 — Data & API foundation  *(mostly invisible; enables features)*
+### Phase 2 — Data & API foundation  *(mostly invisible; enables features)*  ✅ DONE (2026-06-07)
 **Goal:** Local persistence + correct streaming + reliability primitives.
-**Tasks:**
+
+**What shipped:**
+- **2a.** Pure `ConversationStore` in `HermesVoiceKit` (`SessionMeta`/`TranscriptRecord`
+  models, index encode/decode, JSONL transcript encode/decode, title derivation, upsert
+  sorted most-recent-first). App-layer `ConversationFileStore` does atomic (temp+rename)
+  IO under `~/.hermes/hermes_voice/` — `sessions.json` index + `transcripts/<id>.jsonl`.
+- **2b.** `OverlayViewModel` owns the current conversation (`conversationId` +
+  `conversationStartedAt`), persists each user/assistant message, and **resumes the most
+  recent conversation on launch**. `clearConversation()` now starts a fresh conversation
+  (old one stays saved). `ChatMessage` gained an injectable `timestamp` + `isIncomplete`.
+- **2c.** Stopped sending `X-Hermes-Session-Id`; client sends the full `messages` array via
+  `streamCompletion(messages:)`. **Verified** against the live gateway: identical repeated
+  requests *without* the header are stable (prompt_tokens 20659 → 20659), *with* a
+  perpetual header they grow (20639 → 20648) — confirming server-side accumulation /
+  double-counting (open items #1, #4). Removed the perpetual `Config.sessionId`.
+- **2d.** Added stateful `SSEStreamParser` that pairs `event:` lines with the following
+  `data:` line, decoding `hermes.tool.progress` → `ToolActivity` (running/completed).
+  `OverlayViewModel.activeTools` tracks live tool steps (rendering is Phase 4d). Stateless
+  `SSEParser` kept for the content path. 7 new parser tests.
+- **2e.** Pure `HermesErrorClassifier` (offline / auth / http / streamDropped / timeout +
+  `isTransient`). `HermesAPIError` carries a `kind` and friendly guidance. Client returns
+  an `AsyncThrowingStream` so mid-stream drops throw; the VM keeps partial text (marked
+  `isIncomplete`), auto-retries transient failures *before any content arrives* (bounded,
+  backoff), and exposes `retryLast()` (retry button wired in `OverlayView`). `/v1/health`
+  reachability check drives `connectionState`, refreshed when the panel opens.
+  `User-Agent: HermesVoice/<version>` added to all requests (verified `/v1/health` →
+  `{"status":"ok","platform":"hermes-agent"}`).
+
+**Verification:** `swift build -c release` ✅ · `swift run HermesVoiceTests` → 85 checks,
+0 failures ✅ · launch smoke test via `open` (lock acquired, resume-last with seeded data
+does not crash, clean quit + lock released) ✅ · live-gateway protocol checks for 2c/2e ✅.
+⚠️ **Still needs a manual on-device pass:** real send → quit → relaunch resume; killing the
+gateway mid-send to watch the offline state + retry; observing a kept partial on drop.
+
+**Files added:** `Sources/HermesVoiceKit/{ConversationStore,HermesError}.swift`,
+`Sources/HermesVoice/ConversationFileStore.swift`,
+`Tests/HermesVoiceTests/{ConversationStoreTests,HermesErrorTests}.swift`.
+
+<details><summary>Original task list</summary>
+
 - **2a. ConversationStore** (logic in `HermesVoiceKit`, file IO in app layer). Write/read
   `~/.hermes/hermes_voice/sessions.json` (index: `{id, title, startedAt, lastActiveAt,
   source:"hermes_voice", messageCount, model}`) and `transcripts/<id>.jsonl`
@@ -231,6 +270,8 @@ parsed (unit-tested); killing Hermes surfaces an offline state; a dropped stream
 partial text.
 **Don't-break:** Existing SSE content path must still work; `User-Agent: HermesVoice/<v>`
 added to all requests.
+
+</details>
 
 ### Phase 3 — Conversation features (history, new chat, copy)
 **Goal:** Manage multiple conversations.
@@ -360,10 +401,14 @@ all new views.
 - One phase per session; rely on git checkpoints for rollback.
 
 ## 6. Open items to verify during implementation
-1. Confirm `/v1/chat/completions` double-counts when both full history **and**
-   `X-Hermes-Session-Id` are sent (validates the Phase 2c fix).
+1. ✅ **Verified (2026-06-07).** Repeating an identical request *with* a fixed
+   `X-Hermes-Session-Id` grows `prompt_tokens` (20639 → 20648); *without* the header it's
+   stable (20659 → 20659). Confirms accumulation; the Phase 2c fix (drop the header) is correct.
 2. Does the server honor a per-request **`model`** in the body, or is the model global?
    (Shapes the Phase 5 model picker.)
 3. Exact **multimodal image** content-part schema accepted (Phase 4c).
-4. Server-derived session-id grouping behaves as expected with no header (Phase 2c).
-5. `/v1/health` response shape + latency for the health indicator (Phase 2e / 8c).
+4. ✅ **Verified (2026-06-07).** With no header, a multi-turn request answered correctly
+   from client-owned history ("What is my name?" → "Your name is Taohid.") — the server
+   derives its own session and grouping works.
+5. ✅ **Verified (2026-06-07).** `GET /v1/health` → `{"status":"ok","platform":"hermes-agent"}`,
+   sub-second. Used for the reachability indicator (`connectionState`).

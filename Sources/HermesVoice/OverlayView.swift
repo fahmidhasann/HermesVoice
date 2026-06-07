@@ -290,6 +290,20 @@ struct OverlayView: View {
                     .transition(.opacity.combined(with: .scale))
             }
 
+            // Retry button — appears after a failed or interrupted response.
+            if viewModel.canRetry && viewModel.state != .sending && viewModel.state != .responding {
+                Button(action: viewModel.retryLast) {
+                    Image(systemName: "arrow.clockwise")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(Theme.Colors.accent)
+                        .frame(width: 22, height: 22)
+                }
+                .buttonStyle(.plain)
+                .help("Retry response")
+                .accessibilityLabel("Retry last response")
+                .transition(.opacity)
+            }
+
             // Send button — becomes a Stop button while a response streams in
             if viewModel.state == .sending || viewModel.state == .responding {
                 Button(action: viewModel.cancelStreaming) {
