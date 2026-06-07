@@ -15,6 +15,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var viewModel = OverlayViewModel()
     private var autoHideObserver: Any?
 
+    // Global monitor that closes the panel when the user clicks anywhere outside
+    // of it. Installed only while the panel is fully shown and torn down on hide.
+    private var clickOutsideMonitor: Any?
+
+    // The app that was frontmost when the panel opened. Reactivated on close so
+    // keyboard focus returns to where the user was working.
+    private var previousApp: NSRunningApplication?
+
     // Secondary debounce — belt-and-suspenders alongside HotKeyManager's.
     // Guarantees that even if two hotkey events slip through (Carbon quirk,
     // app reactivation, etc.) a single physical press only flips the panel once.
@@ -161,6 +169,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func showPanel() {
         guard let panel = overlayPanel, panel.beginShow() else { return }
 
+        // Remember who was frontmost so we can hand focus back on close.
+        previousApp = NSWorkspace.shared.frontmostApplication
+
         viewModel.reset()
         panel.positionPanel()
         panel.alphaValue = 0
@@ -172,15 +183,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             context.duration = Theme.Layout.appearDuration
             context.timingFunction = CAMediaTimingFunction(name: .easeOut)
             panel.animator().alphaValue = 1.0
-        }, completionHandler: { [weak panel] in
+        }, completionHandler: { [weak self, weak panel] in
             panel?.finishShow()
+            // Install the click-outside monitor only after the show animation
+            // finishes, so the opening click/keystroke can't immediately dismiss.
+            // Animation completions are delivered on the main thread.
+            MainActor.assumeIsolated { self?.installClickOutsideMonitor() }
         })
     }
 
     private func hidePanel() {
         guard let panel = overlayPanel, panel.beginHide() else { return }
 
+        removeClickOutsideMonitor()
         viewModel.cleanup()
+
+        // Return focus to the app the user came from. Done before the fade so the
+        // other app is already frontmost as our panel disappears.
+        if let previousApp, previousApp.bundleIdentifier != Bundle.main.bundleIdentifier {
+            previousApp.activate()
+        }
+        previousApp = nil
 
         // Fade out animation then hide
         NSAnimationContext.runAnimationGroup({ context in
@@ -191,5 +214,28 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             panel?.orderOut(nil)
             panel?.finishHide()
         })
+    }
+
+    // MARK: - Click-outside dismissal
+
+    /// Installs a global mouse-down monitor that closes the panel when the user
+    /// clicks in any other application. Global monitors only observe events
+    /// destined for other apps, so a click inside our own panel never triggers it.
+    private func installClickOutsideMonitor() {
+        guard clickOutsideMonitor == nil else { return }
+        // Only arm the monitor if the panel is actually visible.
+        guard overlayPanel?.phase == .visible else { return }
+        clickOutsideMonitor = NSEvent.addGlobalMonitorForEvents(
+            matching: [.leftMouseDown, .rightMouseDown, .otherMouseDown]
+        ) { [weak self] _ in
+            Task { @MainActor in self?.hidePanel() }
+        }
+    }
+
+    private func removeClickOutsideMonitor() {
+        if let monitor = clickOutsideMonitor {
+            NSEvent.removeMonitor(monitor)
+            clickOutsideMonitor = nil
+        }
     }
 }

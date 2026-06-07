@@ -14,6 +14,13 @@ class OverlayPanel: NSPanel {
     /// Current lifecycle phase, mirrored from the state machine.
     var phase: PanelPhase { stateMachine.phase }
 
+    /// The height we last asked the window to animate toward. Height updates are
+    /// gated against THIS rather than the live `frame.height`, because during an
+    /// in-flight resize animation `frame.height` holds an intermediate value —
+    /// comparing against it re-issues the same target every frame and the
+    /// animation visibly restarts on itself (the resize-jitter bug).
+    private var targetHeight: CGFloat = Theme.Layout.panelInitialHeight
+
     init(viewModel: OverlayViewModel) {
         self.viewModel = viewModel
 
@@ -92,19 +99,24 @@ class OverlayPanel: NSPanel {
     }
 
     func updateHeight(_ newHeight: CGFloat) {
-        // Ignore sub-pixel jitter to avoid feedback loops with the SwiftUI
-        // height preference.
-        guard abs(newHeight - self.frame.height) > 0.5 else { return }
+        // Round to whole points so sub-pixel reflows from SwiftUI don't churn.
+        let rounded = newHeight.rounded()
+
+        // Gate against the last requested target (not the live, possibly
+        // mid-animation `frame.height`). The threshold absorbs minor layout
+        // noise so streaming text grows in clean steps instead of jittering.
+        guard abs(rounded - targetHeight) >= 1.0 else { return }
+        targetHeight = rounded
 
         var frame = self.frame
-        let heightDelta = newHeight - frame.height
-
-        // Adjust origin to keep the top edge stable as the panel grows/shrinks.
+        // Anchor the top edge: compute the delta from the current live frame so
+        // the top stays put even if a previous resize animation is still running.
+        let heightDelta = rounded - frame.height
         frame.origin.y -= heightDelta
-        frame.size.height = newHeight
+        frame.size.height = rounded
 
         // Keep the drop-shadow path in sync with the new size.
-        let shadowBounds = NSRect(x: 0, y: 0, width: frame.width, height: newHeight)
+        let shadowBounds = NSRect(x: 0, y: 0, width: frame.width, height: rounded)
         contentView?.layer?.shadowPath = CGPath(
             roundedRect: shadowBounds,
             cornerWidth: Theme.Layout.cornerRadius,
@@ -113,7 +125,7 @@ class OverlayPanel: NSPanel {
         )
 
         NSAnimationContext.runAnimationGroup { context in
-            context.duration = 0.25
+            context.duration = Theme.Layout.heightDuration
             context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
             self.animator().setFrame(frame, display: true)
         }
