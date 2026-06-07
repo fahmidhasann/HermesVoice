@@ -66,7 +66,7 @@ committed (`63861e9`).
 | **1 — Quick-win bug fixes** | ✅ **Done (2026-06-07)** — commit `63861e9` |
 | **2 — Data & API foundation** | ✅ **Done (2026-06-07)** |
 | **3 — Conversation features** | ✅ **Done (2026-06-07)** |
-| 4 — Rich content | ⬜ Not started |
+| **4 — Rich content** | ✅ **Done (2026-06-07)** |
 | 5 — Settings + keyboard control | ⬜ Not started |
 | 6 — Voice flow change | ⬜ Not started |
 | 7 — Expressive visual redesign | ⬜ Not started |
@@ -330,9 +330,55 @@ copy works on both roles.
 
 </details>
 
-### Phase 4 — Rich content (markdown, images, tool activity)
+### Phase 4 — Rich content (markdown, images, tool activity)  ✅ DONE (2026-06-07)
 **Goal:** Render agent output well; richer I/O.
-**Tasks:**
+
+**What shipped:**
+- **4a. Dependencies** — added `swift-markdown-ui` (exact **2.4.1**) + `Highlightr`
+  (exact **2.3.0**) to `Package.swift`; both resolve and build under CLT (Swift 6.3,
+  transitive `swift-cmark`/`NetworkImage` pulled automatically). `build-app.sh` now copies
+  every SwiftPM `*.bundle` from `.build/release/` into the app's `Resources/` so
+  Highlightr's `Bundle.module` (highlight.js + CSS themes) resolves at runtime — verified
+  `Highlightr_Highlightr.bundle/highlight.min.js` lands in the built bundle.
+- **4b. Markdown rendering** — new `MarkdownMessageView.swift` renders assistant bubbles
+  with MarkdownUI on a custom amber `Theme.hermes` (text/links/inline-code/blockquote).
+  Fenced code blocks use a Highlightr-backed `CodeSyntaxHighlighter` (`atom-one-light`/
+  `atom-one-dark` by appearance, monospaced 12pt) inside a custom code-block style with a
+  language label + **per-block copy button** and horizontal scroll. Lists/tables/headings
+  inherit `.basic`; links open in the browser via the default `openURL`. Streams
+  incrementally (re-renders as content grows). Replaced the old inline-only
+  `AttributedString` path in `MessageBubble`.
+- **4c. Image input** — paste (⌘V image via `AppDelegate.smartPaste`, falling back to text
+  paste) + drag-drop (`.onDrop` of `.image`/`.fileURL` with a dashed accent target) stage
+  images as thumbnail chips above the input (`PendingImageChip`, removable, capped at
+  `maxAttachments = 6`). On send, `OutgoingMessage.contentJSON` builds OpenAI multimodal
+  `content` parts (text + `image_url` data URL); text-only stays a plain string. Attached
+  images render in the user bubble and **persist** in the transcript (`TranscriptRecord`
+  gained optional `images: [String]?`, backward-compatible decode). `ImageEncoder`
+  downscales to ≤1280px and encodes PNG data URLs. **Verified live:** the gateway accepts
+  the exact shape (200/SSE, no `invalid_image`) — open item #3 below.
+- **4d. Tool-activity display** — `ToolActivityRow` renders live "Hermes is using {emoji}
+  {label}…" rows (from `viewModel.activeTools`, populated by the 2d parser) in the thread
+  while a response streams; rows collapse as steps complete and are **never persisted**.
+
+**New pure logic (HermesVoiceKit, tested):** `TranscriptRecord.images` round-trip +
+missing-key backward-compat (2 new tests).
+
+**Files added/changed:** new `Sources/HermesVoice/{MarkdownMessageView,ImageAttachment}.swift`;
+`OverlayView.swift`, `OverlayViewModel.swift`, `HermesAPIClient.swift`, `App.swift`,
+`AppDelegate.swift`, `Package.swift`, `build-app.sh`,
+`HermesVoiceKit/ConversationStore.swift`, `Tests/HermesVoiceTests/ConversationStoreTests.swift`.
+
+**Verification:** `swift build -c release` ✅ · `swift run HermesVoiceTests` → 106 checks,
+0 failures ✅ · live-gateway multimodal check (text+image → "OK", no 400) ✅ · `./build-app.sh`
+embeds the Highlightr bundle ✅ · launch smoke test via `open` (launches, lock acquired,
+no crash, clean quit) ✅.
+⚠️ **Still needs a manual on-device pass:** render a real markdown reply (code block
+highlight + copy, tables/lists); paste & drag an image and confirm Hermes answers about it;
+watch tool-activity rows appear/resolve during a tool-using response.
+
+<details><summary>Original task list</summary>
+
 - **4a. Dependencies** — add `swift-markdown-ui` + `Highlightr` to `Package.swift` (pin
   versions). Confirm they resolve under `swift build` with CLT.
 - **4b. Markdown rendering** — replace inline-only rendering in the assistant bubble with
@@ -351,6 +397,8 @@ copy works on both roles.
 `HermesAPIClient.swift`, `Package.swift`.
 **Acceptance:** code blocks highlighted + copyable; tables/lists render; pasting/dragging
 an image sends it and Hermes responds to it; tool steps appear live then resolve.
+
+</details>
 
 ### Phase 5 — Settings + full keyboard control
 **Goal:** Make hardcoded behavior configurable; native shortcuts everywhere.
@@ -446,7 +494,12 @@ all new views.
    stable (20659 → 20659). Confirms accumulation; the Phase 2c fix (drop the header) is correct.
 2. Does the server honor a per-request **`model`** in the body, or is the model global?
    (Shapes the Phase 5 model picker.)
-3. Exact **multimodal image** content-part schema accepted (Phase 4c).
+3. ✅ **Verified (2026-06-07).** The gateway accepts OpenAI Chat-Completions multimodal
+   `content`: an array of `{"type":"text","text":…}` and
+   `{"type":"image_url","image_url":{"url":"data:image/…;base64,…"}}` parts (data URLs must
+   be `data:image/…` with a comma; http(s) URLs also allowed). A live `text + 1×1 PNG`
+   request streamed `200`/SSE with no `invalid_image` error. Used by Phase 4c
+   (`OutgoingMessage.contentJSON`).
 4. ✅ **Verified (2026-06-07).** With no header, a multi-turn request answered correctly
    from client-owned history ("What is my name?" → "Your name is Taohid.") — the server
    derives its own session and grouping works.

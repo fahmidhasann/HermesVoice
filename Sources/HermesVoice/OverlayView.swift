@@ -1,4 +1,6 @@
 import SwiftUI
+import UniformTypeIdentifiers
+import HermesVoiceKit
 
 /// Carries the overlay content's measured natural height up to the panel so
 /// the NSPanel can size itself to fit (preventing the input row from clipping).
@@ -12,6 +14,7 @@ private struct ContentHeightKey: PreferenceKey {
 struct OverlayView: View {
     @ObservedObject var viewModel: OverlayViewModel
     @State private var streamingContentLength: Int = 0
+    @State private var isDropTargeted = false
     @FocusState private var inputFocused: Bool
     weak var panelRef: OverlayPanel?
 
@@ -74,6 +77,43 @@ struct OverlayView: View {
             // Input area
             inputView
         }
+        // Drag an image (or image file) anywhere onto the panel to attach it.
+        .onDrop(of: [.image, .fileURL], isTargeted: $isDropTargeted) { providers, _ in
+            handleImageDrop(providers)
+        }
+        .overlay {
+            if isDropTargeted {
+                RoundedRectangle(cornerRadius: Theme.Layout.cornerRadius)
+                    .strokeBorder(Theme.Colors.accent.opacity(0.7),
+                                  style: StrokeStyle(lineWidth: 2, dash: [6, 4]))
+                    .padding(2)
+                    .allowsHitTesting(false)
+            }
+        }
+    }
+
+    /// Load dropped images (raw image data or image files) into pending
+    /// attachments. Returns true when at least one provider could be consumed.
+    private func handleImageDrop(_ providers: [NSItemProvider]) -> Bool {
+        var handled = false
+        for provider in providers {
+            if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+                handled = true
+                _ = provider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, _ in
+                    guard let data, let image = NSImage(data: data) else { return }
+                    Task { @MainActor in viewModel.attachImage(image) }
+                }
+            } else if provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
+                handled = true
+                provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { item, _ in
+                    guard let data = item as? Data,
+                          let url = URL(dataRepresentation: data, relativeTo: nil),
+                          let image = NSImage(contentsOf: url) else { return }
+                    Task { @MainActor in viewModel.attachImage(image) }
+                }
+            }
+        }
+        return handled
     }
 
     // MARK: - Header
@@ -235,11 +275,16 @@ struct OverlayView: View {
                             .id(message.id)
                     }
 
+                    // Live tool-activity rows ("Hermes is using…") shown while a
+                    // response streams; they resolve/collapse as steps complete.
+                    toolActivityRows
+
                     // Live transcription preview while listening
                     if viewModel.isRecording && !viewModel.transcribedText.isEmpty {
                         transcriptionPreview
                     }
                 }
+                .animation(Theme.Motion.ifMotion(.easeOut(duration: 0.2)), value: viewModel.activeTools)
                 .padding(.horizontal, Theme.Spacing.lg)
                 .padding(.vertical, Theme.Spacing.md)
             }
@@ -259,6 +304,14 @@ struct OverlayView: View {
                     proxy.scrollTo(last.id, anchor: .bottom)
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var toolActivityRows: some View {
+        ForEach(Array(viewModel.activeTools.enumerated()), id: \.offset) { _, tool in
+            ToolActivityRow(tool: tool)
+                .transition(.opacity.combined(with: .move(edge: .leading)))
         }
     }
 
@@ -290,6 +343,41 @@ struct OverlayView: View {
     // MARK: - Input
 
     private var inputView: some View {
+        VStack(spacing: Theme.Spacing.sm) {
+            if !viewModel.pendingImages.isEmpty {
+                pendingImagesStrip
+            }
+            inputRow
+        }
+        .padding(.horizontal, Theme.Spacing.lg)
+        .padding(.vertical, Theme.Spacing.md)
+        .animation(Theme.Motion.ifMotion(.easeInOut(duration: 0.18)), value: viewModel.pendingImages)
+    }
+
+    /// Horizontal strip of staged image thumbnails (paste/drag) with remove
+    /// buttons, shown above the input row before sending.
+    private var pendingImagesStrip: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: Theme.Spacing.sm) {
+                ForEach(viewModel.pendingImages) { attachment in
+                    PendingImageChip(image: attachment.image) {
+                        viewModel.removePendingImage(id: attachment.id)
+                    }
+                }
+            }
+            .padding(.horizontal, 2)
+            .padding(.vertical, 2)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// Nothing to send when there's neither text nor a staged image.
+    private var sendDisabled: Bool {
+        viewModel.inputText.trimmingCharacters(in: .whitespaces).isEmpty
+            && viewModel.pendingImages.isEmpty
+    }
+
+    private var inputRow: some View {
         HStack(spacing: Theme.Spacing.md) {
             // Mic button
             Button(action: viewModel.toggleRecording) {
@@ -343,18 +431,14 @@ struct OverlayView: View {
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundColor(.white)
                 }
-                .buttonStyle(SendButtonStyle(
-                    isDisabled: viewModel.inputText.trimmingCharacters(in: .whitespaces).isEmpty
-                ))
-                .disabled(viewModel.inputText.trimmingCharacters(in: .whitespaces).isEmpty)
+                .buttonStyle(SendButtonStyle(isDisabled: sendDisabled))
+                .disabled(sendDisabled)
                 .help("Send (Return)")
                 .accessibilityLabel("Send message")
                 .transition(.opacity)
             }
         }
         .animation(Theme.Motion.ifMotion(.easeInOut(duration: 0.18)), value: viewModel.state)
-        .padding(.horizontal, Theme.Spacing.lg)
-        .padding(.vertical, Theme.Spacing.md)
     }
 
     /// Multi-line text field with Enter-to-send.
@@ -428,32 +512,40 @@ struct MessageBubble: View {
 
     private var bubbleContent: some View {
         VStack(alignment: message.role == .user ? .trailing : .leading, spacing: Theme.Spacing.xs) {
-            HStack(alignment: .top, spacing: Theme.Spacing.sm) {
-                messageText
-                    .textSelection(.enabled)
-
-                if message.isStreaming {
-                    ProgressView()
-                        .scaleEffect(0.45)
-                        .frame(width: 12, height: 12)
+            VStack(alignment: message.role == .user ? .trailing : .leading, spacing: Theme.Spacing.sm) {
+                if !message.imageDataURLs.isEmpty {
+                    messageImages
                 }
 
-                // Copy is always present (discoverable) on both user and
-                // assistant bubbles — subtle at rest, full-strength on hover,
-                // with a "Copied" checkmark confirmation.
-                if !message.isStreaming && !message.content.isEmpty {
-                    Button(action: copyMessage) {
-                        Image(systemName: showCopied ? "checkmark" : "doc.on.doc")
-                            .font(.system(size: 10.5, weight: .medium))
-                            .foregroundColor(showCopied ? .green : Theme.Colors.textSecondary)
-                            .frame(width: 22, height: 22)
-                            .background(Theme.Colors.textPrimary.opacity(showCopied ? 0.08 : 0.04))
-                            .clipShape(Circle())
+                if !message.content.isEmpty || message.isStreaming {
+                    HStack(alignment: .top, spacing: Theme.Spacing.sm) {
+                        messageText
+                            .textSelection(.enabled)
+
+                        if message.isStreaming {
+                            ProgressView()
+                                .scaleEffect(0.45)
+                                .frame(width: 12, height: 12)
+                        }
+
+                        // Copy is always present (discoverable) on both user and
+                        // assistant bubbles — subtle at rest, full-strength on hover,
+                        // with a "Copied" checkmark confirmation.
+                        if !message.isStreaming && !message.content.isEmpty {
+                            Button(action: copyMessage) {
+                                Image(systemName: showCopied ? "checkmark" : "doc.on.doc")
+                                    .font(.system(size: 10.5, weight: .medium))
+                                    .foregroundColor(showCopied ? .green : Theme.Colors.textSecondary)
+                                    .frame(width: 22, height: 22)
+                                    .background(Theme.Colors.textPrimary.opacity(showCopied ? 0.08 : 0.04))
+                                    .clipShape(Circle())
+                            }
+                            .buttonStyle(.plain)
+                            .opacity(showCopied || isHovered ? 1 : 0.4)
+                            .help(showCopied ? "Copied" : "Copy message")
+                            .accessibilityLabel("Copy message")
+                        }
                     }
-                    .buttonStyle(.plain)
-                    .opacity(showCopied || isHovered ? 1 : 0.4)
-                    .help(showCopied ? "Copied" : "Copy message")
-                    .accessibilityLabel("Copy message")
                 }
             }
             .padding(.horizontal, Theme.Spacing.md + 2)
@@ -481,18 +573,29 @@ struct MessageBubble: View {
 
     @ViewBuilder
     private var messageText: some View {
-        if message.role == .assistant,
-           let attributed = try? AttributedString(
-               markdown: message.content,
-               options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)
-           ) {
-            Text(attributed)
-                .font(Theme.Font.message(size: 13.5))
-                .foregroundColor(Theme.Colors.textPrimary)
+        if message.role == .assistant && !message.content.isEmpty {
+            // Full GitHub-flavored markdown (themed) with highlighted, copyable
+            // code blocks. Renders incrementally as the response streams in.
+            MarkdownMessageView(content: message.content)
         } else {
             Text(message.content)
                 .font(Theme.Font.message(size: 13.5))
                 .foregroundColor(message.role == .error ? .red : Theme.Colors.textPrimary)
+        }
+    }
+
+    /// Decode and render this message's attached images as rounded thumbnails.
+    @ViewBuilder
+    private var messageImages: some View {
+        let images = message.imageDataURLs.compactMap { ImageEncoder.image(fromDataURL: $0) }
+        VStack(alignment: message.role == .user ? .trailing : .leading, spacing: Theme.Spacing.xs) {
+            ForEach(Array(images.enumerated()), id: \.offset) { _, image in
+                Image(nsImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 240, maxHeight: 220, alignment: message.role == .user ? .trailing : .leading)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
         }
     }
 
@@ -511,5 +614,76 @@ struct MessageBubble: View {
         case .error:
             return Theme.Colors.error.opacity(0.08)
         }
+    }
+}
+
+// MARK: - Tool Activity Row
+
+/// Ephemeral "Hermes is using …" row rendered while a tool step is running.
+/// These are not persisted in the transcript — they vanish when the step
+/// completes (the view model removes completed activities).
+struct ToolActivityRow: View {
+    let tool: ToolActivity
+
+    private var label: String {
+        if let label = tool.label, !label.isEmpty { return label }
+        return tool.tool
+    }
+
+    var body: some View {
+        HStack(spacing: Theme.Spacing.sm) {
+            Text(tool.emoji ?? "🔧")
+                .font(.system(size: 12))
+
+            (Text("Hermes is using ").foregroundColor(Theme.Colors.textSecondary)
+             + Text(label).foregroundColor(Theme.Colors.textPrimary)
+             + Text("…").foregroundColor(Theme.Colors.textSecondary))
+                .font(Theme.Font.message(size: 12))
+                .lineLimit(1)
+                .truncationMode(.middle)
+
+            ProgressView()
+                .scaleEffect(0.4)
+                .frame(width: 12, height: 12)
+
+            Spacer(minLength: 24)
+        }
+        .padding(.horizontal, Theme.Spacing.md)
+        .padding(.vertical, Theme.Spacing.xs + 2)
+        .background(Theme.Colors.accent.opacity(0.07))
+        .cornerRadius(10)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Hermes is using \(label)")
+    }
+}
+
+// MARK: - Pending Image Chip
+
+/// A staged image thumbnail shown above the input with a remove button.
+struct PendingImageChip: View {
+    let image: NSImage
+    let onRemove: () -> Void
+
+    var body: some View {
+        Image(nsImage: image)
+            .resizable()
+            .scaledToFill()
+            .frame(width: 52, height: 52)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Theme.Colors.divider, lineWidth: 1)
+            )
+            .overlay(alignment: .topTrailing) {
+                Button(action: onRemove) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 14))
+                        .foregroundStyle(.white, Color.black.opacity(0.55))
+                }
+                .buttonStyle(.plain)
+                .padding(2)
+                .help("Remove image")
+                .accessibilityLabel("Remove image")
+            }
     }
 }

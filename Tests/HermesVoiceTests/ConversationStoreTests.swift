@@ -70,6 +70,25 @@ enum ConversationStoreTests {
             let text = try! ConversationStore.encodeTranscript(records)
             checkEqual(ConversationStore.decodeTranscript(text), records)
         },
+        TestCase(name: "transcript round-trips image attachments") {
+            let records = [
+                TranscriptRecord(role: "user", content: "look",
+                                 ts: 1.0, images: ["data:image/png;base64,AAAA"]),
+                TranscriptRecord(role: "assistant", content: "ok", ts: 2.0)
+            ]
+            let text = try! ConversationStore.encodeTranscript(records)
+            let decoded = ConversationStore.decodeTranscript(text)
+            checkEqual(decoded, records)
+            checkEqual(decoded.first?.images ?? [], ["data:image/png;base64,AAAA"])
+            check(decoded.last?.images == nil, "text-only record should omit images")
+        },
+        TestCase(name: "transcript without images field decodes (backward compat)") {
+            // Pre-image transcripts had no `images` key; it must decode to nil.
+            let text = #"{"content":"hi","role":"user","ts":1}"#
+            let decoded = ConversationStore.decodeTranscript(text)
+            checkEqual(decoded.count, 1)
+            check(decoded.first?.images == nil, "missing images key should decode as nil")
+        },
         TestCase(name: "transcript skips blank and malformed lines") {
             let text = """
             {"role":"user","content":"hi","ts":1}

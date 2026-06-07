@@ -9,6 +9,30 @@ enum HermesStreamEvent {
     case tool(ToolActivity)
 }
 
+/// One message in an outgoing request. When `imageDataURLs` is empty the content
+/// is serialized as a plain string; otherwise it becomes an OpenAI-style
+/// multimodal `content` array of text + `image_url` parts (the shape the Hermes
+/// gateway accepts — verified against `_normalize_multimodal_content`).
+struct OutgoingMessage {
+    let role: String
+    let text: String
+    let imageDataURLs: [String]
+
+    /// JSON value for the `content` field: a string for text-only messages, or an
+    /// array of typed parts when images are attached.
+    var contentJSON: Any {
+        guard !imageDataURLs.isEmpty else { return text }
+        var parts: [[String: Any]] = []
+        if !text.isEmpty {
+            parts.append(["type": "text", "text": text])
+        }
+        for url in imageDataURLs {
+            parts.append(["type": "image_url", "image_url": ["url": url]])
+        }
+        return parts
+    }
+}
+
 final class HermesAPIClient {
     private let config = Config.shared
 
@@ -19,7 +43,7 @@ final class HermesAPIClient {
     /// Connection/auth/HTTP failures throw synchronously (before the stream is
     /// returned); a mid-stream drop throws into the returned stream so the caller
     /// can keep whatever partial text already arrived.
-    func streamCompletion(messages: [(role: String, content: String)]) async throws -> AsyncThrowingStream<HermesStreamEvent, Error> {
+    func streamCompletion(messages: [OutgoingMessage]) async throws -> AsyncThrowingStream<HermesStreamEvent, Error> {
         var request = URLRequest(url: config.apiEndpoint)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -27,7 +51,7 @@ final class HermesAPIClient {
         request.setValue(config.userAgent, forHTTPHeaderField: "User-Agent")
 
         let payload: [String: Any] = [
-            "messages": messages.map { ["role": $0.role, "content": $0.content] },
+            "messages": messages.map { ["role": $0.role, "content": $0.contentJSON] },
             "stream": true
         ]
         request.httpBody = try JSONSerialization.data(withJSONObject: payload)

@@ -180,6 +180,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         viewModel.openHistory(focusSearch: true)
     }
 
+    /// ⌘V / Edit ▸ Paste. If the pasteboard holds an image and the panel is
+    /// visible, attach it to the message; otherwise forward to the normal text
+    /// paste so typing fields keep working.
+    @objc func smartPaste(_ sender: Any?) {
+        let pasteboard = NSPasteboard.general
+        if overlayPanel?.phase == .visible,
+           pasteboard.canReadObject(forClasses: [NSImage.self], options: nil),
+           let images = pasteboard.readObjects(forClasses: [NSImage.self], options: nil) as? [NSImage],
+           let image = images.first {
+            viewModel.attachImage(image)
+            return
+        }
+        // No image (or panel hidden) — route to the field editor's paste:.
+        NSApp.sendAction(#selector(NSText.paste(_:)), to: nil, from: sender)
+    }
+
     /// Menu-bar ▸ New Chat. Shows the panel first if it's hidden, so it works
     /// even when the app isn't already active.
     @objc func menuBarNewChat() {

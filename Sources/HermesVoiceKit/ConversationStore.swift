@@ -34,11 +34,15 @@ public struct TranscriptRecord: Codable, Equatable, Sendable {
     public var role: String
     public var content: String
     public var ts: Double
+    /// Image attachments as `data:image/...;base64,…` URLs. Optional so older
+    /// transcripts (written before image support) still decode cleanly.
+    public var images: [String]?
 
-    public init(role: String, content: String, ts: Double) {
+    public init(role: String, content: String, ts: Double, images: [String]? = nil) {
         self.role = role
         self.content = content
         self.ts = ts
+        self.images = images
     }
 }
 

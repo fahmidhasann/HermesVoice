@@ -73,7 +73,13 @@ struct HermesVoiceApp {
         editMenu.addItem(.separator())
         editMenu.addItem(withTitle: "Cut", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
         editMenu.addItem(withTitle: "Copy", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
-        editMenu.addItem(withTitle: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+        // Paste routes through a "smart paste": an image on the pasteboard is
+        // attached to the message; otherwise it falls through to the normal text
+        // paste in the field editor.
+        let pasteItem = editMenu.addItem(withTitle: "Paste",
+                                         action: #selector(AppDelegate.smartPaste(_:)),
+                                         keyEquivalent: "v")
+        pasteItem.target = target
         editMenu.addItem(.separator())
         editMenu.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
 

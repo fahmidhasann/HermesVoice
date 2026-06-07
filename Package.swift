@@ -7,6 +7,12 @@ let package = Package(
     platforms: [
         .macOS(.v14)
     ],
+    dependencies: [
+        // GitHub-flavored markdown rendering for assistant messages.
+        .package(url: "https://github.com/gonzalezreal/swift-markdown-ui.git", exact: "2.4.1"),
+        // Syntax highlighting for fenced code blocks (wraps highlight.js).
+        .package(url: "https://github.com/raspu/Highlightr.git", exact: "2.3.0")
+    ],
     targets: [
         // Pure, hardware-free logic shared by the app and exercised by tests.
         .target(
@@ -15,7 +21,11 @@ let package = Package(
         ),
         .executableTarget(
             name: "HermesVoice",
-            dependencies: ["HermesVoiceKit"],
+            dependencies: [
+                "HermesVoiceKit",
+                .product(name: "MarkdownUI", package: "swift-markdown-ui"),
+                .product(name: "Highlightr", package: "Highlightr")
+            ],
             path: "Sources/HermesVoice",
             resources: [
                 .copy("../../Resources/Info.plist")

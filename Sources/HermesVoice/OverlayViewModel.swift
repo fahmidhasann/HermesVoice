@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import AppKit
 import HermesVoiceKit
 
 enum OverlayState: Equatable {
@@ -27,12 +28,15 @@ struct ChatMessage: Identifiable, Equatable {
     /// True when a response was cut short (drop/cancel) and may be retried.
     var isIncomplete: Bool
     let timestamp: Date
+    /// Image attachments (`data:image/...;base64,…` URLs) sent with this message.
+    var imageDataURLs: [String]
 
     init(role: Role,
          content: String,
          isStreaming: Bool = false,
          isIncomplete: Bool = false,
          timestamp: Date = Date(),
+         imageDataURLs: [String] = [],
          id: UUID = UUID()) {
         self.id = id
         self.role = role
@@ -40,6 +44,7 @@ struct ChatMessage: Identifiable, Equatable {
         self.isStreaming = isStreaming
         self.isIncomplete = isIncomplete
         self.timestamp = timestamp
+        self.imageDataURLs = imageDataURLs
     }
 
     enum Role: String {
@@ -61,6 +66,8 @@ class OverlayViewModel: ObservableObject {
     @Published var audioLevel: CGFloat = 0.1
     /// Tool steps currently running, surfaced for live "Hermes is using…" rows.
     @Published var activeTools: [ToolActivity] = []
+    /// Images staged in the input (paste/drag) to send with the next message.
+    @Published var pendingImages: [ImageAttachment] = []
     /// Reachability of the gateway (drives the offline indicator).
     @Published var connectionState: ConnectionState = .unknown
 
@@ -104,6 +111,8 @@ class OverlayViewModel: ObservableObject {
     private var conversationModel: String?
 
     private let maxAttempts = 3
+    /// Upper bound on images staged for a single message.
+    let maxAttachments = 6
 
     init() {
         // Resume the most recent conversation (or start a blank one).
@@ -149,7 +158,8 @@ class OverlayViewModel: ObservableObject {
         chatMessages = records.map { record in
             ChatMessage(role: ChatMessage.Role(rawValue: record.role) ?? .assistant,
                         content: record.content,
-                        timestamp: Date(timeIntervalSince1970: record.ts))
+                        timestamp: Date(timeIntervalSince1970: record.ts),
+                        imageDataURLs: record.images ?? [])
         }
     }
 
@@ -191,14 +201,15 @@ class OverlayViewModel: ObservableObject {
 
     func sendMessage() {
         let text = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty else { return }
+        let images = pendingImages
+        guard !text.isEmpty || !images.isEmpty else { return }
         inputText = ""
-        sendToHermes(text: text)
+        sendToHermes(text: text, images: images)
     }
 
-    private func sendToHermes(text: String) {
+    private func sendToHermes(text: String, images: [ImageAttachment] = []) {
         let messageText = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !messageText.isEmpty else { return }
+        guard !messageText.isEmpty || !images.isEmpty else { return }
         guard state != .sending, state != .responding else { return }
 
         if isRecording {
@@ -208,12 +219,29 @@ class OverlayViewModel: ObservableObject {
         transcribedText = ""
         errorMessage = ""
 
-        registerConversationIfNeeded(firstUserText: messageText)
-        let userMessage = ChatMessage(role: .user, content: messageText)
+        let imageURLs = images.map { $0.dataURL }
+        registerConversationIfNeeded(
+            firstUserText: messageText.isEmpty ? "Image message" : messageText)
+        let userMessage = ChatMessage(role: .user, content: messageText, imageDataURLs: imageURLs)
         chatMessages.append(userMessage)
+        pendingImages = []
         persist(userMessage)
 
         generateResponse()
+    }
+
+    // MARK: - Image attachments
+
+    /// Stage an image (from paste or drag-drop) to send with the next message.
+    func attachImage(_ image: NSImage) {
+        guard pendingImages.count < maxAttachments else { return }
+        guard let attachment = ImageAttachment(image: image) else { return }
+        pendingImages.append(attachment)
+        pulseInputFocus()
+    }
+
+    func removePendingImage(id: UUID) {
+        pendingImages.removeAll { $0.id == id }
     }
 
     /// Whether a retry affordance should be offered (last attempt failed or was
@@ -246,7 +274,9 @@ class OverlayViewModel: ObservableObject {
         // excluding any error rows (and the placeholder we're about to add).
         let messages = chatMessages
             .filter { $0.role == .user || $0.role == .assistant }
-            .map { (role: $0.role.rawValue, content: $0.content) }
+            .map { OutgoingMessage(role: $0.role.rawValue,
+                                   text: $0.content,
+                                   imageDataURLs: $0.imageDataURLs) }
 
         chatMessages.append(ChatMessage(role: .assistant, content: "", isStreaming: true))
         let assistantIndex = chatMessages.count - 1
@@ -259,7 +289,7 @@ class OverlayViewModel: ObservableObject {
         }
     }
 
-    private func runStream(messages: [(role: String, content: String)], assistantIndex: Int) async {
+    private func runStream(messages: [OutgoingMessage], assistantIndex: Int) async {
         var attempt = 0
         while true {
             attempt += 1
@@ -403,7 +433,8 @@ class OverlayViewModel: ObservableObject {
         guard message.role == .user || message.role == .assistant else { return }
         let record = TranscriptRecord(role: message.role.rawValue,
                                       content: message.content,
-                                      ts: message.timestamp.timeIntervalSince1970)
+                                      ts: message.timestamp.timeIntervalSince1970,
+                                      images: message.imageDataURLs.isEmpty ? nil : message.imageDataURLs)
         store.appendRecord(record, to: conversationId)
         updateIndexMeta()
     }
@@ -437,7 +468,8 @@ class OverlayViewModel: ObservableObject {
         let records = persistedMessages.map {
             TranscriptRecord(role: $0.role.rawValue,
                              content: $0.content,
-                             ts: $0.timestamp.timeIntervalSince1970)
+                             ts: $0.timestamp.timeIntervalSince1970,
+                             images: $0.imageDataURLs.isEmpty ? nil : $0.imageDataURLs)
         }
         store.rewriteTranscript(id: conversationId, records: records)
         updateIndexMeta()
@@ -509,6 +541,7 @@ class OverlayViewModel: ObservableObject {
         errorMessage = ""
         isRecording = false
         activeTools = []
+        pendingImages = []
         state = .idle
         conversationId = UUID().uuidString
         conversationStartedAt = Date()
@@ -553,7 +586,8 @@ class OverlayViewModel: ObservableObject {
         chatMessages = store.loadTranscript(id: meta.id).map { record in
             ChatMessage(role: ChatMessage.Role(rawValue: record.role) ?? .assistant,
                         content: record.content,
-                        timestamp: Date(timeIntervalSince1970: record.ts))
+                        timestamp: Date(timeIntervalSince1970: record.ts),
+                        imageDataURLs: record.images ?? [])
         }
 
         showingHistory = false
