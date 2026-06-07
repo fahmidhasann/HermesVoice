@@ -71,7 +71,7 @@ committed (`63861e9`).
 | **6 — Voice flow change** | ✅ **Done (2026-06-07)** |
 | **7 — Expressive visual redesign** | ✅ **Done (2026-06-07)** |
 | **8 — Native packaging & onboarding** | ✅ **Done (2026-06-07)** |
-| 9 — QA, tests, verification | ⬜ Not started |
+| **9 — QA, tests, verification** | ✅ **Done (2026-06-07)** |
 
 ---
 
@@ -678,8 +678,46 @@ menu-bar menu and check the connection line, recents (open one), New Chat, Setti
 
 </details>
 
-### Phase 9 — QA, tests, verification
+### Phase 9 — QA, tests, verification  ✅ DONE (2026-06-07)
 **Goal:** Lock it in.
+
+**What shipped:**
+- **Expanded `HermesVoiceKit` tests** — **145 → 209 checks, 0 failures** (+64).
+  - *SSE named-event/tool parsing:* no-leading-space `data:` lines, unsolicited
+    tool-progress data without an `event:` qualifier, unknown named events clearing the
+    pending state, keep-alive comments, and full `ToolActivity` Codable round-trip
+    (incl. required-only fields + invalid-status rejection).
+  - *ConversationStore round-trip:* `SessionMeta` source/messageCount defaults, custom
+    source/model round-trip, `upsert` appends-new (not just replace), `encodeRecordLine`
+    single-line + sorted-keys, multi-record order + trailing-newline framing,
+    `relativeTime` bucket boundaries (60s→"1m", 3600s→"1h", 86400s→"1d", 604800s→"1w").
+    *(Atomic temp+rename IO lives in the app-layer `ConversationFileStore`, which the Kit
+    test target doesn't link; the pure encode/decode it wraps is fully covered.)*
+  - *Settings serialization:* `baseURLString` with custom host/port, wrong-typed field
+    falling back per-field without wiping siblings, explicit-null model → nil, and
+    `VoiceFlow`/`AppearanceMode` all-cases-have-labels.
+  - *Error classification:* every unreachable URL code → `.offline`, unrecognized code
+    (unknown before stream / drop mid-stream), timeout invariant across stream phase,
+    `http` kind carrying its status code.
+  - *Hotkey-string formatting:* empty modifier string, each modifier→glyph, named key
+    codes (↩ ⎋ ← ↑ F1), `hasModifier` for each single modifier.
+- **Manual verification checklist** — consolidated every phase's "needs on-device pass"
+  into `tasks/manual-verification-checklist.md` (per-feature + the cross-cutting
+  regression pass: hotkey single-fire, single-instance, panel state machine, light/dark,
+  reduce-motion). The pure logic behind hotkey single-fire and the panel state machine is
+  already unit-tested (`PanelStateMachineTests`).
+- **Release build + tests green; bundle builds, validates, launches, quits clean.**
+
+**Verification:** `swift build -c release` ✅ · `swift run HermesVoiceTests` → **209
+checks, 0 failures** ✅ · `./build-app.sh` (clean) — icon embedded, `CFBundleVersion`
+stamped (build 14), `plutil`/`codesign`/icon validation pass ✅ · launch smoke test via
+`open` (launches, runs, clean quit) ✅.
+⚠️ **Remaining manual on-device pass:** see `tasks/manual-verification-checklist.md` —
+the human-in-the-loop items (real keystrokes, mic, screen eyeballing, light/dark +
+reduce-motion) that can't be automated in this headless environment.
+
+<details><summary>Original task list</summary>
+
 **Tasks:**
 - Expand `HermesVoiceKit` tests: SSE named-event/tool parsing, ConversationStore
   round-trip + atomic writes, settings serialization, error classification, hotkey-string
@@ -687,6 +725,8 @@ menu-bar menu and check the connection line, recents (open one), New Chat, Setti
 - Manual verification checklist per feature; regression pass on hotkey single-fire,
   single-instance, panel state machine, light/dark, reduce-motion.
 - Confirm release build + tests green.
+
+</details>
 
 ---
 

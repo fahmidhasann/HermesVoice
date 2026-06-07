@@ -41,5 +41,32 @@ enum HermesErrorTests {
             check(!HermesErrorClassifier.isTransient(.http(500)), "http should not retry")
             check(!HermesErrorClassifier.isTransient(.unknown), "unknown should not retry")
         },
+        TestCase(name: "all unreachable URL codes classify as offline") {
+            for code in [NSURLErrorCannotConnectToHost,
+                         NSURLErrorCannotFindHost,
+                         NSURLErrorDNSLookupFailed,
+                         NSURLErrorNotConnectedToInternet] {
+                checkEqual(HermesErrorClassifier.classify(urlErrorCode: code, midStream: false),
+                           .offline, "code \(code) before stream")
+            }
+        },
+        TestCase(name: "unrecognized URL code: unknown before stream, drop mid-stream") {
+            // NSURLErrorBadServerResponse is not specially handled.
+            checkEqual(
+                HermesErrorClassifier.classify(urlErrorCode: NSURLErrorBadServerResponse, midStream: false),
+                .unknown)
+            checkEqual(
+                HermesErrorClassifier.classify(urlErrorCode: NSURLErrorBadServerResponse, midStream: true),
+                .streamDropped)
+        },
+        TestCase(name: "timeout stays timeout regardless of stream phase") {
+            checkEqual(
+                HermesErrorClassifier.classify(urlErrorCode: NSURLErrorTimedOut, midStream: true),
+                .timeout)
+        },
+        TestCase(name: "http kind carries the original status code") {
+            checkEqual(HermesErrorClassifier.classify(statusCode: 429), .http(429))
+            checkEqual(HermesErrorClassifier.classify(statusCode: 503), .http(503))
+        },
     ]
 }

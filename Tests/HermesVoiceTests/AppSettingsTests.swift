@@ -77,5 +77,52 @@ enum AppSettingsTests {
         TestCase(name: "unknown key code names itself") {
             checkEqual(HotKeyFormatter.keyName(9999), "Key 9999")
         },
+        TestCase(name: "baseURLString reflects custom host and port") {
+            var s = AppSettings.default
+            s.endpointHost = "192.168.1.5"
+            s.endpointPort = 9000
+            checkEqual(s.baseURLString, "http://192.168.1.5:9000")
+        },
+        TestCase(name: "wrong-typed field falls back without wiping the blob") {
+            // endpointPort given as a string is the wrong type; it must fall back
+            // to the default while a correctly-typed sibling is preserved.
+            let json = #"{"endpointPort": "not-a-number", "endpointHost": "example.com"}"#
+            let decoded = AppSettings.decode(Data(json.utf8))
+            checkEqual(decoded.endpointPort, AppSettings.default.endpointPort,
+                       "mistyped field defaults")
+            checkEqual(decoded.endpointHost, "example.com", "valid sibling preserved")
+        },
+        TestCase(name: "explicit null model decodes to nil") {
+            let json = #"{"model": null}"#
+            let decoded = AppSettings.decode(Data(json.utf8))
+            check(decoded.model == nil, "null model → nil")
+        },
+        TestCase(name: "no modifiers yields an empty symbol string") {
+            checkEqual(HotKeyFormatter.modifierSymbols(0), "")
+        },
+        TestCase(name: "each modifier maps to its glyph") {
+            checkEqual(HotKeyFormatter.modifierSymbols(HotKeyFormatter.controlKey), "⌃")
+            checkEqual(HotKeyFormatter.modifierSymbols(HotKeyFormatter.optionKey), "⌥")
+            checkEqual(HotKeyFormatter.modifierSymbols(HotKeyFormatter.shiftKey), "⇧")
+            checkEqual(HotKeyFormatter.modifierSymbols(HotKeyFormatter.cmdKey), "⌘")
+        },
+        TestCase(name: "named key codes resolve to glyphs") {
+            checkEqual(HotKeyFormatter.keyName(36), "↩")
+            checkEqual(HotKeyFormatter.keyName(53), "⎋")
+            checkEqual(HotKeyFormatter.keyName(123), "←")
+            checkEqual(HotKeyFormatter.keyName(126), "↑")
+            checkEqual(HotKeyFormatter.keyName(122), "F1")
+        },
+        TestCase(name: "hasModifier accepts any single modifier") {
+            check(HotKeyFormatter.hasModifier(HotKeyFormatter.controlKey), "ctrl valid")
+            check(HotKeyFormatter.hasModifier(HotKeyFormatter.optionKey), "opt valid")
+            check(HotKeyFormatter.hasModifier(HotKeyFormatter.shiftKey), "shift valid")
+        },
+        TestCase(name: "voiceFlow and appearance expose all cases with labels") {
+            checkEqual(VoiceFlow.allCases.count, 3)
+            checkEqual(AppearanceMode.allCases.count, 3)
+            for f in VoiceFlow.allCases { check(!f.label.isEmpty, "\(f) has a label") }
+            for a in AppearanceMode.allCases { check(!a.label.isEmpty, "\(a) has a label") }
+        },
     ]
 }

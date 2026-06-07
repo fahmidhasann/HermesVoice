@@ -153,5 +153,62 @@ enum ConversationStoreTests {
             check(!label.hasSuffix("ago"), "old entry should be a date, got \(label)")
             check(!label.isEmpty, "date label should be non-empty")
         },
+        TestCase(name: "relativeTime bucket boundaries") {
+            let now = 1_000_000.0
+            // Exactly 60s is the first minute boundary (no longer "just now").
+            checkEqual(ConversationStore.relativeTime(from: now - 60, now: now), "1m ago")
+            // 59m59s is still minutes, 60m flips to hours.
+            checkEqual(ConversationStore.relativeTime(from: now - 59 * 60, now: now), "59m ago")
+            checkEqual(ConversationStore.relativeTime(from: now - 3600, now: now), "1h ago")
+            checkEqual(ConversationStore.relativeTime(from: now - 86400, now: now), "1d ago")
+            checkEqual(ConversationStore.relativeTime(from: now - 6 * 86400, now: now), "6d ago")
+            checkEqual(ConversationStore.relativeTime(from: now - 604_800, now: now), "1w ago")
+        },
+
+        // MARK: - SessionMeta defaults
+
+        TestCase(name: "SessionMeta defaults source to hermes_voice") {
+            let meta = SessionMeta(id: "a", title: "t", startedAt: 1, lastActiveAt: 2)
+            checkEqual(meta.source, ConversationStore.source)
+            checkEqual(meta.source, "hermes_voice")
+            checkEqual(meta.messageCount, 0)
+        },
+        TestCase(name: "index preserves a custom source round-trip") {
+            let sessions = [SessionMeta(id: "a", title: "t", startedAt: 1, lastActiveAt: 2,
+                                        source: "other", messageCount: 5, model: "m")]
+            let data = try! ConversationStore.encodeIndex(sessions)
+            checkEqual(ConversationStore.decodeIndex(data), sessions)
+        },
+
+        // MARK: - upsert / record line
+
+        TestCase(name: "upsert appends a brand-new session") {
+            let existing = [SessionMeta(id: "a", title: "A", startedAt: 0, lastActiveAt: 10)]
+            let added = SessionMeta(id: "b", title: "B", startedAt: 0, lastActiveAt: 5)
+            let result = ConversationStore.upsert(added, into: existing)
+            checkEqual(result.count, 2)
+            // Sorted most-recent-first: "a" (10) before "b" (5).
+            checkEqual(result.first?.id, "a")
+            checkEqual(result.last?.id, "b")
+        },
+        TestCase(name: "encodeRecordLine is a single JSON line with sorted keys") {
+            let line = try! ConversationStore.encodeRecordLine(
+                TranscriptRecord(role: "user", content: "hi", ts: 1.0))
+            check(!line.contains("\n"), "a record line must not contain a newline")
+            // Sorted keys → content before role before ts.
+            check(line.contains(#""content":"hi""#), "content present")
+            check(line.contains(#""role":"user""#), "role present")
+            let decoded = ConversationStore.decodeTranscript(line)
+            checkEqual(decoded.count, 1)
+            checkEqual(decoded.first?.content, "hi")
+        },
+        TestCase(name: "transcript preserves order and trailing newline framing") {
+            let records = (0..<3).map {
+                TranscriptRecord(role: "user", content: "m\($0)", ts: Double($0))
+            }
+            let text = try! ConversationStore.encodeTranscript(records)
+            check(text.hasSuffix("\n"), "non-empty transcript ends with a newline")
+            checkEqual(ConversationStore.decodeTranscript(text), records)
+        },
     ]
 }
