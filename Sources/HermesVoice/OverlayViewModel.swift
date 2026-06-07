@@ -132,15 +132,7 @@ class OverlayViewModel: ObservableObject {
             Task { @MainActor in self?.transcribedText = text }
         }
         voiceEngine?.onFinalResult = { [weak self] text in
-            Task { @MainActor in
-                guard let self else { return }
-                self.transcribedText = text
-                self.isRecording = false
-                self.state = .transcribing
-                self.voiceEngine?.stopRecording()
-                // Auto-send on silence
-                self.sendToHermes(text: text)
-            }
+            Task { @MainActor in self?.handleTranscript(text) }
         }
         voiceEngine?.onError = { [weak self] error in
             Task { @MainActor in
@@ -165,12 +157,28 @@ class OverlayViewModel: ObservableObject {
 
     // MARK: - Voice
 
+    /// Current voice flow from Settings (read fresh so changes apply next record).
+    private var voiceFlow: VoiceFlow { AppSettingsStore.loadCurrent().voiceFlow }
+
+    /// Tap behavior for the mic button in toggle modes (review / auto-send).
     func toggleRecording() {
         if isRecording {
             stopRecording()
         } else {
             startRecording()
         }
+    }
+
+    /// Push-to-talk: begin capture while the mic button is held.
+    func startHoldRecording() {
+        guard !isRecording else { return }
+        startRecording()
+    }
+
+    /// Push-to-talk: release → finalize the transcript (which sends, per flow).
+    func endHoldRecording() {
+        guard isRecording else { return }
+        stopRecording()
     }
 
     private func startRecording() {
@@ -183,17 +191,35 @@ class OverlayViewModel: ObservableObject {
         errorMessage = ""
         isRecording = true
         state = .listening
-        engine.startRecording()
+        engine.startRecording(autoStopOnSilence: voiceFlow.stopsOnSilence)
     }
 
+    /// Manually end capture and let the engine deliver the transcript through
+    /// `handleTranscript`, which routes it per the active voice flow.
     private func stopRecording() {
+        guard isRecording else { return }
+        isRecording = false   // snappy UI; the transcript arrives via onFinalResult
+        voiceEngine?.finish()
+    }
+
+    /// Route a finished transcript according to the active voice flow: fill the
+    /// input for review (default), or send it immediately (auto-send / PTT).
+    private func handleTranscript(_ text: String) {
         isRecording = false
-        voiceEngine?.stopRecording()
-        let text = transcribedText.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !text.isEmpty {
-            sendToHermes(text: text)
-        } else if state == .listening {
-            state = .idle
+        transcribedText = ""
+        switch voiceFlow.outcome(for: text) {
+        case .ignore:
+            // No speech recognized — return to idle quietly and refocus input.
+            if state == .listening || state == .transcribing { state = .idle }
+            pulseInputFocus()
+        case .fill(let transcript):
+            let existing = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
+            inputText = existing.isEmpty ? transcript : existing + " " + transcript
+            if state == .listening { state = .idle }
+            pulseInputFocus()
+        case .send(let transcript):
+            state = .transcribing
+            sendToHermes(text: transcript)
         }
     }
 

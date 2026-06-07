@@ -22,6 +22,18 @@ class VoiceEngine: ObservableObject {
     /// system locale). Tracked so we only rebuild the recognizer when it changes.
     private var currentLanguage: String = ""
 
+    /// When false, the silence timer never auto-stops (push-to-talk holds the
+    /// mic open until the caller releases it).
+    private var autoStopOnSilence = true
+    /// Best transcript seen so far this session, delivered verbatim on `finish()`
+    /// so we never depend on the flaky on-device `isFinal` signal (bug #9).
+    private var latestTranscript = ""
+    /// Armed once we've heard any speech, so a pre-speech silence window can't
+    /// auto-stop the recording before the user has said anything.
+    private var hasReceivedSpeech = false
+    /// Ensures the transcript is delivered exactly once per session.
+    private var didFinish = false
+
     private var isRecording = false
     private var authorizationStatus: SFSpeechRecognizerAuthorizationStatus = .notDetermined
 
@@ -70,7 +82,9 @@ class VoiceEngine: ObservableObject {
         }
     }
 
-    func startRecording() {
+    /// Begin capture. `autoStopOnSilence` is false for push-to-talk, where the
+    /// caller holds the mic open and `finish()` is invoked on release.
+    func startRecording(autoStopOnSilence: Bool = true) {
         guard !isRecording else { return }
         guard authorizationStatus == .authorized else {
             onError?("Speech recognition not authorized.")
@@ -79,6 +93,11 @@ class VoiceEngine: ObservableObject {
 
         // Pick up the latest silence timeout / recognition language.
         applyVoiceSettings()
+
+        self.autoStopOnSilence = autoStopOnSilence
+        latestTranscript = ""
+        hasReceivedSpeech = false
+        didFinish = false
 
         // Cancel any existing task
         recognitionTask?.cancel()
@@ -143,12 +162,13 @@ class VoiceEngine: ObservableObject {
             if let result = result {
                 let text = result.bestTranscription.formattedString
                 self.lastResultTime = Date()
+                if !text.isEmpty {
+                    self.latestTranscript = text
+                    self.hasReceivedSpeech = true
+                }
 
                 if result.isFinal {
-                    DispatchQueue.main.async {
-                        self.onFinalResult?(text)
-                    }
-                    self.stopRecording()
+                    self.finish()
                 } else {
                     DispatchQueue.main.async {
                         self.onPartialResult?(text)
@@ -157,20 +177,42 @@ class VoiceEngine: ObservableObject {
             }
 
             if let error = error {
+                if self.didFinish { return }
                 let nsError = error as NSError
-                // Ignore cancellation errors (code 216 = cancelled, code 1 = no speech detected)
+                // Cancellation (216) and no-speech (1) are expected when we stop
+                // capture ourselves — deliver whatever transcript we have.
                 if nsError.domain == "kAFAssistantErrorDomain" && (nsError.code == 216 || nsError.code == 1) {
+                    self.finish()
                     return
                 }
                 DispatchQueue.main.async {
                     self.onError?("Recognition error: \(error.localizedDescription)")
                 }
-                self.stopRecording()
+                self.teardown()
             }
         }
     }
 
+    /// Stop capture and deliver the accumulated transcript exactly once. Used by
+    /// the silence timer, an `isFinal` result, and the caller (manual stop /
+    /// push-to-talk release).
+    func finish() {
+        guard isRecording, !didFinish else { return }
+        didFinish = true
+        let text = latestTranscript
+        teardown()
+        DispatchQueue.main.async {
+            self.onFinalResult?(text)
+        }
+    }
+
+    /// Stop capture WITHOUT delivering a transcript (cancel / cleanup).
     func stopRecording() {
+        teardown()
+    }
+
+    /// Tear down the audio engine and recognition task. Idempotent.
+    private func teardown() {
         guard isRecording else { return }
         isRecording = false
 
@@ -193,14 +235,17 @@ class VoiceEngine: ObservableObject {
                 self?.silenceTimer?.invalidate()
                 return
             }
+            // Push-to-talk holds the mic open until release.
+            guard self.autoStopOnSilence else { return }
+            // Don't auto-stop until the user has actually said something.
+            guard self.hasReceivedSpeech else { return }
 
             let elapsed = Date().timeIntervalSince(self.lastResultTime)
             if elapsed >= self.silenceThreshold {
-                // Silence detected — stop recording but don't auto-send
+                // Silence detected — finalize with the transcript we've gathered
+                // from partial results (don't wait on the flaky on-device final).
                 DispatchQueue.main.async {
-                    self.silenceTimer?.invalidate()
-                    self.silenceTimer = nil
-                    self.recognitionRequest?.endAudio()
+                    self.finish()
                 }
             }
         }

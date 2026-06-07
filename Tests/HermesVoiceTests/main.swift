@@ -8,6 +8,7 @@ let allCases =
     APIKeyParserTests.cases +
     ConversationStoreTests.cases +
     HermesErrorTests.cases +
-    AppSettingsTests.cases
+    AppSettingsTests.cases +
+    VoiceFlowTests.cases
 
 runAllTests(allCases)

@@ -13,8 +13,10 @@ private struct ContentHeightKey: PreferenceKey {
 
 struct OverlayView: View {
     @ObservedObject var viewModel: OverlayViewModel
+    @ObservedObject private var settingsStore = AppSettingsStore.shared
     @State private var streamingContentLength: Int = 0
     @State private var isDropTargeted = false
+    @State private var micHovering = false
     @FocusState private var inputFocused: Bool
     weak var panelRef: OverlayPanel?
 
@@ -377,18 +379,70 @@ struct OverlayView: View {
             && viewModel.pendingImages.isEmpty
     }
 
+    /// Whether the mic should be disabled (a response is in flight).
+    private var micDisabled: Bool {
+        viewModel.state == .sending || viewModel.state == .responding
+    }
+
+    private var micIcon: some View {
+        Image(systemName: viewModel.isRecording ? "mic.fill" : "mic")
+            .font(.system(size: 14, weight: .medium))
+            .foregroundColor(viewModel.isRecording ? .white : Theme.Colors.textPrimary)
+    }
+
+    /// In review / auto-send modes the mic is a tap-to-toggle button; in
+    /// push-to-talk it's a press-and-hold control (release sends).
+    @ViewBuilder
+    private var micButton: some View {
+        if settingsStore.settings.voiceFlow == .pushToTalk {
+            pushToTalkMic
+        } else {
+            Button(action: viewModel.toggleRecording) { micIcon }
+                .buttonStyle(CircleButtonStyle(isActive: viewModel.isRecording))
+                .disabled(micDisabled)
+                .help(viewModel.isRecording ? "Stop recording" : "Start recording")
+                .accessibilityLabel(viewModel.isRecording ? "Stop recording" : "Start recording")
+        }
+    }
+
+    /// Hold-to-record mic for push-to-talk. A `DragGesture` with zero minimum
+    /// distance gives us press (start) and release (stop+send) without relying
+    /// on Button's tap semantics. Styled to match `CircleButtonStyle`.
+    private var pushToTalkMic: some View {
+        let active = viewModel.isRecording
+        let bg: Color = active
+            ? Theme.Colors.recordingRed
+            : (micHovering ? Theme.Colors.textPrimary.opacity(0.12)
+                           : Theme.Colors.textPrimary.opacity(0.06))
+        return micIcon
+            .frame(width: 34, height: 34)
+            .background(bg)
+            .clipShape(Circle())
+            .scaleEffect(active ? 0.94 : 1.0)
+            .opacity(micDisabled ? 0.5 : 1)
+            .contentShape(Circle())
+            .animation(.easeOut(duration: 0.12), value: micHovering)
+            .animation(.easeOut(duration: 0.1), value: active)
+            .onHover { micHovering = $0 }
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in
+                        guard !micDisabled, !viewModel.isRecording else { return }
+                        viewModel.startHoldRecording()
+                    }
+                    .onEnded { _ in
+                        guard !micDisabled else { return }
+                        viewModel.endHoldRecording()
+                    }
+            )
+            .help("Hold to talk")
+            .accessibilityLabel("Push to talk — hold to record")
+    }
+
     private var inputRow: some View {
         HStack(spacing: Theme.Spacing.md) {
-            // Mic button
-            Button(action: viewModel.toggleRecording) {
-                Image(systemName: viewModel.isRecording ? "mic.fill" : "mic")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(viewModel.isRecording ? .white : Theme.Colors.textPrimary)
-            }
-            .buttonStyle(CircleButtonStyle(isActive: viewModel.isRecording))
-            .disabled(viewModel.state == .sending || viewModel.state == .responding)
-            .help(viewModel.isRecording ? "Stop recording" : "Start recording")
-            .accessibilityLabel(viewModel.isRecording ? "Stop recording" : "Start recording")
+            // Mic button — toggle (tap) in review/auto-send, hold-to-talk in PTT.
+            micButton
 
             // Input area
             if viewModel.isRecording {

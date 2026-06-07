@@ -68,7 +68,7 @@ committed (`63861e9`).
 | **3 — Conversation features** | ✅ **Done (2026-06-07)** |
 | **4 — Rich content** | ✅ **Done (2026-06-07)** |
 | **5 — Settings + keyboard control** | ✅ **Done (2026-06-07)** |
-| 6 — Voice flow change | ⬜ Not started |
+| **6 — Voice flow change** | ✅ **Done (2026-06-07)** |
 | 7 — Expressive visual redesign | ⬜ Not started |
 | 8 — Native packaging & onboarding | ⬜ Not started |
 | 9 — QA, tests, verification | ⬜ Not started |
@@ -481,9 +481,51 @@ default; all shortcuts work.
 
 </details>
 
-### Phase 6 — Voice flow change
+### Phase 6 — Voice flow change  ✅ DONE (2026-06-07)
 **Goal:** Make voice "accurate" by default.
-**Tasks:**
+
+**What shipped:**
+- **6a. Transcribe → review → send is now the default.** `AppSettings.default.voiceFlow`
+  flipped from `.autoSend` to `.reviewSend`. `VoiceEngine` was made **flow-agnostic**: it
+  captures audio + transcribes and delivers the result via a single `onFinalResult`; it no
+  longer decides whether to send. New `startRecording(autoStopOnSilence:)`, `finish()`
+  (deliver transcript exactly once, guarded by `didFinish`), and `stopRecording()`/
+  `teardown()` (cancel without delivering). The **routing decision is pure logic** in
+  `HermesVoiceKit`: `VoiceFlow.outcome(for:) → .ignore / .fill / .send` and
+  `VoiceFlow.stopsOnSilence`. `OverlayViewModel.handleTranscript(_:)` consumes it —
+  `reviewSend` **fills the input field** (appending to any typed text) and refocuses
+  without sending; `autoSend` and `pushToTalk` send immediately. **Push-to-talk** is a
+  hold-to-record control: the mic button becomes a `DragGesture(minimumDistance: 0)` (press
+  → `startHoldRecording`, release → `endHoldRecording` → finalize+send) when the flow is
+  PTT, styled to match `CircleButtonStyle`; tap-to-toggle is preserved for the other modes.
+- **6b. Robustness.** On-device recognition kept (`requiresOnDeviceRecognition = true`).
+  Silence now **finalizes from the accumulated partial transcript** instead of calling
+  `endAudio()` and waiting on the flaky on-device `isFinal` (root-cause fix for bug #9);
+  silence auto-stop is also gated on `hasReceivedSpeech` so a pre-speech pause can't cut
+  recording off early. No-speech (empty transcript, or recognition error codes 1/216)
+  resolves gracefully to `.ignore` → returns to idle quietly. Unsupported recognition
+  locales already fall back to the system locale in `applyVoiceSettings`. The live waveform
+  + transcription preview during capture are unchanged.
+
+**New pure logic (HermesVoiceKit, tested):** `VoiceFlow.stopsOnSilence`,
+`VoiceFlow.TranscriptOutcome`, `VoiceFlow.outcome(for:)`. 7 new tests
+(`VoiceFlowTests`) — **145 checks total**.
+
+**Files changed:** `Sources/HermesVoiceKit/AppSettings.swift` (default flow + routing
+logic), `Sources/HermesVoice/{VoiceEngine,OverlayViewModel,OverlayView,SettingsView}.swift`,
+`Tests/HermesVoiceTests/{VoiceFlowTests.swift,main.swift}`. (`WaveformView.swift`
+needed no change — it already animates from `audioLevel` during capture.)
+
+**Verification:** `swift build -c release` ✅ · `swift run HermesVoiceTests` → 145 checks,
+0 failures ✅ · `./build-app.sh` ✅ · launch smoke test via `open` (launches, lock acquired,
+clean quit + lock released) ✅.
+⚠️ **Still needs a manual on-device pass:** default flow — speak → field fills → edit →
+Return sends; switch to auto-send and confirm it sends after a pause; switch to push-to-talk
+and confirm hold-records / release-sends; confirm the waveform animates while capturing and
+no-speech returns quietly to idle.
+
+<details><summary>Original task list</summary>
+
 - **6a.** Implement **transcribe → review → send** as default: on stop/silence, fill the
   input field with the transcript and focus it; **do not auto-send**; Enter sends. Honor
   the Settings choice for auto-send and push-to-talk (hold-to-record, release-to-send).
@@ -493,6 +535,8 @@ default; all shortcuts work.
 **Files:** `VoiceEngine.swift`, `OverlayViewModel.swift`, `WaveformView.swift`, settings.
 **Acceptance:** default = speak → field fills → edit → Enter; settings switch modes;
 waveform animates while capturing.
+
+</details>
 
 ### Phase 7 — Expressive visual redesign  *(warm & expressive)*
 **Goal:** Cozy, deep, richly-amber — yet native/premium. Applies to **all** surfaces.

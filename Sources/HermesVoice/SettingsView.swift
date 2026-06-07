@@ -92,11 +92,24 @@ private struct VoiceSettingsTab: View {
                 }
             }
 
-            Text("Voice flow changes apply on your next recording.")
+            Text(flowHint)
                 .font(.caption)
                 .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(20)
+    }
+
+    /// One-line explanation of what the currently-selected flow does.
+    private var flowHint: String {
+        switch settings.voiceFlow {
+        case .reviewSend:
+            return "Tap the mic to dictate; the text fills the input for you to edit, then press Return to send."
+        case .autoSend:
+            return "Tap the mic to dictate; the message sends automatically after a pause. Changes apply on your next recording."
+        case .pushToTalk:
+            return "Hold the mic button to record and release to send. Changes apply on your next recording."
+        }
     }
 }
 

@@ -17,6 +17,32 @@ public enum VoiceFlow: String, Codable, Sendable, CaseIterable {
         case .pushToTalk: return "Push-to-talk (hold to record)"
         }
     }
+
+    /// Whether recording should auto-stop after a silence window. Push-to-talk
+    /// holds the mic open until the user releases the button, so it opts out.
+    public var stopsOnSilence: Bool { self != .pushToTalk }
+
+    /// What to do with a captured transcript once recording ends. Pure routing
+    /// logic shared by the view model and exercised by unit tests.
+    public enum TranscriptOutcome: Equatable, Sendable {
+        /// Nothing usable was recognized — return to idle quietly.
+        case ignore
+        /// Place the text in the input field for the user to review and edit.
+        case fill(String)
+        /// Send the text to Hermes immediately.
+        case send(String)
+    }
+
+    /// Decide how a finished transcript should be handled for this flow. Empty
+    /// or whitespace-only transcripts always `.ignore` (graceful no-speech).
+    public func outcome(for transcript: String) -> TranscriptOutcome {
+        let trimmed = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return .ignore }
+        switch self {
+        case .reviewSend:          return .fill(trimmed)
+        case .autoSend, .pushToTalk: return .send(trimmed)
+        }
+    }
 }
 
 /// App appearance override.
@@ -84,7 +110,8 @@ public struct AppSettings: Codable, Equatable, Sendable {
     }
 
     /// The shipped defaults: ⌃⇧H hotkey, local gateway, server-default model,
-    /// system appearance, current voice behavior (auto-send on silence).
+    /// system appearance, and the accurate-by-default voice behavior
+    /// (transcribe → review → send).
     public static let `default` = AppSettings(
         hotKeyCode: 0x04,                                          // kVK_ANSI_H
         hotKeyModifiers: HotKeyFormatter.controlKey | HotKeyFormatter.shiftKey,
@@ -93,7 +120,7 @@ public struct AppSettings: Codable, Equatable, Sendable {
         model: nil,
         appearance: .system,
         launchAtLogin: false,
-        voiceFlow: .autoSend,
+        voiceFlow: .reviewSend,
         silenceTimeout: 1.5,
         recognitionLanguage: "")
 
