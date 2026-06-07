@@ -326,6 +326,15 @@ struct OverlayView: View {
                     proxy.scrollTo(last.id, anchor: .bottom)
                 }
             }
+            // Switching to a (possibly mid-stream) background session resets the
+            // streamed-length tracker, so the first post-switch chunk autoscrolls
+            // instead of being swallowed by the previous session's length (§4.1).
+            .onChange(of: viewModel.conversationId) { _, _ in
+                streamingContentLength = viewModel.chatMessages.last?.content.count ?? 0
+                if let last = viewModel.chatMessages.last {
+                    proxy.scrollTo(last.id, anchor: .bottom)
+                }
+            }
         }
     }
 

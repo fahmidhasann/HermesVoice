@@ -116,11 +116,22 @@ class OverlayViewModel: ObservableObject {
     private let store = ConversationFileStore()
     private let indexWriter: SessionIndexWriter
 
+    /// Holds every live session so streams survive panel hide / focus loss /
+    /// switch, and ref-counts the App Nap assertion across them (§4.3). Owned
+    /// here because the facade is a forever-singleton.
+    private let manager = SessionManager()
+
     /// The conversation currently shown. Per-session state is mirrored from here.
     private(set) var foreground: ChatSession
     /// Subscriptions mirroring the foreground session's published fields. Torn
     /// down and rebuilt on every session swap (§4.1).
     private var sessionCancellables = Set<AnyCancellable>()
+
+    /// The session that owned the mic when recording started. A finished
+    /// transcript is routed back to it (if still live) rather than to whatever
+    /// is foreground when the async result lands, so switching mid-record can't
+    /// misdeliver speech (§4.6). Weak so a torn-down target falls back cleanly.
+    private weak var recordingTarget: ChatSession?
 
     /// Upper bound on images staged for a single message.
     let maxAttachments = 6
@@ -134,23 +145,27 @@ class OverlayViewModel: ObservableObject {
 
         // Resume the most recent conversation (or start a blank one).
         let sessions = store.loadIndex()
+        let initial: ChatSession
         if let recent = ConversationStore.mostRecent(in: sessions) {
             let records = store.loadTranscript(id: recent.id)
-            foreground = ChatSession(conversationId: recent.id,
-                                     startedAt: Date(timeIntervalSince1970: recent.startedAt),
-                                     model: recent.model,
-                                     store: store,
-                                     apiClient: apiClient,
-                                     indexWriter: indexWriter,
-                                     initialMessages: ChatSession.mapRecords(records))
+            initial = ChatSession(conversationId: recent.id,
+                                  startedAt: Date(timeIntervalSince1970: recent.startedAt),
+                                  model: recent.model,
+                                  store: store,
+                                  apiClient: apiClient,
+                                  indexWriter: indexWriter,
+                                  initialMessages: ChatSession.mapRecords(records))
         } else {
-            foreground = ChatSession(conversationId: UUID().uuidString,
-                                     startedAt: Date(),
-                                     model: nil,
-                                     store: store,
-                                     apiClient: apiClient,
-                                     indexWriter: indexWriter)
+            initial = ChatSession(conversationId: UUID().uuidString,
+                                  startedAt: Date(),
+                                  model: nil,
+                                  store: store,
+                                  apiClient: apiClient,
+                                  indexWriter: indexWriter)
         }
+        foreground = initial
+        // All stored properties are initialized — now legal to touch `self`.
+        manager.register(initial)
 
         voiceEngine = VoiceEngine()
         voiceEngine?.onPartialResult = { [weak self] text in
@@ -201,6 +216,36 @@ class OverlayViewModel: ObservableObject {
         session.onConnectionState = { [weak self] in self?.connectionState = $0 }
     }
 
+    /// Create a session and register it with the manager so it survives in the
+    /// background. Single chokepoint so every new/loaded session is registered.
+    private func makeSession(id: String,
+                             startedAt: Date,
+                             model: String?,
+                             initialMessages: [ChatMessage] = []) -> ChatSession {
+        let session = ChatSession(conversationId: id,
+                                  startedAt: startedAt,
+                                  model: model,
+                                  store: store,
+                                  apiClient: apiClient,
+                                  indexWriter: indexWriter,
+                                  initialMessages: initialMessages)
+        manager.register(session)
+        return session
+    }
+
+    /// Before switching the foreground away, drop the outgoing session from the
+    /// manager **unless** it's worth keeping resident — i.e. it's streaming, or
+    /// has a retryable error/partial. Streaming/errored sessions stay alive in
+    /// the background so returning to them shows live or retryable state
+    /// (§0 #1/#5); clean idle/done sessions are reloaded identically from disk,
+    /// which keeps live-session memory bounded without Phase-4 eviction.
+    private func releaseForegroundIfDisposable() {
+        let outgoing = foreground
+        guard !outgoing.isBusy, !outgoing.canRetry else { return }
+        outgoing.teardown()
+        manager.remove(id: outgoing.conversationId)
+    }
+
     // MARK: - Voice
 
     /// Current voice flow from Settings (read fresh so changes apply next record).
@@ -237,6 +282,9 @@ class OverlayViewModel: ObservableObject {
         foreground.errorMessage = ""
         isRecording = true
         foreground.state = .listening
+        // Pin the transcript's destination to the session that owned the mic at
+        // record-start, so switching sessions mid-record can't misroute it (§4.6).
+        recordingTarget = foreground
         engine.startRecording(autoStopOnSilence: voiceFlow.stopsOnSilence)
     }
 
@@ -266,8 +314,11 @@ class OverlayViewModel: ObservableObject {
             if foreground.state == .listening { foreground.state = .idle }
             pulseInputFocus()
         case .send(let transcript):
-            foreground.state = .transcribing
-            routeSend(text: transcript, images: [])
+            // Route to the record-start session if it's still live, else fall
+            // back to the current foreground (§4.6).
+            let target = recordingTarget.flatMap { manager.session(for: $0.conversationId) } ?? foreground
+            target.state = .transcribing
+            routeSend(text: transcript, images: [], to: target)
         }
     }
 
@@ -278,21 +329,23 @@ class OverlayViewModel: ObservableObject {
         let images = pendingImages
         guard !text.isEmpty || !images.isEmpty else { return }
         inputText = ""
-        routeSend(text: text, images: images)
+        routeSend(text: text, images: images, to: foreground)
     }
 
     /// Global pre-send housekeeping (stop mic, clear transcription/staged
-    /// images), then hand the message to the foreground session. Bails when the
-    /// session is busy so nothing global is cleared on a blocked send.
-    private func routeSend(text: String, images: [ImageAttachment]) {
-        guard !foreground.isBusy else { return }
+    /// images), then hand the message to `target`. Guarding on the **target's**
+    /// busy state (not always the foreground's) lets a different session send
+    /// concurrently. Bails when the target is busy so nothing global is cleared
+    /// on a blocked send.
+    private func routeSend(text: String, images: [ImageAttachment], to target: ChatSession) {
+        guard !target.isBusy else { return }
         if isRecording {
             isRecording = false
             voiceEngine?.stopRecording()
         }
         transcribedText = ""
         pendingImages = []
-        foreground.send(text: text, images: images)
+        target.send(text: text, images: images)
     }
 
     // MARK: - Image attachments
@@ -325,13 +378,13 @@ class OverlayViewModel: ObservableObject {
     // MARK: - Lifecycle
 
     func reset() {
-        // Called when panel is shown — keep conversation but stop any recording
+        // Called when the panel is shown. GLOBAL concerns only — must NOT touch
+        // the foreground session's state/errorMessage, or reopening to a
+        // live/errored session would wipe the very thing the user came back to
+        // see or retry (§4.2). The per-session 1.5s timer handles done→idle.
         voiceEngine?.stopRecording()
         isRecording = false
         transcribedText = ""
-        if foreground.state == .done || foreground.state == .error {
-            foreground.state = .idle
-        }
         // Refresh the reachability indicator each time the panel opens.
         checkConnection()
         // Trigger focus on next render
@@ -373,21 +426,17 @@ class OverlayViewModel: ObservableObject {
         pulseInputFocus()
     }
 
-    /// Swap the foreground to a fresh, unregistered conversation. Phase 2 still
-    /// discards the previous session (cancels its stream); Phase 3 keeps it alive.
+    /// Swap the foreground to a fresh blank conversation **without** killing the
+    /// previous one: a streaming/errored session is left running in the
+    /// background (§0 #1/#2); only a disposable idle session is released.
     private func startBlankConversation() {
-        foreground.teardown()
+        releaseForegroundIfDisposable()
         voiceEngine?.stopRecording()
         inputText = ""
         transcribedText = ""
         isRecording = false
         pendingImages = []
-        let session = ChatSession(conversationId: UUID().uuidString,
-                                  startedAt: Date(),
-                                  model: nil,
-                                  store: store,
-                                  apiClient: apiClient,
-                                  indexWriter: indexWriter)
+        let session = makeSession(id: UUID().uuidString, startedAt: Date(), model: nil)
         bindForeground(session)
     }
 
@@ -421,38 +470,52 @@ class OverlayViewModel: ObservableObject {
         }
     }
 
-    /// Load a stored conversation into the thread and return to the chat view.
+    /// Switch to a stored conversation. Identity is the foreground session id: a
+    /// no-op if it's already shown; otherwise re-point to its **live** session if
+    /// one is resident (no disk load, so a still-streaming background session is
+    /// reattached with its live progress), else load it from disk (§4.11).
+    /// Either way the previously-foreground stream is left running.
     func openConversation(id: String) {
         // Re-opening the conversation already shown is a no-op beyond closing.
         guard id != foreground.conversationId else { closeHistory(); return }
-        guard let meta = historyEntries.first(where: { $0.id == id })?.meta
-                ?? store.loadIndex().first(where: { $0.id == id }) else { return }
 
-        foreground.teardown()
+        let target: ChatSession
+        if let live = manager.session(for: id) {
+            releaseForegroundIfDisposable()
+            target = live
+        } else {
+            guard let meta = historyEntries.first(where: { $0.id == id })?.meta
+                    ?? store.loadIndex().first(where: { $0.id == id }) else { return }
+            releaseForegroundIfDisposable()
+            let records = store.loadTranscript(id: meta.id)
+            target = makeSession(id: meta.id,
+                                 startedAt: Date(timeIntervalSince1970: meta.startedAt),
+                                 model: meta.model,
+                                 initialMessages: ChatSession.mapRecords(records))
+        }
+
         voiceEngine?.stopRecording()
         inputText = ""
         transcribedText = ""
         isRecording = false
         pendingImages = []
-
-        let records = store.loadTranscript(id: meta.id)
-        let session = ChatSession(conversationId: meta.id,
-                                  startedAt: Date(timeIntervalSince1970: meta.startedAt),
-                                  model: meta.model,
-                                  store: store,
-                                  apiClient: apiClient,
-                                  indexWriter: indexWriter,
-                                  initialMessages: ChatSession.mapRecords(records))
-        bindForeground(session)
+        bindForeground(target)
 
         showingHistory = false
         historyQuery = ""
         pulseInputFocus()
     }
 
-    /// Delete a stored conversation (index entry + transcript file). If it's the
-    /// one currently open, fall back to a fresh blank conversation.
+    /// Delete a stored conversation (index entry + transcript file). If a live
+    /// session exists for it, cancel and evict that session **before** deleting
+    /// disk so a late chunk can't resurrect the files (ordering per §4.5; the
+    /// in-flight-chunk race is fully hardened in Phase 4). If it's the one
+    /// currently open, fall back to a fresh blank conversation.
     func deleteConversation(id: String) {
+        if let live = manager.session(for: id) {
+            live.teardown()
+            manager.remove(id: id)
+        }
         store.deleteConversation(id: id)
         reloadHistory()
         if id == foreground.conversationId {
@@ -461,7 +524,9 @@ class OverlayViewModel: ObservableObject {
     }
 
     func cleanup() {
-        foreground.teardown()
+        // Panel hidden — stop only the mic. The foreground session keeps
+        // streaming in the background (the whole point of Phase 3); it is NOT
+        // torn down here anymore.
         voiceEngine?.stopRecording()
         isRecording = false
     }

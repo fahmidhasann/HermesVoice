@@ -68,6 +68,13 @@ final class ChatSession: ObservableObject {
     /// state lives on the facade, so the session reports up rather than owning it.
     var onConnectionState: ((ConnectionState) -> Void)?
 
+    /// Called when this session's network loop starts / ends, so the
+    /// `SessionManager` can ref-count the process-wide App Nap assertion (§4.3).
+    /// Wired by the manager at registration and kept for the session's whole
+    /// life, so a backgrounded stream still holds the assertion.
+    var onStreamingBegin: (() -> Void)?
+    var onStreamingEnd: (() -> Void)?
+
     init(conversationId: String,
          startedAt: Date,
          model: String?,
@@ -176,6 +183,20 @@ final class ChatSession: ObservableObject {
     }
 
     private func runStream(messages: [OutgoingMessage]) async {
+        // Hold the App Nap assertion for the duration of the network burst only
+        // (across retry backoffs too), and release it *before* the cosmetic 1.5s
+        // done→idle sleep. The explicit `releaseActivity()` calls do the release
+        // at the right moment; the `defer` is a safety net so the early-returns
+        // (cancellation / failure) can never leak the ref-count (§4.3).
+        onStreamingBegin?()
+        var releasedActivity = false
+        func releaseActivity() {
+            guard !releasedActivity else { return }
+            releasedActivity = true
+            onStreamingEnd?()
+        }
+        defer { releaseActivity() }
+
         var attempt = 0
         while true {
             attempt += 1
@@ -203,6 +224,7 @@ final class ChatSession: ObservableObject {
                 }
 
                 finishAssistant()
+                releaseActivity() // network done — don't hold the assertion through the sleep
                 state = .done
                 try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5s
                 if state == .done { state = .idle }
