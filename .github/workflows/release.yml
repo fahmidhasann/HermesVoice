@@ -1,0 +1,55 @@
+name: Release
+
+# Runs when you push a version tag like v1.1.0.
+# It builds the signed .dmg on a fresh macOS machine and publishes a
+# GitHub Release with the .dmg attached and auto-generated notes.
+#
+# To cut a release:
+#   git tag v1.1.0          # name this snapshot
+#   git push origin v1.1.0  # hand it to GitHub — this Action does the rest
+on:
+  push:
+    tags:
+      - "v*"
+
+# Lets the Action create the Release and upload the .dmg to your repo.
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: macos-14
+    steps:
+      # Grab the code. fetch-depth: 0 pulls the FULL git history, because
+      # build-app.sh derives the build number from `git rev-list --count HEAD`.
+      - name: Check out the code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # The tag (e.g. "v1.1.0") is the single source of truth for the version.
+      # Strip the leading "v" and stamp it into Info.plist so the built app and
+      # the .dmg filename both match the tag — no hand-editing version numbers.
+      - name: Set version from the tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" Resources/Info.plist
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "Building HermesVoice $VERSION"
+
+      # Optional but nicer: gives a drag-to-Applications install window.
+      # If this step is ever removed, make-dmg.sh falls back to hdiutil.
+      - name: Install create-dmg
+        run: brew install create-dmg
+
+      # Runs your existing script: swift build → app bundle → ad-hoc sign → .dmg.
+      - name: Build the .dmg
+        run: ./make-dmg.sh
+
+      # Creates the public Release page, attaches the .dmg, and auto-writes
+      # release notes from the commits since the previous tag.
+      - name: Publish the GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/HermesVoice-${{ env.VERSION }}.dmg
+          generate_release_notes: true
