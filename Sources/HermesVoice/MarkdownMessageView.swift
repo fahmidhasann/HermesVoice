@@ -16,8 +16,10 @@ struct MarkdownMessageView: View {
             .markdownBlockStyle(\.codeBlock) { configuration in
                 HermesCodeBlockView(configuration: configuration)
             }
-            // Render incomplete markdown (mid-stream) without flipping layout.
-            .textSelection(.enabled)
+            // NOTE: do NOT apply `.textSelection(.enabled)` here. On macOS it backs
+            // the text with a selectable view that swallows the single click used to
+            // open a link, making every markdown link unclickable. Whole-message and
+            // per-code-block Copy buttons cover the copy use case instead.
     }
 }
 
