@@ -120,10 +120,10 @@ private struct VoiceSettingsTab: View {
 
 private struct ConnectionSettingsTab: View {
     @Binding var settings: AppSettings
+    @ObservedObject private var credentials = CredentialsStore.shared
     @State private var models: [String] = []
     @State private var modelStatus: String = ""
     @State private var loadingModels = false
-    @State private var portText: String = ""
 
     private let client = HermesAPIClient()
 
@@ -138,11 +138,9 @@ private struct ConnectionSettingsTab: View {
     var body: some View {
         Form {
             Section {
-                TextField("Host", text: $settings.endpointHost)
-                TextField("Port", text: $portText)
-                    .onChange(of: portText) { _, new in
-                        if let port = Int(new.filter(\.isNumber)), port > 0 { settings.endpointPort = port }
-                    }
+                TextField("Gateway URL", text: $settings.gatewayURL)
+                    .autocorrectionDisabled()
+                SecureField("API key", text: $credentials.apiKey)
             }
 
             Section {
@@ -168,13 +166,13 @@ private struct ConnectionSettingsTab: View {
                 }
             }
 
-            Text("Default endpoint is 127.0.0.1:8642 (the local Hermes gateway).")
+            Text("Enter your gateway URL (e.g. http://127.0.0.1:8642) and API key. The key is stored in your Keychain; leave it empty for a no-auth gateway. Refresh models to test the connection.")
                 .font(.caption)
                 .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(20)
         .onAppear {
-            portText = String(settings.endpointPort)
             refreshModels()
         }
     }

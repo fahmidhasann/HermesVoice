@@ -54,18 +54,28 @@ struct ChatMessage: Identifiable, Equatable {
     }
 }
 
+/// Facade over exactly one foreground `ChatSession`. The SwiftUI layer observes
+/// this single object and reads both per-session fields (mirrored from the
+/// foreground session) and global fields (input draft, voice, connection,
+/// history). Per-session work is forwarded to the session; the views never need
+/// to know a session was swapped underneath them.
 @MainActor
 class OverlayViewModel: ObservableObject {
+    // MARK: - Per-session fields, mirrored from the foreground session
+
     @Published var state: OverlayState = .idle
     @Published var chatMessages: [ChatMessage] = []
-    @Published var inputText: String = ""
     @Published var errorMessage: String = ""
+    /// Tool steps currently running, surfaced for live "Hermes is using…" rows.
+    @Published var activeTools: [ToolActivity] = []
+
+    // MARK: - Global fields (owned by the facade)
+
+    @Published var inputText: String = ""
     @Published var isRecording: Bool = false
     @Published var transcribedText: String = ""
     @Published var panelShouldFocus: Bool = false
     @Published var audioLevel: CGFloat = 0.1
-    /// Tool steps currently running, surfaced for live "Hermes is using…" rows.
-    @Published var activeTools: [ToolActivity] = []
     /// Images staged in the input (paste/drag) to send with the next message.
     @Published var pendingImages: [ImageAttachment] = []
     /// Reachability of the gateway (drives the offline indicator).
@@ -99,73 +109,186 @@ class OverlayViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Collaborators
+
     private var voiceEngine: VoiceEngine?
     private let apiClient = HermesAPIClient()
     private let store = ConversationFileStore()
-    private var streamTask: Task<Void, Never>?
+    private let indexWriter: SessionIndexWriter
 
-    /// Stable id of the assistant message currently being streamed into. The
-    /// positional index is invalid across the async boundary and across
-    /// in-session mutations (retry removes a row), so we resolve the index fresh
-    /// from this id at every access and clear it on every terminal path.
-    private var streamingMessageId: UUID?
+    /// Holds every live session so streams survive panel hide / focus loss /
+    /// switch, and ref-counts the App Nap assertion across them (§4.3). Owned
+    /// here because the facade is a forever-singleton.
+    private let manager = SessionManager()
 
-    /// Resolve the live index of the streaming target, fresh at each access.
-    /// Returns nil if the target was removed (reset/retry/delete).
-    private func streamingIndex() -> Int? {
-        guard let id = streamingMessageId else { return nil }
-        return chatMessages.firstIndex(where: { $0.id == id })
-    }
+    /// The conversation currently shown. Per-session state is mirrored from here.
+    private(set) var foreground: ChatSession
+    /// Subscriptions mirroring the foreground session's published fields. Torn
+    /// down and rebuilt on every session swap (§4.1).
+    private var sessionCancellables = Set<AnyCancellable>()
 
-    /// Local id of the conversation currently shown. Stable for the life of the
-    /// conversation; the server derives its own session id from the first message.
-    private(set) var conversationId: String
-    private var conversationStartedAt: Date
-    private var conversationModel: String?
+    /// The session that owned the mic when recording started. A finished
+    /// transcript is routed back to it (if still live) rather than to whatever
+    /// is foreground when the async result lands, so switching mid-record can't
+    /// misdeliver speech (§4.6). Weak so a torn-down target falls back cleanly.
+    private weak var recordingTarget: ChatSession?
 
-    private let maxAttempts = 3
     /// Upper bound on images staged for a single message.
     let maxAttachments = 6
 
+    /// Local id of the conversation currently shown (forwarded for callers that
+    /// compare against the open conversation, e.g. menu-bar recents).
+    var conversationId: String { foreground.conversationId }
+
+    // MARK: - Background-activity surfacing (Phase 5)
+
+    /// True while any session — foreground or background — is streaming. The
+    /// menu-bar status item observes this to animate while a hidden-panel
+    /// background stream runs (§4.8). The manager is private, so the facade
+    /// re-publishes its signals for `AppDelegate`.
+    var anyStreamingPublisher: AnyPublisher<Bool, Never> {
+        manager.$isAnyStreaming.eraseToAnyPublisher()
+    }
+
+    /// Fires the id of a session that just finished a response, so the app can
+    /// post an ambient completion cue for background finishes (§4.8).
+    var sessionFinishedPublisher: AnyPublisher<String, Never> {
+        manager.didFinish.eraseToAnyPublisher()
+    }
+
     init() {
+        indexWriter = SessionIndexWriter(store: store)
+
         // Resume the most recent conversation (or start a blank one).
         let sessions = store.loadIndex()
+        let initial: ChatSession
         if let recent = ConversationStore.mostRecent(in: sessions) {
-            conversationId = recent.id
-            conversationStartedAt = Date(timeIntervalSince1970: recent.startedAt)
-            conversationModel = recent.model
+            initial = ChatSession(conversationId: recent.id,
+                                  startedAt: Date(timeIntervalSince1970: recent.startedAt),
+                                  model: recent.model,
+                                  store: store,
+                                  apiClient: apiClient,
+                                  indexWriter: indexWriter,
+                                  initialMessages: OverlayViewModel.loadMessages(id: recent.id, store: store))
         } else {
-            conversationId = UUID().uuidString
-            conversationStartedAt = Date()
-            conversationModel = nil
+            initial = ChatSession(conversationId: UUID().uuidString,
+                                  startedAt: Date(),
+                                  model: nil,
+                                  store: store,
+                                  apiClient: apiClient,
+                                  indexWriter: indexWriter)
         }
+        foreground = initial
+        // All stored properties are initialized — now legal to touch `self`.
+        manager.register(initial)
 
         voiceEngine = VoiceEngine()
         voiceEngine?.onPartialResult = { [weak self] text in
-            Task { @MainActor in self?.transcribedText = text }
+            Task { @MainActor [weak self] in self?.transcribedText = text }
         }
         voiceEngine?.onFinalResult = { [weak self] text in
-            Task { @MainActor in self?.handleTranscript(text) }
+            Task { @MainActor [weak self] in self?.handleTranscript(text) }
         }
         voiceEngine?.onError = { [weak self] error in
-            Task { @MainActor in
-                self?.state = .error
-                self?.errorMessage = error
+            Task { @MainActor [weak self] in
+                self?.foreground.state = .error
+                self?.foreground.errorMessage = error
                 self?.isRecording = false
             }
         }
         voiceEngine?.onAudioLevel = { [weak self] level in
-            Task { @MainActor in self?.audioLevel = level }
+            Task { @MainActor [weak self] in self?.audioLevel = level }
         }
 
-        // Load the resumed transcript into the thread.
-        let records = store.loadTranscript(id: conversationId)
-        chatMessages = records.map { record in
-            ChatMessage(role: ChatMessage.Role(rawValue: record.role) ?? .assistant,
-                        content: record.content,
-                        timestamp: Date(timeIntervalSince1970: record.ts),
-                        imageDataURLs: record.images ?? [])
+        bindForeground(foreground)
+    }
+
+    // MARK: - Foreground mirroring (§4.1)
+
+    /// Point the facade at `session`: tear down the old subscriptions, swap the
+    /// foreground reference, **synchronously copy** every mirrored field (so the
+    /// view never shows one stale frame before Combine catches up), then
+    /// re-subscribe with cancellable `.sink`s.
+    private func bindForeground(_ session: ChatSession) {
+        sessionCancellables.removeAll()
+        foreground = session
+
+        // 1. Synchronous pre-copy — mandatory; without it a reopened session
+        //    shows the previous transcript for one frame.
+        state = session.state
+        chatMessages = session.chatMessages
+        errorMessage = session.errorMessage
+        activeTools = session.activeTools
+
+        // 2. Re-subscribe. Explicit `.sink` (NOT `assign(to:&$…)`) so the old
+        //    session stops writing into the facade the moment we re-point.
+        session.$state.sink { [weak self] in self?.state = $0 }.store(in: &sessionCancellables)
+        session.$chatMessages.sink { [weak self] in self?.chatMessages = $0 }.store(in: &sessionCancellables)
+        session.$errorMessage.sink { [weak self] in self?.errorMessage = $0 }.store(in: &sessionCancellables)
+        session.$activeTools.sink { [weak self] in self?.activeTools = $0 }.store(in: &sessionCancellables)
+
+        // Global connection state is reported up from the session's stream.
+        session.onConnectionState = { [weak self] in self?.connectionState = $0 }
+    }
+
+    /// Create a session and register it with the manager so it survives in the
+    /// background. Single chokepoint so every new/loaded session is registered.
+    private func makeSession(id: String,
+                             startedAt: Date,
+                             model: String?,
+                             initialMessages: [ChatMessage] = []) -> ChatSession {
+        let session = ChatSession(conversationId: id,
+                                  startedAt: startedAt,
+                                  model: model,
+                                  store: store,
+                                  apiClient: apiClient,
+                                  indexWriter: indexWriter,
+                                  initialMessages: initialMessages)
+        manager.register(session)
+        return session
+    }
+
+    /// Load a conversation's messages from disk, folding any leftover `.partial`
+    /// crash-recovery side-file into a trailing **incomplete** (retryable)
+    /// assistant message per the deterministic rule (§4.7), and clearing the
+    /// side-file once reconciled. Static so it can run during `init` before all
+    /// stored properties are set. Every load path goes through here so a ⌘Q
+    /// mid-stream is recovered identically on relaunch and on reopen.
+    private static func loadMessages(id: String, store: ConversationFileStore) -> [ChatMessage] {
+        let records = store.loadTranscript(id: id)
+        var messages = ChatSession.mapRecords(records)
+        guard let partial = store.readPartial(id: id) else { return messages }
+
+        let lastRole = records.last?.role
+        let trailingAssistant = lastRole == "assistant" ? records.last?.content : nil
+        switch PartialReconciler.decide(lastJSONLRole: lastRole,
+                                        partialContent: partial.content,
+                                        trailingAssistantContent: trailingAssistant) {
+        case .fold:
+            messages.append(ChatMessage(role: .assistant,
+                                        content: partial.content,
+                                        isIncomplete: true,
+                                        timestamp: Date(timeIntervalSince1970: partial.ts)))
+            store.clearPartial(id: id)
+        case .deleteOnly:
+            store.clearPartial(id: id)
+        case .ignore:
+            break
         }
+        return messages
+    }
+
+    /// Before switching the foreground away, drop the outgoing session from the
+    /// manager **unless** it's worth keeping resident — i.e. it's streaming, or
+    /// has a retryable error/partial. Streaming/errored sessions stay alive in
+    /// the background so returning to them shows live or retryable state
+    /// (§0 #1/#5); clean idle/done sessions are reloaded identically from disk,
+    /// which keeps live-session memory bounded without Phase-4 eviction.
+    private func releaseForegroundIfDisposable() {
+        let outgoing = foreground
+        guard !outgoing.isBusy, !outgoing.canRetry else { return }
+        outgoing.teardown()
+        manager.remove(id: outgoing.conversationId)
     }
 
     // MARK: - Voice
@@ -196,14 +319,17 @@ class OverlayViewModel: ObservableObject {
 
     private func startRecording() {
         guard let engine = voiceEngine, engine.isAvailable else {
-            state = .error
-            errorMessage = "Speech recognition unavailable"
+            foreground.state = .error
+            foreground.errorMessage = "Speech recognition unavailable"
             return
         }
         transcribedText = ""
-        errorMessage = ""
+        foreground.errorMessage = ""
         isRecording = true
-        state = .listening
+        foreground.state = .listening
+        // Pin the transcript's destination to the session that owned the mic at
+        // record-start, so switching sessions mid-record can't misroute it (§4.6).
+        recordingTarget = foreground
         engine.startRecording(autoStopOnSilence: voiceFlow.stopsOnSilence)
     }
 
@@ -223,16 +349,21 @@ class OverlayViewModel: ObservableObject {
         switch voiceFlow.outcome(for: text) {
         case .ignore:
             // No speech recognized — return to idle quietly and refocus input.
-            if state == .listening || state == .transcribing { state = .idle }
+            if foreground.state == .listening || foreground.state == .transcribing {
+                foreground.state = .idle
+            }
             pulseInputFocus()
         case .fill(let transcript):
             let existing = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
             inputText = existing.isEmpty ? transcript : existing + " " + transcript
-            if state == .listening { state = .idle }
+            if foreground.state == .listening { foreground.state = .idle }
             pulseInputFocus()
         case .send(let transcript):
-            state = .transcribing
-            sendToHermes(text: transcript)
+            // Route to the record-start session if it's still live, else fall
+            // back to the current foreground (§4.6).
+            let target = recordingTarget.flatMap { manager.session(for: $0.conversationId) } ?? foreground
+            target.state = .transcribing
+            routeSend(text: transcript, images: [], to: target)
         }
     }
 
@@ -243,30 +374,23 @@ class OverlayViewModel: ObservableObject {
         let images = pendingImages
         guard !text.isEmpty || !images.isEmpty else { return }
         inputText = ""
-        sendToHermes(text: text, images: images)
+        routeSend(text: text, images: images, to: foreground)
     }
 
-    private func sendToHermes(text: String, images: [ImageAttachment] = []) {
-        let messageText = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !messageText.isEmpty || !images.isEmpty else { return }
-        guard state != .sending, state != .responding else { return }
-
+    /// Global pre-send housekeeping (stop mic, clear transcription/staged
+    /// images), then hand the message to `target`. Guarding on the **target's**
+    /// busy state (not always the foreground's) lets a different session send
+    /// concurrently. Bails when the target is busy so nothing global is cleared
+    /// on a blocked send.
+    private func routeSend(text: String, images: [ImageAttachment], to target: ChatSession) {
+        guard !target.isBusy else { return }
         if isRecording {
             isRecording = false
             voiceEngine?.stopRecording()
         }
         transcribedText = ""
-        errorMessage = ""
-
-        let imageURLs = images.map { $0.dataURL }
-        registerConversationIfNeeded(
-            firstUserText: messageText.isEmpty ? "Image message" : messageText)
-        let userMessage = ChatMessage(role: .user, content: messageText, imageDataURLs: imageURLs)
-        chatMessages.append(userMessage)
         pendingImages = []
-        persist(userMessage)
-
-        generateResponse()
+        target.send(text: text, images: images)
     }
 
     // MARK: - Image attachments
@@ -283,254 +407,29 @@ class OverlayViewModel: ObservableObject {
         pendingImages.removeAll { $0.id == id }
     }
 
-    /// Whether a retry affordance should be offered (last attempt failed or was
-    /// interrupted, and there is a user message to re-answer).
-    var canRetry: Bool {
-        guard chatMessages.contains(where: { $0.role == .user }) else { return false }
-        if state == .error { return true }
-        if let last = chatMessages.last, last.role == .assistant, last.isIncomplete { return true }
-        return false
-    }
+    /// Whether a retry affordance should be offered (delegated to the session).
+    var canRetry: Bool { foreground.canRetry }
 
-    /// Re-run the last response. Drops a kept partial first so the retry is clean.
+    /// Re-run the last response on the foreground session.
     func retryLast() {
-        guard canRetry, state != .sending, state != .responding else { return }
-        if let lastIndex = chatMessages.indices.last,
-           chatMessages[lastIndex].role == .assistant,
-           chatMessages[lastIndex].isIncomplete {
-            // Drop the kept partial. Clear any stale streaming target pointing at
-            // it so the row removal can't be mis-resolved by a late access.
-            if streamingMessageId == chatMessages[lastIndex].id { streamingMessageId = nil }
-            chatMessages.remove(at: lastIndex)
-            rewritePersistedTranscript()
-        }
-        errorMessage = ""
-        guard chatMessages.contains(where: { $0.role == .user }) else { return }
-        generateResponse()
+        foreground.retryLast()
     }
 
-    /// Appends a streaming assistant placeholder and fills it from the stream,
-    /// auto-retrying transient failures until the first content arrives.
-    private func generateResponse() {
-        // Full message array for the request: user + assistant turns so far,
-        // excluding any error rows (and the placeholder we're about to add).
-        let messages = chatMessages
-            .filter { $0.role == .user || $0.role == .assistant }
-            .map { OutgoingMessage(role: $0.role.rawValue,
-                                   text: $0.content,
-                                   imageDataURLs: $0.imageDataURLs) }
-
-        let placeholder = ChatMessage(role: .assistant, content: "", isStreaming: true)
-        chatMessages.append(placeholder)
-        streamingMessageId = placeholder.id
-        activeTools = []
-
-        state = .sending
-        streamTask?.cancel()
-        streamTask = Task { [weak self] in
-            await self?.runStream(messages: messages)
-        }
-    }
-
-    private func runStream(messages: [OutgoingMessage]) async {
-        var attempt = 0
-        while true {
-            attempt += 1
-            var receivedContent = streamingIndex().map { !chatMessages[$0].content.isEmpty } ?? false
-            do {
-                state = .responding
-                if let index = streamingIndex() {
-                    chatMessages[index].isIncomplete = false
-                }
-
-                let stream = try await apiClient.streamCompletion(messages: messages)
-                connectionState = .online
-
-                for try await event in stream {
-                    if Task.isCancelled { return }
-                    switch event {
-                    case .text(let chunk):
-                        receivedContent = true
-                        if let index = streamingIndex() {
-                            chatMessages[index].content += chunk
-                        }
-                    case .tool(let activity):
-                        applyToolActivity(activity)
-                    }
-                }
-
-                finishAssistant()
-                state = .done
-                try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5s
-                if state == .done { state = .idle }
-                return
-            } catch {
-                if Task.isCancelled { return }
-                let apiError = (error as? HermesAPIError) ?? .streamDropped
-
-                // Retry transient failures, but only before any content arrives —
-                // once text is streaming we keep it instead of restarting.
-                if apiError.isTransient, !receivedContent, attempt < maxAttempts {
-                    let backoff = UInt64(Double(attempt) * 0.5 * 1_000_000_000)
-                    try? await Task.sleep(nanoseconds: backoff)
-                    continue
-                }
-
-                handleStreamFailure(apiError, hadContent: receivedContent)
-                return
-            }
-        }
-    }
-
-    /// Finalize a fully-streamed assistant message: stop the spinner and persist
-    /// it, or drop an empty placeholder if nothing arrived.
-    private func finishAssistant() {
-        activeTools = []
-        defer { streamingMessageId = nil }
-        guard let index = streamingIndex() else { return }
-        chatMessages[index].isStreaming = false
-        chatMessages[index].isIncomplete = false
-        if chatMessages[index].content.isEmpty {
-            chatMessages.remove(at: index)
-        } else {
-            persist(chatMessages[index])
-        }
-    }
-
-    private func handleStreamFailure(_ error: HermesAPIError, hadContent: Bool) {
-        activeTools = []
-        if error.kind == .offline { connectionState = .offline }
-
-        if let index = streamingIndex() {
-            if hadContent, !chatMessages[index].content.isEmpty {
-                // Keep the partial response, mark it incomplete, and offer a retry.
-                chatMessages[index].isStreaming = false
-                chatMessages[index].isIncomplete = true
-                persist(chatMessages[index])
-            } else if chatMessages[index].role == .assistant,
-                      chatMessages[index].content.isEmpty {
-                // Nothing useful arrived — drop the empty placeholder.
-                chatMessages.remove(at: index)
-            }
-        }
-
-        streamingMessageId = nil
-        errorMessage = error.errorDescription ?? "Something went wrong."
-        state = .error
-    }
-
-    private func applyToolActivity(_ activity: ToolActivity) {
-        switch activity.status {
-        case .running:
-            if let index = activeTools.firstIndex(where: { $0.toolCallId == activity.toolCallId }) {
-                activeTools[index] = activity
-            } else {
-                activeTools.append(activity)
-            }
-        case .completed:
-            activeTools.removeAll { $0.toolCallId == activity.toolCallId }
-        }
-    }
-
-    /// Cancels an in-flight streamed response, keeping whatever text has
-    /// already arrived (marked incomplete), and returns to idle.
+    /// Stop an in-flight streamed response on the foreground session.
     func cancelStreaming() {
-        guard state == .sending || state == .responding else { return }
-        streamTask?.cancel()
-        streamTask = nil
-        activeTools = []
-        if let index = streamingIndex(), chatMessages[index].isStreaming {
-            chatMessages[index].isStreaming = false
-            if chatMessages[index].content.isEmpty {
-                // Drop an empty assistant placeholder so the thread isn't blank.
-                chatMessages.remove(at: index)
-            } else {
-                chatMessages[index].isIncomplete = true
-                persist(chatMessages[index])
-            }
-        }
-        streamingMessageId = nil
-        state = .idle
-    }
-
-    // MARK: - Persistence
-
-    /// Register a brand-new conversation in the index on its first message.
-    private func registerConversationIfNeeded(firstUserText: String) {
-        var sessions = store.loadIndex()
-        guard !sessions.contains(where: { $0.id == conversationId }) else { return }
-        let now = Date().timeIntervalSince1970
-        let meta = SessionMeta(id: conversationId,
-                               title: ConversationStore.deriveTitle(from: firstUserText),
-                               startedAt: conversationStartedAt.timeIntervalSince1970,
-                               lastActiveAt: now,
-                               messageCount: 0,
-                               model: conversationModel)
-        sessions = ConversationStore.upsert(meta, into: sessions)
-        store.saveIndex(sessions)
-    }
-
-    /// Append one message to the transcript and refresh the index metadata.
-    private func persist(_ message: ChatMessage) {
-        guard message.role == .user || message.role == .assistant else { return }
-        let record = TranscriptRecord(role: message.role.rawValue,
-                                      content: message.content,
-                                      ts: message.timestamp.timeIntervalSince1970,
-                                      images: message.imageDataURLs.isEmpty ? nil : message.imageDataURLs)
-        store.appendRecord(record, to: conversationId)
-        updateIndexMeta()
-    }
-
-    private func updateIndexMeta() {
-        var sessions = store.loadIndex()
-        let count = persistedMessages.count
-        if let existing = sessions.first(where: { $0.id == conversationId }) {
-            var meta = existing
-            meta.lastActiveAt = Date().timeIntervalSince1970
-            meta.messageCount = count
-            meta.model = conversationModel
-            sessions = ConversationStore.upsert(meta, into: sessions)
-        } else {
-            let title = ConversationStore.deriveTitle(
-                from: chatMessages.first(where: { $0.role == .user })?.content ?? "")
-            let meta = SessionMeta(id: conversationId,
-                                   title: title,
-                                   startedAt: conversationStartedAt.timeIntervalSince1970,
-                                   lastActiveAt: Date().timeIntervalSince1970,
-                                   messageCount: count,
-                                   model: conversationModel)
-            sessions = ConversationStore.upsert(meta, into: sessions)
-        }
-        store.saveIndex(sessions)
-    }
-
-    /// Rewrite the whole transcript from the current in-memory thread (used after
-    /// dropping a retried partial so the persisted copy stays consistent).
-    private func rewritePersistedTranscript() {
-        let records = persistedMessages.map {
-            TranscriptRecord(role: $0.role.rawValue,
-                             content: $0.content,
-                             ts: $0.timestamp.timeIntervalSince1970,
-                             images: $0.imageDataURLs.isEmpty ? nil : $0.imageDataURLs)
-        }
-        store.rewriteTranscript(id: conversationId, records: records)
-        updateIndexMeta()
-    }
-
-    private var persistedMessages: [ChatMessage] {
-        chatMessages.filter { $0.role == .user || $0.role == .assistant }
+        foreground.cancelStreaming()
     }
 
     // MARK: - Lifecycle
 
     func reset() {
-        // Called when panel is shown — keep conversation but stop any recording
+        // Called when the panel is shown. GLOBAL concerns only — must NOT touch
+        // the foreground session's state/errorMessage, or reopening to a
+        // live/errored session would wipe the very thing the user came back to
+        // see or retry (§4.2). The per-session 1.5s timer handles done→idle.
         voiceEngine?.stopRecording()
         isRecording = false
         transcribedText = ""
-        if state == .done || state == .error {
-            state = .idle
-        }
         // Refresh the reachability indicator each time the panel opens.
         checkConnection()
         // Trigger focus on next render
@@ -572,23 +471,18 @@ class OverlayViewModel: ObservableObject {
         pulseInputFocus()
     }
 
-    /// Reset all in-memory conversation state to a fresh, unregistered
-    /// conversation. Shared by New Chat and "deleted the open conversation".
+    /// Swap the foreground to a fresh blank conversation **without** killing the
+    /// previous one: a streaming/errored session is left running in the
+    /// background (§0 #1/#2); only a disposable idle session is released.
     private func startBlankConversation() {
-        streamTask?.cancel()
-        streamingMessageId = nil
+        releaseForegroundIfDisposable()
         voiceEngine?.stopRecording()
-        chatMessages.removeAll()
         inputText = ""
         transcribedText = ""
-        errorMessage = ""
         isRecording = false
-        activeTools = []
         pendingImages = []
-        state = .idle
-        conversationId = UUID().uuidString
-        conversationStartedAt = Date()
-        conversationModel = nil
+        let session = makeSession(id: UUID().uuidString, startedAt: Date(), model: nil)
+        bindForeground(session)
     }
 
     // MARK: - History browser
@@ -621,42 +515,64 @@ class OverlayViewModel: ObservableObject {
         }
     }
 
-    /// Load a stored conversation into the thread and return to the chat view.
+    /// Switch to a stored conversation. Identity is the foreground session id: a
+    /// no-op if it's already shown; otherwise re-point to its **live** session if
+    /// one is resident (no disk load, so a still-streaming background session is
+    /// reattached with its live progress), else load it from disk (§4.11).
+    /// Either way the previously-foreground stream is left running.
     func openConversation(id: String) {
         // Re-opening the conversation already shown is a no-op beyond closing.
-        guard id != conversationId else { closeHistory(); return }
-        guard let meta = historyEntries.first(where: { $0.id == id })?.meta
-                ?? store.loadIndex().first(where: { $0.id == id }) else { return }
+        guard id != foreground.conversationId else { closeHistory(); return }
 
-        startBlankConversation()
-        conversationId = meta.id
-        conversationStartedAt = Date(timeIntervalSince1970: meta.startedAt)
-        conversationModel = meta.model
-
-        chatMessages = store.loadTranscript(id: meta.id).map { record in
-            ChatMessage(role: ChatMessage.Role(rawValue: record.role) ?? .assistant,
-                        content: record.content,
-                        timestamp: Date(timeIntervalSince1970: record.ts),
-                        imageDataURLs: record.images ?? [])
+        let target: ChatSession
+        if let live = manager.session(for: id) {
+            releaseForegroundIfDisposable()
+            target = live
+        } else {
+            guard let meta = historyEntries.first(where: { $0.id == id })?.meta
+                    ?? store.loadIndex().first(where: { $0.id == id }) else { return }
+            releaseForegroundIfDisposable()
+            target = makeSession(id: meta.id,
+                                 startedAt: Date(timeIntervalSince1970: meta.startedAt),
+                                 model: meta.model,
+                                 initialMessages: Self.loadMessages(id: meta.id, store: store))
         }
+
+        voiceEngine?.stopRecording()
+        inputText = ""
+        transcribedText = ""
+        isRecording = false
+        pendingImages = []
+        bindForeground(target)
 
         showingHistory = false
         historyQuery = ""
         pulseInputFocus()
     }
 
-    /// Delete a stored conversation (index entry + transcript file). If it's the
-    /// one currently open, fall back to a fresh blank conversation.
+    /// Delete a stored conversation (index entry + transcript + `.partial`). If
+    /// a live session exists for it: (1) `markDeleted()` — set `isDeleted` and
+    /// cancel its stream so no late chunk can write disk, (2) remove it from the
+    /// manager, (3) **then** delete disk (§4.5). A chunk arriving after cancel
+    /// but before the Task observes it is now blocked by the `isDeleted` guard,
+    /// so the just-deleted files can't be resurrected. If it's the one currently
+    /// open, fall back to a fresh blank conversation.
     func deleteConversation(id: String) {
+        if let live = manager.session(for: id) {
+            live.markDeleted()
+            manager.remove(id: id)
+        }
         store.deleteConversation(id: id)
         reloadHistory()
-        if id == conversationId {
+        if id == foreground.conversationId {
             startBlankConversation()
         }
     }
 
     func cleanup() {
-        streamTask?.cancel()
+        // Panel hidden — stop only the mic. The foreground session keeps
+        // streaming in the background (the whole point of Phase 3); it is NOT
+        // torn down here anymore.
         voiceEngine?.stopRecording()
         isRecording = false
     }

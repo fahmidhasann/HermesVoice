@@ -44,6 +44,16 @@ final class HermesAPIClient {
         return URL(string: settings.baseURLString + path) ?? config.apiEndpoint
     }
 
+    /// Attach the bearer token from the Keychain, read **per request** so a key
+    /// entered in onboarding/Settings takes effect on the next call without a
+    /// restart. Omitted entirely when no key is set, so no-auth local gateways
+    /// aren't sent an empty `Bearer`.
+    private func authorize(_ request: inout URLRequest) {
+        if let apiKey = CredentialsStore.current() {
+            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        }
+    }
+
     /// Stream a chat completion. The caller owns history, so the full `messages`
     /// array is sent as-is — we deliberately do NOT send `X-Hermes-Session-Id`
     /// (sending both history and the header double-counts context server-side).
@@ -55,7 +65,7 @@ final class HermesAPIClient {
         var request = URLRequest(url: endpoint("/v1/chat/completions"))
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(config.apiKey)", forHTTPHeaderField: "Authorization")
+        authorize(&request)
         request.setValue(config.userAgent, forHTTPHeaderField: "User-Agent")
 
         var payload: [String: Any] = [
@@ -137,7 +147,7 @@ final class HermesAPIClient {
     func fetchModels() async -> [String] {
         var request = URLRequest(url: endpoint("/v1/models"))
         request.httpMethod = "GET"
-        request.setValue("Bearer \(config.apiKey)", forHTTPHeaderField: "Authorization")
+        authorize(&request)
         request.setValue(config.userAgent, forHTTPHeaderField: "User-Agent")
         request.timeoutInterval = 5
         guard let (data, response) = try? await URLSession.shared.data(for: request),
@@ -194,19 +204,19 @@ enum HermesAPIError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .offline:
-            return "Can't reach Hermes. Is the gateway running on 127.0.0.1:8642?"
+            return "Can't reach the gateway. Check the URL in Settings ▸ Connection."
         case .auth:
-            return "Authentication failed. Check API_SERVER_KEY in ~/.hermes/.env."
+            return "Authentication failed. Check your API key in Settings ▸ Connection."
         case .http(let code):
-            return "Hermes returned an error (HTTP \(code))."
+            return "The gateway returned an error (HTTP \(code))."
         case .streamDropped:
             return "The connection dropped mid-response."
         case .timeout:
-            return "Hermes timed out. It may be busy — try again."
+            return "The gateway timed out. It may be busy — try again."
         case .invalidResponse:
-            return "Invalid response from Hermes."
+            return "Invalid response from the gateway."
         case .noAPIKey:
-            return "No API key found in ~/.hermes/.env."
+            return "No API key set. Add one in Settings ▸ Connection."
         }
     }
 }

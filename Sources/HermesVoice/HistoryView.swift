@@ -17,7 +17,6 @@ struct HistoryView: View {
             Divider().background(Theme.Colors.divider)
             listView
         }
-        .fixedSize(horizontal: false, vertical: true)
         .onAppear { searchFocused = true }
         .onChange(of: viewModel.historySearchShouldFocus) { _, should in
             if should { searchFocused = true }
@@ -127,7 +126,7 @@ struct HistoryView: View {
                     .padding(.horizontal, Theme.Spacing.lg)
                     .padding(.bottom, Theme.Spacing.md)
                 }
-                .frame(maxHeight: Theme.Layout.panelMaxHeight - 150)
+                .frame(maxHeight: .infinity)
                 .onChange(of: selectedIndex) { _, _ in
                     let clamped = clampedSelection(in: entries)
                     if entries.indices.contains(clamped) {
@@ -151,7 +150,7 @@ struct HistoryView: View {
                 .font(Theme.Font.message(size: 13))
                 .foregroundColor(Theme.Colors.textSecondary)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.vertical, Theme.Spacing.xxl)
     }
 

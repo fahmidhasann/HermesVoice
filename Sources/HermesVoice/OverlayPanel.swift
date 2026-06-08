@@ -14,18 +14,11 @@ class OverlayPanel: NSPanel {
     /// Current lifecycle phase, mirrored from the state machine.
     var phase: PanelPhase { stateMachine.phase }
 
-    /// The height we last asked the window to animate toward. Height updates are
-    /// gated against THIS rather than the live `frame.height`, because during an
-    /// in-flight resize animation `frame.height` holds an intermediate value —
-    /// comparing against it re-issues the same target every frame and the
-    /// animation visibly restarts on itself (the resize-jitter bug).
-    private var targetHeight: CGFloat = Theme.Layout.panelInitialHeight
-
     init(viewModel: OverlayViewModel) {
         self.viewModel = viewModel
 
         super.init(
-            contentRect: NSRect(x: 0, y: 0, width: Theme.Layout.panelWidth, height: Theme.Layout.panelInitialHeight),
+            contentRect: NSRect(x: 0, y: 0, width: Theme.Layout.panelWidth, height: Theme.Layout.panelHeight),
             styleMask: [.nonactivatingPanel, .borderless],
             backing: .buffered,
             defer: false
@@ -40,7 +33,7 @@ class OverlayPanel: NSPanel {
         self.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
 
         // Wrapper view: holds the shadow layer (masksToBounds = false so shadow is visible)
-        let wrapper = NSView(frame: NSRect(x: 0, y: 0, width: Theme.Layout.panelWidth, height: Theme.Layout.panelInitialHeight))
+        let wrapper = NSView(frame: NSRect(x: 0, y: 0, width: Theme.Layout.panelWidth, height: Theme.Layout.panelHeight))
         wrapper.autoresizingMask = [.width, .height]
         wrapper.wantsLayer = true
         wrapper.layer?.masksToBounds = false
@@ -61,10 +54,12 @@ class OverlayPanel: NSPanel {
 
         // Shadow on wrapper — visible because wrapper.masksToBounds = false.
         // Deeper + softer than before for a more grounded, premium float.
+        // Single source: Theme.Elevation.floating (a SwiftUI .shadow can't reach
+        // this window-level AppKit view, so the values are read raw here).
         wrapper.layer?.shadowColor = NSColor.black.cgColor
-        wrapper.layer?.shadowOpacity = 0.28
-        wrapper.layer?.shadowRadius = 34
-        wrapper.layer?.shadowOffset = NSSize(width: 0, height: -12)
+        wrapper.layer?.shadowOpacity = Float(Theme.Elevation.floatingOpacity)
+        wrapper.layer?.shadowRadius = Theme.Elevation.floatingRadius
+        wrapper.layer?.shadowOffset = NSSize(width: 0, height: Theme.Elevation.floatingY)
         wrapper.layer?.shadowPath = CGPath(
             roundedRect: wrapper.bounds,
             cornerWidth: Theme.Layout.cornerRadius,
@@ -76,7 +71,7 @@ class OverlayPanel: NSPanel {
         self.contentView = wrapper
 
         // Host SwiftUI view inside the visual effect
-        let overlayView = OverlayView(viewModel: viewModel, panelRef: self)
+        let overlayView = OverlayView(viewModel: viewModel)
         let hostingView = NSHostingView(rootView: overlayView)
         hostingView.frame = visualEffect.bounds
         hostingView.autoresizingMask = [.width, .height]
@@ -101,39 +96,6 @@ class OverlayPanel: NSPanel {
         let y = screenFrame.maxY - topOffset - self.frame.height
 
         self.setFrameOrigin(NSPoint(x: x, y: y))
-    }
-
-    func updateHeight(_ newHeight: CGFloat) {
-        // Round to whole points so sub-pixel reflows from SwiftUI don't churn.
-        let rounded = newHeight.rounded()
-
-        // Gate against the last requested target (not the live, possibly
-        // mid-animation `frame.height`). The threshold absorbs minor layout
-        // noise so streaming text grows in clean steps instead of jittering.
-        guard abs(rounded - targetHeight) >= 1.0 else { return }
-        targetHeight = rounded
-
-        var frame = self.frame
-        // Anchor the top edge: compute the delta from the current live frame so
-        // the top stays put even if a previous resize animation is still running.
-        let heightDelta = rounded - frame.height
-        frame.origin.y -= heightDelta
-        frame.size.height = rounded
-
-        // Keep the drop-shadow path in sync with the new size.
-        let shadowBounds = NSRect(x: 0, y: 0, width: frame.width, height: rounded)
-        contentView?.layer?.shadowPath = CGPath(
-            roundedRect: shadowBounds,
-            cornerWidth: Theme.Layout.cornerRadius,
-            cornerHeight: Theme.Layout.cornerRadius,
-            transform: nil
-        )
-
-        NSAnimationContext.runAnimationGroup { context in
-            context.duration = Theme.Layout.heightDuration
-            context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-            self.animator().setFrame(frame, display: true)
-        }
     }
 
     // MARK: - State-machine-guarded show / hide

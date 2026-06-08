@@ -10,6 +10,18 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/auto-rebuild.sh",
+            "timeout": 180,
+            "statusMessage": "Rebuilding HermesVoice…"
+          }
+        ]
+      }
     ]
   }
 }

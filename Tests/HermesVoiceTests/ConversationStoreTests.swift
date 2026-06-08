@@ -210,5 +210,16 @@ enum ConversationStoreTests {
             check(text.hasSuffix("\n"), "non-empty transcript ends with a newline")
             checkEqual(ConversationStore.decodeTranscript(text), records)
         },
+        TestCase(name: "partial record round-trips through encode/decode") {
+            let record = PartialRecord(content: "half an answer", ts: 42.0)
+            let data = try! ConversationStore.encodePartial(record)
+            checkEqual(ConversationStore.decodePartial(data), record)
+        },
+        TestCase(name: "decodePartial is tolerant of empty/garbage data") {
+            check(ConversationStore.decodePartial(Data()) == nil,
+                  "empty data should decode as nil")
+            check(ConversationStore.decodePartial(Data("not json".utf8)) == nil,
+                  "garbage data should decode as nil, not throw")
+        },
     ]
 }

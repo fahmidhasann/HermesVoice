@@ -35,7 +35,8 @@ let package = Package(
                 .linkedFramework("AppKit"),
                 .linkedFramework("Speech"),
                 .linkedFramework("AVFoundation"),
-                .linkedFramework("SwiftUI")
+                .linkedFramework("SwiftUI"),
+                .linkedFramework("Security")
             ]
         ),
         // Standalone test runner. XCTest/swift-testing aren't available under

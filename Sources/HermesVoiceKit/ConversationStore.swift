@@ -46,6 +46,20 @@ public struct TranscriptRecord: Codable, Equatable, Sendable {
     }
 }
 
+/// Crash-recovery side-file (`transcripts/<id>.partial`) holding the in-flight
+/// assistant text while a reply streams. Deliberately a SEPARATE shape from
+/// `TranscriptRecord` so the shared transcript schema (read by the Hermes
+/// agent) is never touched — durability state lives only in this side file.
+public struct PartialRecord: Codable, Equatable, Sendable {
+    public var content: String
+    public var ts: Double
+
+    public init(content: String, ts: Double) {
+        self.content = content
+        self.ts = ts
+    }
+}
+
 /// Pure (de)serialization + index manipulation for the local conversation store.
 /// All disk IO lives in the app layer (`ConversationFileStore`); everything here
 /// is hardware-free and unit-tested.
@@ -167,6 +181,21 @@ public enum ConversationStore {
     /// Encode a whole transcript as newline-terminated JSONL.
     public static func encodeTranscript(_ records: [TranscriptRecord]) throws -> String {
         try records.map(encodeRecordLine).joined(separator: "\n") + (records.isEmpty ? "" : "\n")
+    }
+
+    // MARK: - Partial (crash-recovery side-file)
+
+    public static func encodePartial(_ record: PartialRecord) throws -> Data {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        return try encoder.encode(record)
+    }
+
+    /// Tolerant decode — a missing or corrupt `.partial` reads as `nil` rather
+    /// than throwing, so a bad side-file never blocks load.
+    public static func decodePartial(_ data: Data) -> PartialRecord? {
+        guard !data.isEmpty else { return nil }
+        return try? JSONDecoder().decode(PartialRecord.self, from: data)
     }
 
     /// Parse JSONL transcript text, skipping any blank or malformed lines.

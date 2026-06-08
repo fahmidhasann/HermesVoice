@@ -127,16 +127,27 @@ struct Theme {
         }
     }
 
-    // MARK: - Depth (shadows)
+    // MARK: - Elevation (shadows)
     //
-    // Two elevation steps. `bubble` is a near-invisible lift that separates a
-    // surface from the background; `action` is the warm glow under the primary
-    // send button. Keep radii small — these render per-message in a list.
+    // One elevation scale, two neutral steps plus the action glow:
+    //   • rest     — a near-invisible lift separating a small surface (bubble,
+    //                row) from the panel. Keep the radius small; it renders
+    //                per-message in a list.
+    //   • floating — the whole panel hovering over the desktop. Applied on the
+    //                AppKit wrapper layer in `OverlayPanel` (a SwiftUI `.shadow`
+    //                can't reach the window-level view), so it's exposed as raw
+    //                values here and is the single source for that shadow.
+    // `actionGlow` is a *coloured* glow under the primary send button — not a
+    // neutral elevation — so it's kept distinct from the rest/floating scale.
 
-    struct Depth {
-        static let bubbleColor   = Color.black.opacity(0.07)
-        static let bubbleRadius: CGFloat = 4
-        static let bubbleY:      CGFloat = 1.5
+    struct Elevation {
+        static let restColor   = Color.black.opacity(0.07)
+        static let restRadius:  CGFloat = 4
+        static let restY:       CGFloat = 1.5
+
+        static let floatingOpacity: CGFloat = 0.28
+        static let floatingRadius:  CGFloat = 34
+        static let floatingY:       CGFloat = -12
 
         static func actionGlow(_ base: Color = Colors.accent) -> Color { base.opacity(0.40) }
         static let actionRadius: CGFloat = 6
@@ -164,60 +175,100 @@ struct Theme {
         static func caption(size: CGFloat = 10) -> SwiftUI.Font {
             .system(size: size, weight: .regular, design: .default)
         }
+        /// Small medium-weight helper text (keyboard hints, inline cues).
+        static func hint(size: CGFloat = 10.5) -> SwiftUI.Font {
+            .system(size: size, weight: .medium, design: .default)
+        }
+    }
+
+    // MARK: - Icon sizes
+    //
+    // A tight four-step ladder for SF Symbols and leading glyphs, so icon sizing
+    // is a token rather than a sprinkling of inline `.system(size:)` values.
+    // Pair with an explicit weight: `.font(Theme.Icon.font(.sm, weight: .semibold))`.
+
+    struct Icon {
+        static let xs: CGFloat = 11      // close, copy, small inline glyphs
+        static let sm: CGFloat = 12.5    // header actions, retry/stop/send, tool glyph
+        static let md: CGFloat = 14      // mic, primary controls, remove-image
+        static let lg: CGFloat = 22      // empty-state focal mark
+
+        static func font(_ size: CGFloat, weight: SwiftUI.Font.Weight = .regular) -> SwiftUI.Font {
+            .system(size: size, weight: weight, design: .default)
+        }
     }
 
     // MARK: - Spacing
 
+    // Core ladder plus three half-steps (`*2` = one notch above the named step)
+    // that fill real gaps used by snug control/bubble padding, and a hero step
+    // for empty-state breathing room. This is the single source — no more inline
+    // `+2 / +4` offsets at call sites.
+
     struct Spacing {
-        static let xxs: CGFloat = 2
-        static let xs:  CGFloat = 4
-        static let sm:  CGFloat = 8
-        static let md:  CGFloat = 12
-        static let lg:  CGFloat = 16
-        static let xl:  CGFloat = 20
-        static let xxl: CGFloat = 28
+        static let xxs:  CGFloat = 2
+        static let xs:   CGFloat = 4
+        static let xs2:  CGFloat = 6     // half-step xs → sm
+        static let sm:   CGFloat = 8
+        static let sm2:  CGFloat = 10    // half-step sm → md
+        static let md:   CGFloat = 12
+        static let md2:  CGFloat = 14    // half-step md → lg
+        static let lg:   CGFloat = 16
+        static let xl:   CGFloat = 20
+        static let xxl:  CGFloat = 28
+        static let xxxl: CGFloat = 36    // hero / empty-state breathing room
     }
 
     // MARK: - Radius
 
+    // A concentric ladder: each radius nests visually inside the one above, all
+    // anchored to the panel corner. panel(16) ▸ bubble(14) ▸ control(11) ▸
+    // chip(10) ▸ image(8). `Layout.cornerRadius` aliases `panel` so the outer
+    // corner has one source too.
+
     struct Radius {
-        static let bubble:  CGFloat = 14
-        static let control: CGFloat = 11
-        static let chip:    CGFloat = 10
+        static let panel:   CGFloat = 16   // the window itself
+        static let bubble:  CGFloat = 14   // message bubbles, transcription preview
+        static let control: CGFloat = 11   // input field, buttons
+        static let chip:    CGFloat = 10   // tool-activity rows, chips
+        static let image:   CGFloat = 8    // thumbnails (pending + in-message)
     }
 
     // MARK: - Layout
 
     struct Layout {
         static let panelWidth: CGFloat = 540
-        static let panelMinHeight: CGFloat = 220
-        static let panelMaxHeight: CGFloat = 540
-        /// Height the panel window is created at before SwiftUI reports the
-        /// content's real height. Chosen ≥ the empty-state natural height so the
-        /// first frame never clips the input row.
-        static let panelInitialHeight: CGFloat = 300
-        static let cornerRadius: CGFloat = 16
+        /// Fixed panel height. The window no longer resizes to fit content; the
+        /// conversation/history scroll inside this constant frame. This severs the
+        /// content→window-height coupling that caused the resize-jitter.
+        static let panelHeight: CGFloat = 540
+        /// Outer panel corner — single source is `Radius.panel`.
+        static let cornerRadius: CGFloat = Radius.panel
         static let screenTopOffset: CGFloat = 0.18
-
-        static let shadowRadius: CGFloat = 32
-        static let shadowOffsetY: CGFloat = -12
-        static let shadowOpacity: CGFloat = 0.22
 
         // Animation durations (used by AppDelegate)
         static let appearDuration: CGFloat = 0.22
         static let disappearDuration: CGFloat = 0.16
-        static let heightDuration: CGFloat = 0.28
     }
 
     // MARK: - Motion
 
     struct Motion {
+        // Springs — arrivals & navigation.
         static let springQuick  = SwiftUI.Animation.spring(response: 0.28, dampingFraction: 0.82)
         static let springGentle = SwiftUI.Animation.spring(response: 0.42, dampingFraction: 0.86)
         /// A touch more lively for arrivals (bubbles, chips) — still no overshoot bounce worth noticing.
         static let springBubble = SwiftUI.Animation.spring(response: 0.34, dampingFraction: 0.78)
-        static let easeOut      = SwiftUI.Animation.easeOut(duration: 0.22)
-        static let easeInOut    = SwiftUI.Animation.easeInOut(duration: 0.28)
+
+        // Micro-motion ladder (eases) — named by *role*, not duration, so every
+        // hover/press/state/content transition speaks one short vocabulary.
+        static let press   = SwiftUI.Animation.easeOut(duration: 0.08)    // button press dip
+        static let hover   = SwiftUI.Animation.easeOut(duration: 0.12)    // hover wash in/out
+        static let toggle  = SwiftUI.Animation.easeOut(duration: 0.16)    // binary toggle (active, focus ring, disabled)
+        static let content = SwiftUI.Animation.easeOut(duration: 0.20)    // content arrival / autoscroll / swap
+        static let state   = SwiftUI.Animation.easeInOut(duration: 0.24)  // multi-state status pill / input-state shifts
+        /// Slow ambient pulse (listening dot, future breathing). Already repeating.
+        static let breathe = SwiftUI.Animation.easeInOut(duration: 1.2).repeatForever(autoreverses: true)
 
         /// Returns `.never` when the user has disabled motion (accessibility),
         /// preserving the requested animation otherwise. Use like:
@@ -231,6 +282,21 @@ struct Theme {
             NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
         }
     }
+
+    // MARK: - Materials
+    //
+    // The hybrid chrome/content rule from ADR 0001, as tokens rather than ad-hoc
+    // choices: translucent *chrome* lets the wallpaper whisper through (header,
+    // input bar, status pill, chips, tool rows); near-solid *content* keeps
+    // reading surfaces (message bubbles) legible over any background. Applied in
+    // Phase 1; defined here so every surface draws from one source.
+
+    struct Materials {
+        /// Chrome — translucent floating surfaces.
+        static let chrome: Material = .thinMaterial
+        /// Content — near-solid resolved surface bubbles tint over.
+        static let content: Color = Colors.baseTint
+    }
 }
 
 // MARK: - Color helpers
@@ -238,7 +304,12 @@ struct Theme {
 /// Returns `light` in light mode, `dark` in dark mode.
 private func resolvedColor(light: Color, dark: Color) -> Color {
     Color(nsColor: NSColor(name: nil, dynamicProvider: { appearance in
-        let isDark = appearance.bestMatch(from: [.darkAqua, .vibrantDark, .aqua]) == .darkAqua
+        // Match only against [.aqua, .darkAqua] so any *vibrant* appearance the
+        // NSVisualEffectView imposes on the hosting view (e.g. .vibrantDark)
+        // resolves to its nearest base appearance. Listing .vibrantDark made it
+        // match itself (≠ .darkAqua) and silently fall through to the light
+        // colour — which kept the solid panel light while in dark mode.
+        let isDark = appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
         return isDark ? NSColor(dark) : NSColor(light)
     }))
 }
