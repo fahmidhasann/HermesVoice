@@ -570,6 +570,44 @@ struct OverlayView: View {
 
 // MARK: - Message Bubble
 
+private struct ThinkingDots: View {
+    @State private var phase = 0
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(0..<3, id: \.self) { i in
+                Circle()
+                    .fill(i == phase ? Theme.Colors.accent : Theme.Colors.textSecondary.opacity(0.3))
+                    .frame(width: 5, height: 5)
+                    .scaleEffect(i == phase ? 1.15 : 0.85)
+                    .animation(Theme.Motion.ifMotion(Theme.Motion.toggle), value: phase)
+            }
+        }
+        .task {
+            guard !Theme.Motion.reduceMotion else { return }
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 380_000_000)
+                phase = (phase + 1) % 3
+            }
+        }
+    }
+}
+
+private struct StreamingCursor: View {
+    @State private var pulsing = false
+
+    var body: some View {
+        Circle()
+            .fill(Theme.Colors.accent.opacity(pulsing ? 0.3 : 0.85))
+            .frame(width: 6, height: 6)
+            .animation(
+                pulsing ? Theme.Motion.ifMotion(Theme.Motion.breathe) : nil,
+                value: pulsing
+            )
+            .onAppear { pulsing = true }
+    }
+}
+
 struct MessageBubble: View {
     let message: ChatMessage
     @State private var appeared = false
@@ -611,32 +649,40 @@ struct MessageBubble: View {
                 }
 
                 if !message.content.isEmpty || message.isStreaming {
-                    HStack(alignment: .top, spacing: Theme.Spacing.sm) {
-                        messageText
-                            .textSelection(.enabled)
-
-                        if message.isStreaming {
-                            ProgressView()
-                                .scaleEffect(0.45)
-                                .frame(width: 12, height: 12)
+                    if message.isStreaming && message.content.isEmpty {
+                        HStack(spacing: Theme.Spacing.sm) {
+                            ThinkingDots()
+                            Text("Thinking…")
+                                .font(Theme.Font.message(size: 13))
+                                .foregroundColor(Theme.Colors.textSecondary)
                         }
+                    } else {
+                        HStack(alignment: .top, spacing: Theme.Spacing.sm) {
+                            messageText
+                                .textSelection(.enabled)
 
-                        // Copy is always present (discoverable) on both user and
-                        // assistant bubbles — subtle at rest, full-strength on hover,
-                        // with a "Copied" checkmark confirmation.
-                        if !message.isStreaming && !message.content.isEmpty {
-                            Button(action: copyMessage) {
-                                Image(systemName: showCopied ? "checkmark" : "doc.on.doc")
-                                    .font(Theme.Icon.font(Theme.Icon.xs, weight: .medium))
-                                    .foregroundColor(showCopied ? .green : Theme.Colors.textSecondary)
-                                    .frame(width: 22, height: 22)
-                                    .background(Theme.Colors.textPrimary.opacity(showCopied ? 0.08 : 0.04))
-                                    .clipShape(Circle())
+                            if message.isStreaming {
+                                StreamingCursor()
+                                    .padding(.top, 4)
                             }
-                            .buttonStyle(.plain)
-                            .opacity(showCopied || isHovered ? 1 : 0.4)
-                            .help(showCopied ? "Copied" : "Copy message")
-                            .accessibilityLabel("Copy message")
+
+                            // Copy is always present (discoverable) on both user and
+                            // assistant bubbles — subtle at rest, full-strength on hover,
+                            // with a "Copied" checkmark confirmation.
+                            if !message.isStreaming && !message.content.isEmpty {
+                                Button(action: copyMessage) {
+                                    Image(systemName: showCopied ? "checkmark" : "doc.on.doc")
+                                        .font(Theme.Icon.font(Theme.Icon.xs, weight: .medium))
+                                        .foregroundColor(showCopied ? .green : Theme.Colors.textSecondary)
+                                        .frame(width: 22, height: 22)
+                                        .background(Theme.Colors.textPrimary.opacity(showCopied ? 0.08 : 0.04))
+                                        .clipShape(Circle())
+                                }
+                                .buttonStyle(.plain)
+                                .opacity(showCopied || isHovered ? 1 : 0.4)
+                                .help(showCopied ? "Copied" : "Copy message")
+                                .accessibilityLabel("Copy message")
+                            }
                         }
                     }
                 }
@@ -729,6 +775,21 @@ struct MessageBubble: View {
 
 // MARK: - Tool Activity Row
 
+private struct ToolRunningDot: View {
+    @State private var pulsing = false
+
+    var body: some View {
+        Circle()
+            .fill(Theme.Colors.accent.opacity(pulsing ? 0.25 : 0.8))
+            .frame(width: 5, height: 5)
+            .animation(
+                pulsing ? Theme.Motion.ifMotion(Theme.Motion.breathe) : nil,
+                value: pulsing
+            )
+            .onAppear { pulsing = true }
+    }
+}
+
 /// Ephemeral "Hermes is using …" row rendered while a tool step is running.
 /// These are not persisted in the transcript — they vanish when the step
 /// completes (the view model removes completed activities).
@@ -742,19 +803,33 @@ struct ToolActivityRow: View {
 
     var body: some View {
         HStack(spacing: Theme.Spacing.sm) {
-            Text(tool.emoji ?? "🔧")
-                .font(Theme.Icon.font(Theme.Icon.sm))
+            if tool.status == .completed {
+                Image(systemName: "checkmark")
+                    .font(Theme.Icon.font(Theme.Icon.xs, weight: .bold))
+                    .foregroundColor(Theme.Colors.success)
+                    .frame(width: 16, height: 16)
+            } else {
+                Text(tool.emoji ?? "🔧")
+                    .font(Theme.Icon.font(Theme.Icon.sm))
+            }
 
-            (Text("Hermes is using ").foregroundColor(Theme.Colors.textSecondary)
-             + Text(label).foregroundColor(Theme.Colors.textPrimary)
-             + Text("…").foregroundColor(Theme.Colors.textSecondary))
-                .font(Theme.Font.message(size: 12))
-                .lineLimit(1)
-                .truncationMode(.middle)
+            Group {
+                if tool.status == .completed {
+                    (Text(label).foregroundColor(Theme.Colors.textPrimary)
+                     + Text(" · done").foregroundColor(Theme.Colors.textSecondary))
+                } else {
+                    (Text("Hermes is using ").foregroundColor(Theme.Colors.textSecondary)
+                     + Text(label).foregroundColor(Theme.Colors.textPrimary)
+                     + Text("…").foregroundColor(Theme.Colors.textSecondary))
+                }
+            }
+            .font(Theme.Font.message(size: 12))
+            .lineLimit(1)
+            .truncationMode(.middle)
 
-            ProgressView()
-                .scaleEffect(0.4)
-                .frame(width: 12, height: 12)
+            if tool.status == .running {
+                ToolRunningDot()
+            }
 
             Spacer(minLength: 24)
         }
@@ -762,14 +837,22 @@ struct ToolActivityRow: View {
         .padding(.vertical, Theme.Spacing.xs2)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.chip, style: .continuous)
-                .fill(Theme.Colors.accentSoft)
+                .fill(tool.status == .completed
+                    ? Theme.Colors.success.opacity(0.09)
+                    : Theme.Colors.accentSoft)
                 .overlay(
                     RoundedRectangle(cornerRadius: Theme.Radius.chip, style: .continuous)
-                        .strokeBorder(Theme.Colors.accent.opacity(0.15), lineWidth: 0.5)
+                        .strokeBorder(
+                            tool.status == .completed
+                                ? Theme.Colors.success.opacity(0.22)
+                                : Theme.Colors.accent.opacity(0.15),
+                            lineWidth: 0.5
+                        )
                 )
         )
+        .animation(Theme.Motion.ifMotion(Theme.Motion.state), value: tool.status)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Hermes is using \(label)")
+        .accessibilityLabel(tool.status == .completed ? "\(label) done" : "Hermes is using \(label)")
     }
 }
 

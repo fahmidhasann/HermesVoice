@@ -337,7 +337,13 @@ final class ChatSession: ObservableObject {
                 activeTools.append(activity)
             }
         case .completed:
-            activeTools.removeAll { $0.toolCallId == activity.toolCallId }
+            guard let index = activeTools.firstIndex(where: { $0.toolCallId == activity.toolCallId }) else { return }
+            activeTools[index] = activity
+            let toolCallId = activity.toolCallId
+            Task { @MainActor [weak self] in
+                try? await Task.sleep(nanoseconds: 800_000_000)
+                self?.activeTools.removeAll { $0.toolCallId == toolCallId }
+            }
         }
     }
 
