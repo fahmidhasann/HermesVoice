@@ -184,20 +184,20 @@ class OverlayViewModel: ObservableObject {
 
         voiceEngine = VoiceEngine()
         voiceEngine?.onPartialResult = { [weak self] text in
-            Task { @MainActor in self?.transcribedText = text }
+            Task { @MainActor [weak self] in self?.transcribedText = text }
         }
         voiceEngine?.onFinalResult = { [weak self] text in
-            Task { @MainActor in self?.handleTranscript(text) }
+            Task { @MainActor [weak self] in self?.handleTranscript(text) }
         }
         voiceEngine?.onError = { [weak self] error in
-            Task { @MainActor in
+            Task { @MainActor [weak self] in
                 self?.foreground.state = .error
                 self?.foreground.errorMessage = error
                 self?.isRecording = false
             }
         }
         voiceEngine?.onAudioLevel = { [weak self] level in
-            Task { @MainActor in self?.audioLevel = level }
+            Task { @MainActor [weak self] in self?.audioLevel = level }
         }
 
         bindForeground(foreground)

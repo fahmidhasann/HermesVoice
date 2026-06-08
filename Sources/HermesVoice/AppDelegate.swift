@@ -84,7 +84,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            Task { @MainActor in
+            Task { @MainActor [weak self] in
                 self?.hidePanel()
             }
         }
@@ -562,7 +562,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         clickOutsideMonitor = NSEvent.addGlobalMonitorForEvents(
             matching: [.leftMouseDown, .rightMouseDown, .otherMouseDown]
         ) { [weak self] _ in
-            Task { @MainActor in self?.hidePanel() }
+            Task { @MainActor [weak self] in self?.hidePanel() }
         }
     }
 
