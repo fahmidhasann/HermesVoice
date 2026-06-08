@@ -6,6 +6,7 @@ enum AppSettingsTests {
         TestCase(name: "defaults are sane") {
             let d = AppSettings.default
             checkEqual(d.hotKeyCode, 0x04, "default hotkey is H")
+            checkEqual(d.gatewayURL, "http://127.0.0.1:8642")
             checkEqual(d.endpointHost, "127.0.0.1")
             checkEqual(d.endpointPort, 8642)
             check(d.model == nil, "default model is nil")
@@ -14,6 +15,7 @@ enum AppSettingsTests {
         },
         TestCase(name: "encode/decode round-trips") {
             var s = AppSettings.default
+            s.gatewayURL = "https://gw.example.com:8443"
             s.endpointHost = "localhost"
             s.endpointPort = 9000
             s.model = "hermes-pro"
@@ -77,11 +79,42 @@ enum AppSettingsTests {
         TestCase(name: "unknown key code names itself") {
             checkEqual(HotKeyFormatter.keyName(9999), "Key 9999")
         },
-        TestCase(name: "baseURLString reflects custom host and port") {
+        TestCase(name: "baseURLString reflects the gateway URL (any scheme/port)") {
             var s = AppSettings.default
-            s.endpointHost = "192.168.1.5"
-            s.endpointPort = 9000
-            checkEqual(s.baseURLString, "http://192.168.1.5:9000")
+            s.gatewayURL = "https://gw.example.com:8443"
+            checkEqual(s.baseURLString, "https://gw.example.com:8443")
+        },
+        TestCase(name: "baseURLString strips trailing slashes") {
+            var s = AppSettings.default
+            s.gatewayURL = "http://localhost:8642/"
+            checkEqual(s.baseURLString, "http://localhost:8642", "one trailing slash")
+            s.gatewayURL = "http://localhost:8642///"
+            checkEqual(s.baseURLString, "http://localhost:8642", "several trailing slashes")
+            s.gatewayURL = "  http://localhost:8642  "
+            checkEqual(s.baseURLString, "http://localhost:8642", "surrounding whitespace trimmed")
+        },
+        TestCase(name: "legacy host/port composes gatewayURL when absent") {
+            // A blob written before gatewayURL existed: migrate from host/port.
+            let json = #"{"endpointHost": "localhost", "endpointPort": 9000}"#
+            let decoded = AppSettings.decode(Data(json.utf8))
+            checkEqual(decoded.gatewayURL, "http://localhost:9000", "composed from legacy fields")
+            checkEqual(decoded.baseURLString, "http://localhost:9000")
+        },
+        TestCase(name: "missing gatewayURL with no host/port lands on the default") {
+            let json = #"{"model": "x"}"#
+            let decoded = AppSettings.decode(Data(json.utf8))
+            // host/port default to 127.0.0.1:8642, so the composed URL matches.
+            checkEqual(decoded.gatewayURL, "http://127.0.0.1:8642")
+        },
+        TestCase(name: "explicit gatewayURL wins over legacy host/port") {
+            let json = #"{"gatewayURL": "https://gw.example.com", "endpointHost": "localhost", "endpointPort": 9000}"#
+            let decoded = AppSettings.decode(Data(json.utf8))
+            checkEqual(decoded.gatewayURL, "https://gw.example.com", "stored URL preferred")
+        },
+        TestCase(name: "blank stored gatewayURL falls back to composed legacy URL") {
+            let json = #"{"gatewayURL": "   ", "endpointHost": "10.0.0.2", "endpointPort": 7000}"#
+            let decoded = AppSettings.decode(Data(json.utf8))
+            checkEqual(decoded.gatewayURL, "http://10.0.0.2:7000", "whitespace-only URL ignored")
         },
         TestCase(name: "wrong-typed field falls back without wiping the blob") {
             // endpointPort given as a string is the wrong type; it must fall back

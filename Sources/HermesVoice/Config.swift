@@ -6,7 +6,6 @@ class Config {
 
     let apiEndpoint: URL
     let healthEndpoint: URL
-    let apiKey: String
     /// Sent on every request so Hermes can attribute traffic to this client.
     let userAgent: String
 
@@ -15,26 +14,24 @@ class Config {
         apiEndpoint = URL(string: "\(baseURL)/v1/chat/completions")!
         healthEndpoint = URL(string: "\(baseURL)/v1/health")!
 
-        // Load API key from ~/.hermes/.env
-        apiKey = Config.loadAPIKey()
-
         let version = (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "1.0"
         userAgent = "HermesVoice/\(version)"
     }
-    
-    private static func loadAPIKey() -> String {
-        let envPath = NSString("~/.hermes/.env").expandingTildeInPath
-        
-        guard let contents = try? String(contentsOfFile: envPath, encoding: .utf8) else {
-            print("HermesVoice: Warning - Could not read ~/.hermes/.env")
-            return ""
-        }
-        
-        if let key = APIKeyParser.parse(env: contents) {
-            return key
-        }
 
-        print("HermesVoice: Warning - API_SERVER_KEY not found in ~/.hermes/.env")
-        return ""
+    /// One-time migration of a pre-Keychain credential. Early builds read the API
+    /// key from `~/.hermes/.env` on every launch; it now lives in the Keychain
+    /// (entered via onboarding/Settings, see `CredentialsStore`). On launch, if
+    /// the Keychain has no key but a legacy `.env` does, import it once so
+    /// upgraders keep working without re-entering it. Idempotent: a no-op as soon
+    /// as a key is present in the Keychain.
+    static func migrateLegacyAPIKeyIfNeeded() {
+        guard CredentialsStore.current() == nil else { return }
+
+        let envPath = NSString("~/.hermes/.env").expandingTildeInPath
+        guard let contents = try? String(contentsOfFile: envPath, encoding: .utf8),
+              let key = APIKeyParser.parse(env: contents), !key.isEmpty else {
+            return
+        }
+        CredentialsStore.save(key)
     }
 }

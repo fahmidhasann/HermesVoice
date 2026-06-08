@@ -11,12 +11,26 @@ struct OnboardingView: View {
     let onFinish: () -> Void
 
     private enum Step: Int, CaseIterable {
-        case welcome, permissions, hotkey
+        case welcome, connect, permissions, hotkey
     }
+
+    /// Result of a "Test connection" tap in the Connect step.
+    private enum TestState: Equatable {
+        case idle, testing, reachable(models: Int), unreachable
+    }
+
+    // Fields bind straight into the shared stores, so whatever the user types is
+    // persisted immediately (URL → UserDefaults, key → Keychain). That's why the
+    // step is freely skippable: there's nothing to "commit" on the way out.
+    @ObservedObject private var settingsStore = AppSettingsStore.shared
+    @ObservedObject private var credentials = CredentialsStore.shared
 
     @State private var step: Step = .welcome
     @State private var micStatus: AVAuthorizationStatus = AVCaptureDevice.authorizationStatus(for: .audio)
     @State private var speechStatus: SFSpeechRecognizerAuthorizationStatus = SFSpeechRecognizer.authorizationStatus()
+    @State private var testState: TestState = .idle
+
+    private let client = HermesAPIClient()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -27,7 +41,10 @@ struct OnboardingView: View {
 
             footer
         }
-        .frame(width: 460, height: 420)
+        // Height is sized for the tallest step (Connect: badge + two fields + a
+        // test row). The shorter steps absorb the slack through their trailing
+        // Spacer, so nothing clips.
+        .frame(width: 460, height: 500)
         .background(Theme.Colors.baseTint)
     }
 
@@ -37,6 +54,7 @@ struct OnboardingView: View {
     private var content: some View {
         switch step {
         case .welcome:     welcomeStep
+        case .connect:     connectStep
         case .permissions: permissionsStep
         case .hotkey:      hotkeyStep
         }
@@ -55,6 +73,84 @@ struct OnboardingView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer(minLength: 0)
+        }
+    }
+
+    private var connectStep: some View {
+        VStack(spacing: 18) {
+            iconBadge(symbol: "network")
+            VStack(spacing: 8) {
+                Text("Connect your gateway")
+                    .font(.system(size: 20, weight: .semibold))
+                Text("HermesVoice talks to your Hermes Agent Gateway. Enter its URL and API key — both stay on this Mac (the key lives in your Keychain).")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Theme.Colors.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            VStack(spacing: 12) {
+                onboardingField(label: "Gateway URL") {
+                    TextField("http://127.0.0.1:8642", text: $settingsStore.settings.gatewayURL)
+                        .textFieldStyle(.plain)
+                        .autocorrectionDisabled()
+                }
+                onboardingField(label: "API key") {
+                    SecureField("Paste your API key (optional)", text: $credentials.apiKey)
+                        .textFieldStyle(.plain)
+                }
+                testRow
+            }
+            .frame(width: 320)
+
+            Spacer(minLength: 0)
+        }
+    }
+
+    /// "Test connection" action plus its ✓/✗ result, used only in the Connect step.
+    private var testRow: some View {
+        HStack(spacing: 8) {
+            Button(action: testConnection) {
+                Text("Test connection")
+                    .font(.system(size: 12, weight: .medium))
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(Theme.Colors.accent)
+            .disabled(testState == .testing)
+
+            if testState == .testing {
+                ProgressView().scaleEffect(0.5).frame(width: 14, height: 14)
+            }
+            Spacer()
+            testStatusLabel
+        }
+    }
+
+    @ViewBuilder
+    private var testStatusLabel: some View {
+        switch testState {
+        case .idle, .testing:
+            EmptyView()
+        case .reachable(let count):
+            Label(count > 0 ? "Connected · \(count) model\(count == 1 ? "" : "s")" : "Connected",
+                  systemImage: "checkmark.circle.fill")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(Theme.Colors.success)
+        case .unreachable:
+            Label("Can't reach gateway", systemImage: "xmark.circle.fill")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(Theme.Colors.error)
+        }
+    }
+
+    private func testConnection() {
+        testState = .testing
+        Task {
+            let healthy = await client.checkHealth()
+            let models = healthy ? await client.fetchModels() : []
+            await MainActor.run {
+                testState = healthy ? .reachable(models: models.count) : .unreachable
+            }
         }
     }
 
@@ -138,6 +234,7 @@ struct OnboardingView: View {
     private var primaryTitle: String {
         switch step {
         case .welcome:     return "Get Started"
+        case .connect:     return "Continue"
         case .permissions: return permissionsResolved ? "Continue" : "Allow Access"
         case .hotkey:      return "Done"
         }
@@ -146,6 +243,8 @@ struct OnboardingView: View {
     private func advance() {
         switch step {
         case .welcome:
+            step = .connect
+        case .connect:
             step = .permissions
         case .permissions:
             if permissionsResolved {
@@ -193,6 +292,30 @@ struct OnboardingView: View {
             Image(systemName: symbol)
                 .font(.system(size: 40, weight: .medium))
                 .foregroundStyle(Theme.Gradients.accent)
+        }
+    }
+
+    /// A labelled input chip for the Connect step — the field sits in the same
+    /// soft-amber rounded surface used by `permissionRow`/`keycap`, so the step
+    /// reads as part of the onboarding rather than a bare system form.
+    private func onboardingField<Content: View>(label: String,
+                                                @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(Theme.Colors.textTertiary)
+            content()
+                .font(.system(size: 13))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 9)
+                .background(
+                    RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
+                        .fill(Theme.Colors.accentSoft.opacity(0.5))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
+                                .strokeBorder(Theme.Colors.hairline)
+                        )
+                )
         }
     }
 

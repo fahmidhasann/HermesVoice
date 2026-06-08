@@ -71,6 +71,13 @@ public struct AppSettings: Codable, Equatable, Sendable {
     public var hotKeyModifiers: UInt32
 
     // MARK: Connection
+    /// Full base URL of the gateway (scheme + host + optional port), e.g.
+    /// `http://127.0.0.1:8642` or `https://gw.example.com`. This is the single
+    /// source for the endpoint; `endpointHost`/`endpointPort` are retained only
+    /// to migrate settings written before this field existed.
+    public var gatewayURL: String
+    /// Legacy split endpoint — superseded by `gatewayURL`. Kept decodable so an
+    /// upgrade composes `gatewayURL` from these once (see `init(from:)`).
     public var endpointHost: String
     public var endpointPort: Int
     /// Model id to request, or `nil`/empty to let the server pick its default.
@@ -89,6 +96,7 @@ public struct AppSettings: Codable, Equatable, Sendable {
 
     public init(hotKeyCode: UInt32,
                 hotKeyModifiers: UInt32,
+                gatewayURL: String,
                 endpointHost: String,
                 endpointPort: Int,
                 model: String?,
@@ -99,6 +107,7 @@ public struct AppSettings: Codable, Equatable, Sendable {
                 recognitionLanguage: String) {
         self.hotKeyCode = hotKeyCode
         self.hotKeyModifiers = hotKeyModifiers
+        self.gatewayURL = gatewayURL
         self.endpointHost = endpointHost
         self.endpointPort = endpointPort
         self.model = model
@@ -115,6 +124,7 @@ public struct AppSettings: Codable, Equatable, Sendable {
     public static let `default` = AppSettings(
         hotKeyCode: 0x04,                                          // kVK_ANSI_H
         hotKeyModifiers: HotKeyFormatter.controlKey | HotKeyFormatter.shiftKey,
+        gatewayURL: "http://127.0.0.1:8642",
         endpointHost: "127.0.0.1",
         endpointPort: 8642,
         model: nil,
@@ -124,9 +134,12 @@ public struct AppSettings: Codable, Equatable, Sendable {
         silenceTimeout: 1.5,
         recognitionLanguage: "")
 
-    /// Base URL string for the configured endpoint (no trailing slash).
+    /// Base URL string for the configured endpoint (no trailing slash). Derived
+    /// from `gatewayURL`, so it carries whatever scheme/port the user entered.
     public var baseURLString: String {
-        "http://\(endpointHost):\(endpointPort)"
+        var s = gatewayURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        while s.hasSuffix("/") { s.removeLast() }
+        return s
     }
 
     /// Model normalized for sending: trimmed, `nil` when empty.
@@ -139,7 +152,7 @@ public struct AppSettings: Codable, Equatable, Sendable {
 
     private enum CodingKeys: String, CodingKey {
         case hotKeyCode, hotKeyModifiers
-        case endpointHost, endpointPort, model
+        case gatewayURL, endpointHost, endpointPort, model
         case appearance, launchAtLogin
         case voiceFlow, silenceTimeout, recognitionLanguage
     }
@@ -155,6 +168,15 @@ public struct AppSettings: Codable, Equatable, Sendable {
         hotKeyModifiers = value(.hotKeyModifiers, d.hotKeyModifiers)
         endpointHost = value(.endpointHost, d.endpointHost)
         endpointPort = value(.endpointPort, d.endpointPort)
+        // gatewayURL migration: an explicit stored value wins; otherwise compose
+        // it from the legacy host/port (which themselves defaulted just above, so
+        // a brand-new blob lands on the local-gateway default).
+        if let stored = (try? c.decodeIfPresent(String.self, forKey: .gatewayURL)) ?? nil,
+           !stored.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            gatewayURL = stored
+        } else {
+            gatewayURL = "http://\(endpointHost):\(endpointPort)"
+        }
         model = (try? c.decodeIfPresent(String.self, forKey: .model)) ?? nil
         appearance = value(.appearance, d.appearance)
         launchAtLogin = value(.launchAtLogin, d.launchAtLogin)

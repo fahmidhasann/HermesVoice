@@ -67,6 +67,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             return
         }
 
+        // Import a legacy `~/.hermes/.env` key into the Keychain on first launch
+        // after upgrading. Runs before any view touches `CredentialsStore.shared`,
+        // so the migrated key is present when onboarding/Settings read it.
+        Config.migrateLegacyAPIKeyIfNeeded()
+
         setupOverlayPanel()
         setupHotKey()
         subscribeToSettings()
