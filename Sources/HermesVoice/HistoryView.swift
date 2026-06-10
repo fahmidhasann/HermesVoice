@@ -120,7 +120,6 @@ struct HistoryView: View {
                                 onDelete: { viewModel.deleteConversation(id: entry.id) }
                             )
                             .id(entry.id)
-                            .onTapGesture { viewModel.openConversation(id: entry.id) }
                         }
                     }
                     .padding(.horizontal, Theme.Spacing.lg)
@@ -185,6 +184,7 @@ private struct HistoryRow: View {
     let onDelete: () -> Void
 
     @State private var isHovered = false
+    @State private var showDeleteConfirm = false
 
     var body: some View {
         HStack(alignment: .top, spacing: Theme.Spacing.md) {
@@ -212,9 +212,11 @@ private struct HistoryRow: View {
                     .foregroundColor(Theme.Colors.textSecondary.opacity(0.5))
             }
 
-            // Delete affordance — revealed on hover to keep rows tidy.
-            if isHovered {
-                Button(action: onDelete) {
+            // Delete affordance — revealed on hover to keep rows tidy. Deletion
+            // is irreversible, so it asks for confirmation instead of firing on
+            // a single (possibly stray) click inside a clickable row.
+            if isHovered || showDeleteConfirm {
+                Button(action: { showDeleteConfirm = true }) {
                     Image(systemName: "trash")
                         .font(.system(size: 11, weight: .regular))
                         .foregroundColor(Theme.Colors.error)
@@ -224,12 +226,29 @@ private struct HistoryRow: View {
                 .help("Delete conversation")
                 .accessibilityLabel("Delete conversation")
                 .transition(.opacity)
+                .popover(isPresented: $showDeleteConfirm, arrowEdge: .bottom) {
+                    VStack(spacing: Theme.Spacing.md) {
+                        Text("Delete this conversation?")
+                            .font(Theme.Font.messageEmphasized(size: 12.5))
+                        HStack(spacing: Theme.Spacing.sm) {
+                            Button("Cancel") { showDeleteConfirm = false }
+                            Button("Delete") {
+                                showDeleteConfirm = false
+                                onDelete()
+                            }
+                            .tint(Theme.Colors.error)
+                            .keyboardShortcut(.defaultAction)
+                        }
+                    }
+                    .padding(Theme.Spacing.lg)
+                }
             }
         }
         .padding(.horizontal, Theme.Spacing.md)
         .padding(.vertical, Theme.Spacing.sm + 2)
         .background(rowBackground)
         .contentShape(Rectangle())
+        .onTapGesture(perform: onOpen)
         .onHover { hovering in
             withAnimation(Theme.Motion.ifMotion(.easeOut(duration: 0.12))) {
                 isHovered = hovering

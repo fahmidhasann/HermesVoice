@@ -140,6 +140,15 @@ private struct ConnectionSettingsTab: View {
             Section {
                 TextField("Gateway URL", text: $settings.gatewayURL)
                     .autocorrectionDisabled()
+                    // Clean up the entry once editing ends (adds a missing
+                    // scheme, strips a trailing path) so what's stored is what
+                    // requests will actually hit.
+                    .onSubmit(normalizeGatewayURL)
+                if gatewayURLInvalid {
+                    Text("Enter a valid http(s) URL, e.g. http://127.0.0.1:8642.")
+                        .font(.caption)
+                        .foregroundColor(.red)
+                }
                 SecureField("API key", text: $credentials.apiKey)
             }
 
@@ -177,6 +186,21 @@ private struct ConnectionSettingsTab: View {
         }
     }
 
+    /// True when the current entry can't be normalized into an http(s) base —
+    /// surfaced inline instead of silently falling back to localhost at
+    /// request time. Empty is not flagged (the placeholder/default applies).
+    private var gatewayURLInvalid: Bool {
+        let raw = settings.gatewayURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        return !raw.isEmpty && AppSettings.normalizedGatewayURL(raw) == nil
+    }
+
+    private func normalizeGatewayURL() {
+        if let normalized = AppSettings.normalizedGatewayURL(settings.gatewayURL),
+           normalized != settings.gatewayURL {
+            settings.gatewayURL = normalized
+        }
+    }
+
     private func refreshModels() {
         loadingModels = true
         modelStatus = ""
@@ -203,12 +227,16 @@ private struct ShortcutsSettingsTab: View {
             HStack {
                 Text("Toggle panel")
                 Spacer()
-                HotKeyRecorder(keyCode: $settings.hotKeyCode, modifiers: $settings.hotKeyModifiers)
+                HotKeyRecorder(settings: $settings)
             }
 
             Button("Reset to default (⌃⇧H)") {
-                settings.hotKeyCode = AppSettings.default.hotKeyCode
-                settings.hotKeyModifiers = AppSettings.default.hotKeyModifiers
+                // One assignment so the combo can't be applied half-changed
+                // (see HotKeyRecorder's doc comment).
+                var updated = settings
+                updated.hotKeyCode = AppSettings.default.hotKeyCode
+                updated.hotKeyModifiers = AppSettings.default.hotKeyModifiers
+                settings = updated
             }
             .buttonStyle(.link)
 

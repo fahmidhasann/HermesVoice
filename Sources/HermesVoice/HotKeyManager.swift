@@ -19,11 +19,16 @@ final class HotKeyManager {
     init(keyCode: UInt32, modifiers: UInt32, callback: @escaping () -> Void) {
         self.callback = callback
         HotKeyManager.instance = self
+        // The event handler is installed exactly once for the manager's life
+        // (re-registrations only swap the hotkey), so a failed registration
+        // can't strand an orphaned handler.
+        installEventHandler()
         _ = registerHotKey(keyCode: keyCode, modifiers: modifiers)
     }
 
     deinit {
         unregisterHotKey()
+        removeEventHandler()
         HotKeyManager.instance = nil
     }
 
@@ -43,17 +48,13 @@ final class HotKeyManager {
         return false
     }
 
-    @discardableResult
-    private func registerHotKey(keyCode: UInt32, modifiers: UInt32) -> Bool {
-        var hotKeyID = EventHotKeyID()
-        hotKeyID.signature = OSType(0x48564B59) // "HVKY"
-        hotKeyID.id = 1
+    private func installEventHandler() {
+        guard eventHandler == nil else { return }
 
         var eventType = EventTypeSpec()
         eventType.eventClass = OSType(kEventClassKeyboard)
         eventType.eventKind = UInt32(kEventHotKeyPressed)
 
-        // Install event handler
         let handlerCallback: EventHandlerUPP = { _, event, _ -> OSStatus in
             guard let event = event else { return OSStatus(eventNotHandledErr) }
 
@@ -83,6 +84,20 @@ final class HotKeyManager {
             nil,
             &eventHandler
         )
+    }
+
+    private func removeEventHandler() {
+        if let eventHandler = eventHandler {
+            RemoveEventHandler(eventHandler)
+            self.eventHandler = nil
+        }
+    }
+
+    @discardableResult
+    private func registerHotKey(keyCode: UInt32, modifiers: UInt32) -> Bool {
+        var hotKeyID = EventHotKeyID()
+        hotKeyID.signature = OSType(0x48564B59) // "HVKY"
+        hotKeyID.id = 1
 
         // Register the hotkey
         let status = RegisterEventHotKey(
@@ -111,10 +126,6 @@ final class HotKeyManager {
         if let hotKeyRef = hotKeyRef {
             UnregisterEventHotKey(hotKeyRef)
             self.hotKeyRef = nil
-        }
-        if let eventHandler = eventHandler {
-            RemoveEventHandler(eventHandler)
-            self.eventHandler = nil
         }
     }
 }

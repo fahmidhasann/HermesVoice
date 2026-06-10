@@ -264,7 +264,7 @@ struct OverlayView: View {
                 .font(Theme.Font.messageEmphasized(size: 13.5))
                 .foregroundColor(Theme.Colors.textPrimary)
 
-            Text("⌃⇧H to toggle  ·  Enter to send")
+            Text("\(HotKeyFormatter.displayString(keyCode: settingsStore.settings.hotKeyCode, modifiers: settingsStore.settings.hotKeyModifiers)) to toggle  ·  Enter to send")
                 .font(Theme.Font.hint())
                 .foregroundColor(Theme.Colors.textSecondary)
                 .padding(.horizontal, Theme.Spacing.sm2)
@@ -301,6 +301,10 @@ struct OverlayView: View {
             }
             // Scroll to new messages
             .onChange(of: viewModel.chatMessages.count) { _, _ in
+                // A new message (incl. a fresh streaming placeholder) restarts
+                // the streamed-length tracker; without this, autoscroll for the
+                // next response stays gated behind the longest previous one.
+                streamingContentLength = viewModel.chatMessages.last?.content.count ?? 0
                 if let last = viewModel.chatMessages.last {
                     withAnimation(Theme.Motion.ifMotion(Theme.Motion.content)) {
                         proxy.scrollTo(last.id, anchor: .bottom)
@@ -329,7 +333,10 @@ struct OverlayView: View {
 
     @ViewBuilder
     private var toolActivityRows: some View {
-        ForEach(Array(viewModel.activeTools.enumerated()), id: \.offset) { _, tool in
+        // Value identity (not positional \.offset) so removing one row doesn't
+        // churn the identity of every row after it. Rows can't be equal:
+        // the session dedupes on toolCallId (or tool name when id-less).
+        ForEach(viewModel.activeTools, id: \.self) { tool in
             ToolActivityRow(tool: tool)
                 .transition(.opacity.combined(with: .move(edge: .leading)))
         }
@@ -399,7 +406,7 @@ struct OverlayView: View {
 
     /// Nothing to send when there's neither text nor a staged image.
     private var sendDisabled: Bool {
-        viewModel.inputText.trimmingCharacters(in: .whitespaces).isEmpty
+        viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             && viewModel.pendingImages.isEmpty
     }
 
@@ -475,7 +482,7 @@ struct OverlayView: View {
 
             // Input area
             if viewModel.isRecording {
-                WaveformView(viewModel: viewModel)
+                WaveformView(audio: viewModel.audioLevel)
                     .frame(height: 36)
                     .transition(.opacity.combined(with: .scale))
             } else {

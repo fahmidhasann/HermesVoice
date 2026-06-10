@@ -151,6 +151,32 @@ enum AppSettingsTests {
             check(HotKeyFormatter.hasModifier(HotKeyFormatter.optionKey), "opt valid")
             check(HotKeyFormatter.hasModifier(HotKeyFormatter.shiftKey), "shift valid")
         },
+        TestCase(name: "normalizedGatewayURL accepts well-formed http(s) URLs as-is") {
+            checkEqual(AppSettings.normalizedGatewayURL("http://127.0.0.1:8642"), "http://127.0.0.1:8642")
+            checkEqual(AppSettings.normalizedGatewayURL("https://gw.example.com:8443"), "https://gw.example.com:8443")
+            checkEqual(AppSettings.normalizedGatewayURL("HTTPS://gw.example.com"), "https://gw.example.com",
+                       "scheme lowercased")
+        },
+        TestCase(name: "normalizedGatewayURL prepends http:// when the scheme is missing") {
+            checkEqual(AppSettings.normalizedGatewayURL("gw.example.com:8642"), "http://gw.example.com:8642",
+                       "host:port parses with a bogus scheme without this")
+            checkEqual(AppSettings.normalizedGatewayURL("127.0.0.1:8642"), "http://127.0.0.1:8642")
+            checkEqual(AppSettings.normalizedGatewayURL("localhost"), "http://localhost")
+        },
+        TestCase(name: "normalizedGatewayURL strips trailing path, slash, and query") {
+            checkEqual(AppSettings.normalizedGatewayURL("http://gw.example.com/v1"), "http://gw.example.com",
+                       "trailing path would double up as /v1/v1/…")
+            checkEqual(AppSettings.normalizedGatewayURL("http://localhost:8642/"), "http://localhost:8642")
+            checkEqual(AppSettings.normalizedGatewayURL("http://localhost:8642/v1/?x=1"), "http://localhost:8642")
+            checkEqual(AppSettings.normalizedGatewayURL("  http://localhost:8642  "), "http://localhost:8642",
+                       "whitespace trimmed")
+        },
+        TestCase(name: "normalizedGatewayURL rejects unusable input") {
+            check(AppSettings.normalizedGatewayURL("") == nil, "empty → nil")
+            check(AppSettings.normalizedGatewayURL("   ") == nil, "blank → nil")
+            check(AppSettings.normalizedGatewayURL("ftp://gw.example.com") == nil, "non-http scheme → nil")
+            check(AppSettings.normalizedGatewayURL("http://") == nil, "no host → nil")
+        },
         TestCase(name: "voiceFlow and appearance expose all cases with labels") {
             checkEqual(VoiceFlow.allCases.count, 3)
             checkEqual(AppearanceMode.allCases.count, 3)

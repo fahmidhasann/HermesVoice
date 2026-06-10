@@ -142,6 +142,42 @@ public struct AppSettings: Codable, Equatable, Sendable {
         return s
     }
 
+    /// Normalize a user-entered gateway URL into `scheme://host[:port]`, or nil
+    /// when no valid http(s) base can be made of it. Handles the common entry
+    /// mistakes that previously produced silently-wrong requests:
+    /// - missing scheme (`gw.example.com:8642` parses with scheme
+    ///   "gw.example.com"!) → `http://` is prepended,
+    /// - a trailing path or slash (`…/v1` → `…/v1/v1/chat/completions`) →
+    ///   path/query/fragment are stripped.
+    public static func normalizedGatewayURL(_ raw: String) -> String? {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+
+        var candidate = trimmed
+        if let schemeRange = trimmed.range(of: "://") {
+            // An explicit scheme must be http(s); anything else is a typo we
+            // can't guess at (ftp://… etc.), not a missing-scheme case.
+            let scheme = trimmed[..<schemeRange.lowerBound].lowercased()
+            guard scheme == "http" || scheme == "https" else { return nil }
+        } else {
+            candidate = "http://" + candidate
+        }
+
+        guard var components = URLComponents(string: candidate),
+              let parsedScheme = components.scheme?.lowercased(),
+              parsedScheme == "http" || parsedScheme == "https",
+              let host = components.host, !host.isEmpty
+        else { return nil }
+
+        components.scheme = parsedScheme
+        components.path = ""
+        components.query = nil
+        components.fragment = nil
+        guard var normalized = components.string else { return nil }
+        while normalized.hasSuffix("/") { normalized.removeLast() }
+        return normalized
+    }
+
     /// Model normalized for sending: trimmed, `nil` when empty.
     public var normalizedModel: String? {
         guard let model = model?.trimmingCharacters(in: .whitespaces), !model.isEmpty else { return nil }

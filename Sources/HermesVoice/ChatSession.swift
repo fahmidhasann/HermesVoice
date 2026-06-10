@@ -125,6 +125,20 @@ final class ChatSession: ObservableObject {
     /// True while a response is in flight; a new send is blocked until it ends.
     var isBusy: Bool { state == .sending || state == .responding }
 
+    /// Toolchain-pure mirror of `state`, consulted by `EvictionPolicy` when the
+    /// facade sweeps finished background sessions (§4.10).
+    var lifecycleState: SessionLifecycleState {
+        switch state {
+        case .idle:         return .idle
+        case .listening:    return .listening
+        case .transcribing: return .transcribing
+        case .sending:      return .sending
+        case .responding:   return .responding
+        case .done:         return .done
+        case .error:        return .error
+        }
+    }
+
     /// Resolve the live index of the streaming target, fresh at each access.
     /// Returns nil if the target was removed (reset/retry/delete).
     private func streamingIndex() -> Int? {
@@ -212,6 +226,15 @@ final class ChatSession: ObservableObject {
     }
 
     private func runStream(messages: [OutgoingMessage]) async {
+        // Every resumption point in this task is a cancellation boundary: a
+        // cancelled task must never write `state` or run `finishAssistant()`,
+        // because `cancelStreaming()` already finalized this stream and a newer
+        // stream may have re-pointed `streamingMessageId` at its own
+        // placeholder. In particular, a cancelled `for try await` loop ends
+        // *without throwing*, so falling through to `finishAssistant()` would
+        // silently destroy the next response's placeholder.
+        if Task.isCancelled { return }
+
         // Hold the App Nap assertion for the duration of the network burst only
         // (across retry backoffs too), and release it *before* the cosmetic 1.5s
         // done→idle sleep. The explicit `releaseActivity()` calls do the release
@@ -258,6 +281,10 @@ final class ChatSession: ObservableObject {
                     }
                 }
 
+                // A cancelled stream terminates the loop without throwing —
+                // bail before finalizing as if it completed.
+                if Task.isCancelled { return }
+
                 finishAssistant()
                 releaseActivity() // network done — don't hold the assertion through the sleep
                 state = .done
@@ -273,6 +300,10 @@ final class ChatSession: ObservableObject {
                 if apiError.isTransient, !receivedContent, attempt < maxAttempts {
                     let backoff = UInt64(Double(attempt) * 0.5 * 1_000_000_000)
                     try? await Task.sleep(nanoseconds: backoff)
+                    // `try?` swallows the sleep's CancellationError — a cancel
+                    // during the backoff must end the task, not retry over the
+                    // `.idle` that `cancelStreaming()` just set.
+                    if Task.isCancelled { return }
                     continue
                 }
 
@@ -298,8 +329,10 @@ final class ChatSession: ObservableObject {
         } else {
             persist(chatMessages[index])
             // A real answer landed — fire the one-shot completion cue so a
-            // background finish can be surfaced in the menu bar (§4.8).
-            onFinished?(conversationId)
+            // background finish can be surfaced in the menu bar (§4.8). Guarded
+            // like every other side effect so a deleted conversation can't
+            // flash a completion cue for a thread that no longer exists.
+            if !isDeleted { onFinished?(conversationId) }
         }
     }
 
@@ -328,21 +361,38 @@ final class ChatSession: ObservableObject {
         state = .error
     }
 
+    /// Row to update for `activity`. Matches on `toolCallId` when the gateway
+    /// provides one; otherwise falls back to the tool name, so two concurrent
+    /// id-less tools can't collide on `nil == nil` and overwrite each other.
+    private func toolRowIndex(for activity: ToolActivity) -> Int? {
+        if let id = activity.toolCallId {
+            return activeTools.firstIndex(where: { $0.toolCallId == id })
+        }
+        return activeTools.firstIndex(where: { $0.toolCallId == nil && $0.tool == activity.tool })
+    }
+
     private func applyToolActivity(_ activity: ToolActivity) {
         switch activity.status {
         case .running:
-            if let index = activeTools.firstIndex(where: { $0.toolCallId == activity.toolCallId }) {
+            if let index = toolRowIndex(for: activity) {
                 activeTools[index] = activity
             } else {
                 activeTools.append(activity)
             }
         case .completed:
-            guard let index = activeTools.firstIndex(where: { $0.toolCallId == activity.toolCallId }) else { return }
+            guard let index = toolRowIndex(for: activity) else { return }
             activeTools[index] = activity
             let toolCallId = activity.toolCallId
+            let toolName = activity.tool
             Task { @MainActor [weak self] in
                 try? await Task.sleep(nanoseconds: 800_000_000)
-                self?.activeTools.removeAll { $0.toolCallId == toolCallId }
+                // Only sweep rows that are actually completed, so an id-less
+                // cleanup can't wipe a still-running row for the same tool.
+                self?.activeTools.removeAll { row in
+                    guard row.status == .completed else { return false }
+                    if let toolCallId { return row.toolCallId == toolCallId }
+                    return row.toolCallId == nil && row.tool == toolName
+                }
             }
         }
     }

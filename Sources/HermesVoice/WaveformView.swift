@@ -2,9 +2,10 @@ import SwiftUI
 
 /// Live capture waveform. Bars are filled with the warm amber gradient and
 /// fade toward the edges so the energy reads as centred, sitting on a soft
-/// amber wash. Driven entirely by `viewModel.audioLevel`.
+/// amber wash. Driven entirely by the dedicated `AudioLevelModel`, so its
+/// buffer-rate ticks re-render only this view, never the whole overlay.
 struct WaveformView: View {
-    @ObservedObject var viewModel: OverlayViewModel
+    @ObservedObject var audio: AudioLevelModel
     private let barCount = 32
     @State private var bars: [CGFloat] = Array(repeating: 0.02, count: 32)
 
@@ -23,7 +24,7 @@ struct WaveformView: View {
             RoundedRectangle(cornerRadius: Theme.Radius.chip, style: .continuous)
                 .fill(Theme.Colors.accentSoft.opacity(0.5))
         )
-        .onChange(of: viewModel.audioLevel) { _, newLevel in
+        .onChange(of: audio.level) { _, newLevel in
             withAnimation(.linear(duration: 0.08)) {
                 bars.removeFirst()
                 bars.append(newLevel)

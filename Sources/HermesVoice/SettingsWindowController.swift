@@ -26,8 +26,9 @@ final class SettingsWindowController {
         // key events) and become the active app on screen.
         NSApp.activate(ignoringOtherApps: true)
         guard let w = window else { return }
-        // Re-center on a fresh open and force it to the absolute front of its
-        // window level, ahead of the floating overlay, then give it key focus.
+        // Force the window (centered once at creation; later opens keep the
+        // user's placement) to the absolute front of its window level, ahead of
+        // the floating overlay, then give it key focus.
         w.orderFrontRegardless()
         w.makeKeyAndOrderFront(nil)
         w.makeKey()

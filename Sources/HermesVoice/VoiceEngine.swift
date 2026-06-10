@@ -3,6 +3,13 @@ import Speech
 import AVFoundation
 import HermesVoiceKit
 
+/// All mutable state in this class is **main-thread confined**: the facade
+/// calls in on the main thread, the speech-recognizer callback hops to main
+/// before touching anything, `finish()` re-dispatches itself to main, and the
+/// audio tap only forwards (it captures the recognition request directly and
+/// publishes levels via `DispatchQueue.main.async`). Keep it that way — the
+/// previous unsynchronized cross-thread mutation could double-deliver or drop
+/// transcripts and race `teardown()` against the tap.
 class VoiceEngine: ObservableObject {
     var onPartialResult: ((String) -> Void)?
     var onFinalResult: ((String) -> Void)?
@@ -121,9 +128,21 @@ class VoiceEngine: ObservableObject {
         let inputNode = audioEngine.inputNode
         let recordingFormat = inputNode.outputFormat(forBus: 0)
 
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { [weak self] buffer, _ in
-            self?.recognitionRequest?.append(buffer)
-            
+        // No usable input device (mic revoked in System Settings, or none
+        // attached) yields a 0 Hz/0-channel format, and `installTap` with that
+        // format raises an Objective-C exception — surface an error instead.
+        guard recordingFormat.sampleRate > 0, recordingFormat.channelCount > 0 else {
+            self.audioEngine = nil
+            self.recognitionRequest = nil
+            onError?("No audio input device available. Check your microphone.")
+            return
+        }
+
+        // Capture the request directly (not via `self`) so the render thread
+        // never reads a property that `teardown()` mutates on the main thread.
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { [recognitionRequest, weak self] buffer, _ in
+            recognitionRequest.append(buffer)
+
             // Audio metering
             guard let channelData = buffer.floatChannelData?[0] else { return }
             let frames = Int(buffer.frameLength)
@@ -157,38 +176,38 @@ class VoiceEngine: ObservableObject {
         }
 
         recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest) { [weak self] result, error in
-            guard let self = self else { return }
+            // The recognizer delivers on its own queue; hop to main before
+            // touching any engine state so it stays main-thread confined.
+            DispatchQueue.main.async {
+                guard let self else { return }
 
-            if let result = result {
-                let text = result.bestTranscription.formattedString
-                self.lastResultTime = Date()
-                if !text.isEmpty {
-                    self.latestTranscript = text
-                    self.hasReceivedSpeech = true
-                }
+                if let result = result {
+                    let text = result.bestTranscription.formattedString
+                    self.lastResultTime = Date()
+                    if !text.isEmpty {
+                        self.latestTranscript = text
+                        self.hasReceivedSpeech = true
+                    }
 
-                if result.isFinal {
-                    self.finish()
-                } else {
-                    DispatchQueue.main.async {
+                    if result.isFinal {
+                        self.finish()
+                    } else {
                         self.onPartialResult?(text)
                     }
                 }
-            }
 
-            if let error = error {
-                if self.didFinish { return }
-                let nsError = error as NSError
-                // Cancellation (216) and no-speech (1) are expected when we stop
-                // capture ourselves — deliver whatever transcript we have.
-                if nsError.domain == "kAFAssistantErrorDomain" && (nsError.code == 216 || nsError.code == 1) {
-                    self.finish()
-                    return
-                }
-                DispatchQueue.main.async {
+                if let error = error {
+                    if self.didFinish { return }
+                    let nsError = error as NSError
+                    // Cancellation (216) and no-speech (1) are expected when we stop
+                    // capture ourselves — deliver whatever transcript we have.
+                    if nsError.domain == "kAFAssistantErrorDomain" && (nsError.code == 216 || nsError.code == 1) {
+                        self.finish()
+                        return
+                    }
                     self.onError?("Recognition error: \(error.localizedDescription)")
+                    self.teardown()
                 }
-                self.teardown()
             }
         }
     }
@@ -197,13 +216,18 @@ class VoiceEngine: ObservableObject {
     /// the silence timer, an `isFinal` result, and the caller (manual stop /
     /// push-to-talk release).
     func finish() {
+        // Funnel onto the main thread: every caller path (silence timer,
+        // recognizer callback, facade) ends up here, and the once-only guard
+        // below is only race-free when it always runs on one thread.
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async { self.finish() }
+            return
+        }
         guard isRecording, !didFinish else { return }
         didFinish = true
         let text = latestTranscript
         teardown()
-        DispatchQueue.main.async {
-            self.onFinalResult?(text)
-        }
+        onFinalResult?(text)
     }
 
     /// Stop capture WITHOUT delivering a transcript (cancel / cleanup).

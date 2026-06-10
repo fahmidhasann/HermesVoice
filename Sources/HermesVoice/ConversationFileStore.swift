@@ -48,8 +48,14 @@ final class ConversationFileStore {
 
     /// A single-line snippet of the conversation's most recent message, used for
     /// the history list. Returns an empty string when there's nothing to show.
+    /// Only the **last** JSONL line is decoded: this runs for every row on each
+    /// history open, and full transcripts can carry megabytes of base64 image
+    /// data per line that a preview never needs.
     func loadPreview(id: String) -> String {
-        guard let last = loadTranscript(id: id).last else { return "" }
+        guard let text = try? String(contentsOf: transcriptURL(for: id), encoding: .utf8),
+              let lastLine = text.split(separator: "\n", omittingEmptySubsequences: true).last,
+              let last = ConversationStore.decodeTranscript(String(lastLine)).last
+        else { return "" }
         return ConversationStore.previewText(from: last.content)
     }
 
