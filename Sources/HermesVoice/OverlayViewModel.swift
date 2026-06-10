@@ -54,6 +54,14 @@ struct ChatMessage: Identifiable, Equatable {
     }
 }
 
+/// Dedicated publisher for the live mic level. The audio tap updates this at
+/// buffer rate (~dozens/sec); keeping it off the facade's `@Published` surface
+/// means only `WaveformView` re-renders on each tick, not the whole overlay.
+@MainActor
+final class AudioLevelModel: ObservableObject {
+    @Published var level: CGFloat = 0.1
+}
+
 /// Facade over exactly one foreground `ChatSession`. The SwiftUI layer observes
 /// this single object and reads both per-session fields (mirrored from the
 /// foreground session) and global fields (input draft, voice, connection,
@@ -75,7 +83,9 @@ class OverlayViewModel: ObservableObject {
     @Published var isRecording: Bool = false
     @Published var transcribedText: String = ""
     @Published var panelShouldFocus: Bool = false
-    @Published var audioLevel: CGFloat = 0.1
+    /// Live mic level, isolated in its own observable so waveform ticks don't
+    /// re-render the whole overlay (observed only by `WaveformView`).
+    let audioLevel = AudioLevelModel()
     /// Images staged in the input (paste/drag) to send with the next message.
     @Published var pendingImages: [ImageAttachment] = []
     /// Reachability of the gateway (drives the offline indicator).
@@ -126,6 +136,8 @@ class OverlayViewModel: ObservableObject {
     /// Subscriptions mirroring the foreground session's published fields. Torn
     /// down and rebuilt on every session swap (§4.1).
     private var sessionCancellables = Set<AnyCancellable>()
+    /// Facade-lifetime subscriptions (never torn down on session swap).
+    private var cancellables = Set<AnyCancellable>()
 
     /// The session that owned the mic when recording started. A finished
     /// transcript is routed back to it (if still live) rather than to whatever
@@ -197,10 +209,23 @@ class OverlayViewModel: ObservableObject {
             }
         }
         voiceEngine?.onAudioLevel = { [weak self] level in
-            Task { @MainActor [weak self] in self?.audioLevel = level }
+            Task { @MainActor [weak self] in self?.audioLevel.level = level }
         }
 
         bindForeground(foreground)
+
+        // Bound live-session memory: shortly after any session finishes a
+        // response, sweep evictable background sessions (§4.10). The delay
+        // clears the cosmetic 1.5s done→idle window so the policy sees the
+        // settled state.
+        manager.didFinish
+            .sink { [weak self] _ in
+                Task { @MainActor [weak self] in
+                    try? await Task.sleep(nanoseconds: 2_000_000_000)
+                    self?.sweepEvictableSessions()
+                }
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - Foreground mirroring (§4.1)
@@ -269,6 +294,15 @@ class OverlayViewModel: ObservableObject {
                                         content: partial.content,
                                         isIncomplete: true,
                                         timestamp: Date(timeIntervalSince1970: partial.ts)))
+            // Persist the folded text as a normal assistant line before
+            // dropping the side-file: until now it survived only in RAM, so
+            // reading it and quitting lost it for good (and the on-screen
+            // thread didn't match the on-disk transcript). `retryLast` already
+            // removes it via `rewritePersistedTranscript` when retried.
+            store.appendRecord(TranscriptRecord(role: "assistant",
+                                                content: partial.content,
+                                                ts: partial.ts,
+                                                images: nil), to: id)
             store.clearPartial(id: id)
         case .deleteOnly:
             store.clearPartial(id: id)
@@ -287,8 +321,33 @@ class OverlayViewModel: ObservableObject {
     private func releaseForegroundIfDisposable() {
         let outgoing = foreground
         guard !outgoing.isBusy, !outgoing.canRetry else { return }
+        // A session that currently owns the mic is not disposable either:
+        // tearing it down would deallocate the pinned `recordingTarget` and the
+        // in-flight transcript would be misrouted into whatever conversation is
+        // foreground when it lands (§4.6).
+        if isRecording, recordingTarget === outgoing { return }
         outgoing.teardown()
         manager.remove(id: outgoing.conversationId)
+    }
+
+    /// Drop background sessions that finished their work, so live `ChatSession`s
+    /// (and the base64 image strings in their transcripts) don't accumulate for
+    /// the life of the process (§4.10). Keeps the foreground, anything
+    /// retryable (same carve-out as `releaseForegroundIfDisposable`), and the
+    /// session that owns the mic. Evicted sessions reload from disk on demand
+    /// via `openConversation`.
+    private func sweepEvictableSessions() {
+        for (id, session) in manager.sessions where id != foreground.conversationId {
+            guard !session.canRetry else { continue }
+            if isRecording, recordingTarget === session { continue }
+            // `hasPendingPartial` is always false here: the partial debouncer
+            // is leading-edge and writes synchronously, so no flush is queued.
+            guard EvictionPolicy.isEvictable(state: session.lifecycleState,
+                                             isStreaming: session.isBusy,
+                                             hasPendingPartial: false) else { continue }
+            session.teardown()
+            manager.remove(id: id)
+        }
     }
 
     // MARK: - Voice
@@ -359,12 +418,35 @@ class OverlayViewModel: ObservableObject {
             if foreground.state == .listening { foreground.state = .idle }
             pulseInputFocus()
         case .send(let transcript):
-            // Route to the record-start session if it's still live, else fall
-            // back to the current foreground (§4.6).
-            let target = recordingTarget.flatMap { manager.session(for: $0.conversationId) } ?? foreground
+            // Route to the record-start session pinned at `startRecording`
+            // (§4.6). If it's gone (deleted mid-record), fall back to filling
+            // the input rather than misdelivering the words into whatever
+            // conversation is now on screen.
+            guard let target = recordingTarget.flatMap({ manager.session(for: $0.conversationId) }) else {
+                fillInput(with: transcript)
+                return
+            }
+            // Busy-check BEFORE any state write: a blocked send must not
+            // clobber the streaming session's state (which would un-busy it and
+            // let a second send race into the live stream) or drop the words.
+            guard !target.isBusy else {
+                fillInput(with: transcript)
+                return
+            }
             target.state = .transcribing
             routeSend(text: transcript, images: [], to: target)
         }
+    }
+
+    /// Put a transcript in the input field for review (the graceful fallback
+    /// when an auto-send is blocked or its target session is gone).
+    private func fillInput(with transcript: String) {
+        let existing = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
+        inputText = existing.isEmpty ? transcript : existing + " " + transcript
+        if foreground.state == .listening || foreground.state == .transcribing {
+            foreground.state = .idle
+        }
+        pulseInputFocus()
     }
 
     // MARK: - Messaging
@@ -373,17 +455,21 @@ class OverlayViewModel: ObservableObject {
         let text = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
         let images = pendingImages
         guard !text.isEmpty || !images.isEmpty else { return }
-        inputText = ""
-        routeSend(text: text, images: images, to: foreground)
+        // Clear the draft only once the send actually went through, so a
+        // blocked send never loses what the user typed.
+        if routeSend(text: text, images: images, to: foreground) {
+            inputText = ""
+        }
     }
 
     /// Global pre-send housekeeping (stop mic, clear transcription/staged
     /// images), then hand the message to `target`. Guarding on the **target's**
     /// busy state (not always the foreground's) lets a different session send
     /// concurrently. Bails when the target is busy so nothing global is cleared
-    /// on a blocked send.
-    private func routeSend(text: String, images: [ImageAttachment], to target: ChatSession) {
-        guard !target.isBusy else { return }
+    /// on a blocked send; returns whether the message was handed off.
+    @discardableResult
+    private func routeSend(text: String, images: [ImageAttachment], to target: ChatSession) -> Bool {
+        guard !target.isBusy else { return false }
         if isRecording {
             isRecording = false
             voiceEngine?.stopRecording()
@@ -391,6 +477,7 @@ class OverlayViewModel: ObservableObject {
         transcribedText = ""
         pendingImages = []
         target.send(text: text, images: images)
+        return true
     }
 
     // MARK: - Image attachments

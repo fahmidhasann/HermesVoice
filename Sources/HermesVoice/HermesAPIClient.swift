@@ -38,10 +38,14 @@ final class HermesAPIClient {
 
     /// Endpoints are resolved per call from the live settings (host/port), so a
     /// change in the Connection tab takes effect on the next request without a
-    /// restart. Falls back to the compiled-in default if a URL can't be built.
+    /// restart. The stored URL is normalized first (scheme prepended, trailing
+    /// path stripped) so a slightly-off entry still hits the right target;
+    /// Settings/onboarding surface invalid entries at edit time. Falls back to
+    /// the compiled-in default if no URL can be built at all.
     private func endpoint(_ path: String) -> URL {
         let settings = AppSettingsStore.loadCurrent()
-        return URL(string: settings.baseURLString + path) ?? config.apiEndpoint
+        let base = AppSettings.normalizedGatewayURL(settings.gatewayURL) ?? settings.baseURLString
+        return URL(string: base + path) ?? config.apiEndpoint
     }
 
     /// Attach the bearer token from the Keychain, read **per request** so a key
@@ -67,6 +71,9 @@ final class HermesAPIClient {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         authorize(&request)
         request.setValue(config.userAgent, forHTTPHeaderField: "User-Agent")
+        // The default 60s *idle* timeout would cut agent turns that stay
+        // byte-silent during long tool execution; give streams a wide window.
+        request.timeoutInterval = 300
 
         var payload: [String: Any] = [
             "messages": messages.map { ["role": $0.role, "content": $0.contentJSON] },

@@ -4,12 +4,16 @@ import HermesVoiceKit
 
 /// A click-to-record control for capturing a global-hotkey combination. While
 /// recording it installs a local key-down monitor and swallows the next valid
-/// key + modifier press, writing it back through the bindings. `AppDelegate`
+/// key + modifier press, writing it back through the binding. `AppDelegate`
 /// performs the actual (revertable) Carbon re-registration when the binding
 /// changes, so a combination the system rejects is rolled back automatically.
+///
+/// Takes the whole-settings binding so key code + modifiers land as **one**
+/// store write: two sequential writes publish twice, and the first delivery
+/// would register the never-chosen intermediate combo (new key, old modifiers)
+/// with Carbon — possibly tripping a spurious conflict alert + bad revert.
 struct HotKeyRecorder: View {
-    @Binding var keyCode: UInt32
-    @Binding var modifiers: UInt32
+    @Binding var settings: AppSettings
 
     @State private var recording = false
     @State private var monitor: Any?
@@ -20,7 +24,7 @@ struct HotKeyRecorder: View {
 
     var body: some View {
         Button(action: toggle) {
-            Text(recording ? "Type shortcut…" : HotKeyFormatter.displayString(keyCode: keyCode, modifiers: modifiers))
+            Text(recording ? "Type shortcut…" : HotKeyFormatter.displayString(keyCode: settings.hotKeyCode, modifiers: settings.hotKeyModifiers))
                 .font(.system(size: 13, weight: .medium, design: .rounded))
                 .frame(minWidth: 96)
                 .padding(.vertical, 4)
@@ -58,8 +62,11 @@ struct HotKeyRecorder: View {
             // A global hotkey needs at least one modifier; otherwise keep waiting.
             guard HotKeyFormatter.hasModifier(mods) else { return nil }
 
-            keyCode = UInt32(event.keyCode)
-            modifiers = mods
+            // One mutated copy, one assignment — atomic from the store's view.
+            var updated = settings
+            updated.hotKeyCode = UInt32(event.keyCode)
+            updated.hotKeyModifiers = mods
+            settings = updated
             stopRecording()
             return nil // swallow the event so it doesn't type into anything
         }

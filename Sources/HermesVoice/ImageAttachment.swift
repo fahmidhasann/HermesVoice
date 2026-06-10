@@ -31,8 +31,9 @@ struct ImageAttachment: Identifiable, Equatable {
 /// Pure-ish AppKit helpers for converting between `NSImage` and the base64 PNG
 /// data URLs that the gateway accepts (`data:image/png;base64,…`).
 enum ImageEncoder {
-    /// Cap the longest edge so a pasted full-resolution screenshot doesn't blow
-    /// up the request (base64 image bytes count against the model's budget).
+    /// Cap the longest edge — in **pixels** — so a pasted full-resolution
+    /// screenshot doesn't blow up the request (base64 image bytes count against
+    /// the model's budget).
     static let maxDimension: CGFloat = 1280
 
     /// Encode an `NSImage` to a downscaled PNG `data:` URL, or nil on failure.
@@ -41,13 +42,43 @@ enum ImageEncoder {
         return "data:image/png;base64,\(png.base64EncodedString())"
     }
 
+    /// Render the image into a PNG capped at `maxDimension` pixels on its
+    /// longest edge. All math is in pixels and the draw targets an explicit
+    /// `NSBitmapImageRep` (points == pixels) — `NSImage.size` is in points and
+    /// `lockFocus()` rasterizes at the screen's backing scale, which on Retina
+    /// produced bitmaps 2× the documented cap (4× the bytes).
     static func pngData(from image: NSImage) -> Data? {
-        let scaled = downscaled(image, maxDimension: maxDimension)
-        guard let tiff = scaled.tiffRepresentation,
-              let rep = NSBitmapImageRep(data: tiff),
-              let png = rep.representation(using: .png, properties: [:])
-        else { return nil }
-        return png
+        guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return nil }
+        let pixelWidth = CGFloat(cgImage.width)
+        let pixelHeight = CGFloat(cgImage.height)
+        let longest = max(pixelWidth, pixelHeight)
+        guard longest > 0 else { return nil }
+
+        let scale = min(1, maxDimension / longest)
+        let targetWidth = max(1, Int(floor(pixelWidth * scale)))
+        let targetHeight = max(1, Int(floor(pixelHeight * scale)))
+
+        guard let rep = NSBitmapImageRep(bitmapDataPlanes: nil,
+                                         pixelsWide: targetWidth,
+                                         pixelsHigh: targetHeight,
+                                         bitsPerSample: 8,
+                                         samplesPerPixel: 4,
+                                         hasAlpha: true,
+                                         isPlanar: false,
+                                         colorSpaceName: .deviceRGB,
+                                         bytesPerRow: 0,
+                                         bitsPerPixel: 0) else { return nil }
+        rep.size = NSSize(width: targetWidth, height: targetHeight)
+
+        guard let context = NSGraphicsContext(bitmapImageRep: rep) else { return nil }
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current = context
+        context.cgContext.interpolationQuality = .high
+        context.cgContext.draw(cgImage, in: CGRect(x: 0, y: 0, width: targetWidth, height: targetHeight))
+        context.flushGraphics()
+        NSGraphicsContext.restoreGraphicsState()
+
+        return rep.representation(using: .png, properties: [:])
     }
 
     /// Decode a `data:image/...;base64,…` URL back into an `NSImage` for display.
@@ -59,23 +90,4 @@ enum ImageEncoder {
         return NSImage(data: data)
     }
 
-    /// Proportionally shrink so the longest edge is `maxDimension`; returns the
-    /// original when it's already within bounds.
-    private static func downscaled(_ image: NSImage, maxDimension: CGFloat) -> NSImage {
-        let size = image.size
-        let longest = max(size.width, size.height)
-        guard longest > maxDimension, longest > 0 else { return image }
-
-        let scale = maxDimension / longest
-        let target = NSSize(width: floor(size.width * scale), height: floor(size.height * scale))
-        let result = NSImage(size: target)
-        result.lockFocus()
-        NSGraphicsContext.current?.imageInterpolation = .high
-        image.draw(in: NSRect(origin: .zero, size: target),
-                   from: NSRect(origin: .zero, size: size),
-                   operation: .copy,
-                   fraction: 1.0)
-        result.unlockFocus()
-        return result
-    }
 }

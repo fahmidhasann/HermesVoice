@@ -153,12 +153,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         return true
     }
 
-    /// Releases the lock by closing the held descriptor.
+    /// Releases the lock by closing the held descriptor. The lock file itself
+    /// is deliberately NOT unlinked: removing it opens a race where an instance
+    /// holding the old (now-unlinked) inode and one creating a fresh file can
+    /// both "win" the lock. A stale empty file is harmless — flock state lives
+    /// on the inode and the kernel drops it with the fd.
     private func releaseSingleInstanceLock() {
         guard lockFD >= 0 else { return }
         close(lockFD)
         lockFD = -1
-        try? FileManager.default.removeItem(atPath: Self.lockPath)
     }
 
     // MARK: - Setup
@@ -369,7 +372,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     /// paste so typing fields keep working.
     @objc func smartPaste(_ sender: Any?) {
         let pasteboard = NSPasteboard.general
+        // Attach only when the panel itself has key focus: with Settings (or
+        // another window) key, an image-bearing clipboard must still paste as
+        // text into the focused field, not into the chat.
         if overlayPanel?.phase == .visible,
+           NSApp.keyWindow === overlayPanel,
            pasteboard.canReadObject(forClasses: [NSImage.self], options: nil),
            let images = pasteboard.readObjects(forClasses: [NSImage.self], options: nil) as? [NSImage],
            let image = images.first {
@@ -444,7 +451,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         newChat.target = self
         menu.addItem(newChat)
 
-        let activate = NSMenuItem(title: "Open HermesVoice  (⌃⇧H)", action: #selector(togglePanel), keyEquivalent: "")
+        // The menu is rebuilt on every open, so this reflects a rebound hotkey.
+        let hotkey = HotKeyFormatter.displayString(keyCode: AppSettingsStore.shared.settings.hotKeyCode,
+                                                   modifiers: AppSettingsStore.shared.settings.hotKeyModifiers)
+        let activate = NSMenuItem(title: "Open HermesVoice  (\(hotkey))", action: #selector(togglePanel), keyEquivalent: "")
         activate.target = self
         menu.addItem(activate)
 

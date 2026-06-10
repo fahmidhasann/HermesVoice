@@ -43,13 +43,16 @@ for bundle in .build/release/*.bundle; do
     cp -R "$bundle" "$APP_DIR/Resources/"
 done
 
-# Sign with ad-hoc signature (needed for hardened runtime features)
-codesign --force --sign - --entitlements entitlements.plist "$APP_DIR/MacOS/HermesVoice"
+# Ad-hoc sign the whole .app bundle (after all resources are in place), not
+# just the inner executable: without the bundle-level _CodeSignature seal,
+# Gatekeeper treats a quarantined copy (DMG download) as unsealed and shows
+# the "app is damaged" dialog instead of the right-click ▸ Open flow.
+codesign --force --sign - --entitlements entitlements.plist "./build/HermesVoice.app"
 
 # Validate the produced bundle before declaring success.
 echo "🔍 Validating bundle..."
 plutil -lint "$APP_DIR/Info.plist" >/dev/null
-codesign --verify --strict "$APP_DIR/MacOS/HermesVoice"
+codesign --verify --strict "./build/HermesVoice.app"
 [ -f "$APP_DIR/Resources/AppIcon.icns" ] || { echo "❌ icon missing from bundle"; exit 1; }
 echo "   ✓ Info.plist valid · signature valid · icon embedded"
 

@@ -2,8 +2,8 @@ import Foundation
 
 /// A tool-activity event emitted by Hermes as a named SSE event
 /// (`event: hermes.tool.progress` followed by its `data:` line).
-public struct ToolActivity: Equatable, Sendable, Codable {
-    public enum Status: String, Equatable, Sendable, Codable {
+public struct ToolActivity: Hashable, Sendable, Codable {
+    public enum Status: String, Hashable, Sendable, Codable {
         case running
         case completed
     }
