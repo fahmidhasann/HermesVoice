@@ -283,6 +283,7 @@ struct OverlayView: View {
                 LazyVStack(spacing: Theme.Spacing.sm) {
                     ForEach(viewModel.chatMessages) { message in
                         MessageBubble(message: message)
+                            .equatable()
                             .id(message.id)
                     }
 
@@ -615,11 +616,18 @@ private struct StreamingCursor: View {
     }
 }
 
-struct MessageBubble: View {
+struct MessageBubble: View, Equatable {
     let message: ChatMessage
     @State private var appeared = false
     @State private var isHovered = false
     @State private var showCopied = false
+
+    /// Compared via `.equatable()` so streaming updates to one message don't
+    /// re-evaluate (and re-parse the markdown of) every other bubble. Only the
+    /// message matters; the `@State` vars are SwiftUI-managed and excluded.
+    static func == (lhs: MessageBubble, rhs: MessageBubble) -> Bool {
+        lhs.message == rhs.message
+    }
 
     var body: some View {
         HStack(spacing: 0) {
@@ -744,10 +752,16 @@ struct MessageBubble: View {
         }
     }
 
-    private func formatTimestamp(_ date: Date) -> String {
+    /// Shared because `DateFormatter` creation costs ~ms and this runs on every
+    /// bubble render. Only touched from SwiftUI body evaluation (main thread).
+    private static let timestampFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
-        return formatter.string(from: date)
+        return formatter
+    }()
+
+    private func formatTimestamp(_ date: Date) -> String {
+        Self.timestampFormatter.string(from: date)
     }
 
     /// Rounded surface with a role-specific gradient tint, a hairline edge, and a
