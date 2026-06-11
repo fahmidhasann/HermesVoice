@@ -139,6 +139,17 @@ private final class HighlightrEngine {
     private let highlightr = Highlightr()
     private var currentTheme = ""
     private let codeFont = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
+    /// Highlighting runs highlight.js through JavaScriptCore — tens of ms for a
+    /// sizeable block, on the main thread, on every body evaluation. SwiftUI
+    /// re-evaluates message bodies freely during streaming, so without a cache
+    /// the same blocks are re-highlighted constantly and the UI stalls. Keyed by
+    /// theme + language + code so a theme/appearance switch never serves stale
+    /// colors; NSCache bounds memory under pressure.
+    private let cache = NSCache<NSString, NSAttributedString>()
+
+    init() {
+        cache.countLimit = 200
+    }
 
     func highlight(_ code: String, language: String?) -> NSAttributedString? {
         applyThemeForAppearance()
@@ -147,8 +158,12 @@ private final class HighlightrEngine {
         let resolved = (lang?.isEmpty == false && highlightr?.supportedLanguages().contains(lang!) == true)
             ? lang
             : nil
+        let key = "\(currentTheme)|\(resolved ?? "")|\(code)" as NSString
+        if let cached = cache.object(forKey: key) { return cached }
         let result = highlightr?.highlight(code, as: resolved, fastRender: true)
-        return result.map(trimTrailingNewline)
+            .map(trimTrailingNewline)
+        if let result { cache.setObject(result, forKey: key) }
+        return result
     }
 
     /// Highlightr appends a trailing newline to each block; drop it so the code

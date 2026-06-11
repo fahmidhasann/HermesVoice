@@ -249,6 +249,28 @@ final class ChatSession: ObservableObject {
         }
         defer { releaseActivity() }
 
+        // Streamed text is coalesced before it touches `chatMessages`: every
+        // mutation re-renders the streaming bubble, which re-parses the whole
+        // (growing) markdown body and re-runs syntax highlighting on the main
+        // thread. At token rate that work arrives faster than it completes and
+        // the main thread never drains — the app beachballs until force-quit.
+        // Buffering chunks and flushing at most ~12×/s keeps the UI fluid.
+        var pendingText = ""
+        var lastFlush = Date.distantPast
+        let flushInterval: TimeInterval = 0.08
+        func flushPendingText() {
+            guard !pendingText.isEmpty else { return }
+            defer { pendingText = "" }
+            guard let index = streamingIndex() else { return }
+            chatMessages[index].content += pendingText
+            // Best-effort durability: flush the growing text to
+            // the `.partial` side-file at most ~2×/s (§4.7).
+            if partialDebouncer.shouldFire() {
+                writePartial(chatMessages[index].content,
+                             ts: chatMessages[index].timestamp)
+            }
+        }
+
         var attempt = 0
         while true {
             attempt += 1
@@ -267,16 +289,16 @@ final class ChatSession: ObservableObject {
                     switch event {
                     case .text(let chunk):
                         receivedContent = true
-                        if let index = streamingIndex() {
-                            chatMessages[index].content += chunk
-                            // Best-effort durability: flush the growing text to
-                            // the `.partial` side-file at most ~2×/s (§4.7).
-                            if partialDebouncer.shouldFire() {
-                                writePartial(chatMessages[index].content,
-                                             ts: chatMessages[index].timestamp)
-                            }
+                        pendingText += chunk
+                        let now = Date()
+                        if now.timeIntervalSince(lastFlush) >= flushInterval {
+                            lastFlush = now
+                            flushPendingText()
                         }
                     case .tool(let activity):
+                        // Keep text current so a tool row never appears above
+                        // words that arrived before it.
+                        flushPendingText()
                         applyToolActivity(activity)
                     }
                 }
@@ -285,6 +307,7 @@ final class ChatSession: ObservableObject {
                 // bail before finalizing as if it completed.
                 if Task.isCancelled { return }
 
+                flushPendingText()
                 finishAssistant()
                 releaseActivity() // network done — don't hold the assertion through the sleep
                 state = .done
@@ -307,6 +330,9 @@ final class ChatSession: ObservableObject {
                     continue
                 }
 
+                // Commit any buffered text first so a kept partial includes
+                // everything that actually arrived.
+                flushPendingText()
                 handleStreamFailure(apiError, hadContent: receivedContent)
                 return
             }
