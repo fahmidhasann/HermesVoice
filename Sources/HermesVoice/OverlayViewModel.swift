@@ -162,6 +162,10 @@ class OverlayViewModel: ObservableObject {
         manager.$isAnyStreaming.eraseToAnyPublisher()
     }
 
+    /// Set of conversation IDs currently streaming. Published so the history
+    /// list can show live indicators on background-streaming rows.
+    @Published var streamingSessionIds: Set<String> = []
+
     /// Fires the id of a session that just finished a response, so the app can
     /// post an ambient completion cue for background finishes (§4.8).
     var sessionFinishedPublisher: AnyPublisher<String, Never> {
@@ -213,6 +217,12 @@ class OverlayViewModel: ObservableObject {
         }
 
         bindForeground(foreground)
+
+        // Mirror streaming-session IDs from the manager so SwiftUI views can
+        // show live indicators on background-streaming history rows.
+        manager.$streamingSessionIds
+            .sink { [weak self] in self?.streamingSessionIds = $0 }
+            .store(in: &cancellables)
 
         // Bound live-session memory: shortly after any session finishes a
         // response, sweep evictable background sessions (§4.10). The delay

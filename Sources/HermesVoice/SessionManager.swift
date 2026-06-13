@@ -24,6 +24,10 @@ final class SessionManager: ObservableObject {
     /// stays foreground-only and is unaffected.
     @Published private(set) var isAnyStreaming = false
 
+    /// Set of conversation IDs that are currently streaming. Published so the
+    /// history list can show a live indicator on background-streaming rows.
+    @Published private(set) var streamingSessionIds: Set<String> = []
+
     /// Fires the id of a session that just finished a response. One-shot per
     /// completion (driven by `ChatSession.onFinished`), so a background finish
     /// can post an ambient cue without inferring it from a transient state.
@@ -41,8 +45,9 @@ final class SessionManager: ObservableObject {
     /// even after it drops to the background.
     func register(_ session: ChatSession) {
         sessions[session.conversationId] = session
-        session.onStreamingBegin = { [weak self] in self?.streamingDidBegin() }
-        session.onStreamingEnd = { [weak self] in self?.streamingDidEnd() }
+        let id = session.conversationId
+        session.onStreamingBegin = { [weak self] in self?.streamingDidBegin(id: id) }
+        session.onStreamingEnd = { [weak self] in self?.streamingDidEnd(id: id) }
         session.onFinished = { [weak self] id in self?.didFinish.send(id) }
     }
 
@@ -58,7 +63,8 @@ final class SessionManager: ObservableObject {
     // MARK: - App Nap suppression (§4.3)
 
     /// A stream started. Acquire the OS activity token on the 0→1 transition.
-    private func streamingDidBegin() {
+    private func streamingDidBegin(id: String) {
+        streamingSessionIds.insert(id)
         defer { isAnyStreaming = activity.count > 0 }
         guard activity.begin() else { return }
         activityToken = ProcessInfo.processInfo.beginActivity(
@@ -67,7 +73,8 @@ final class SessionManager: ObservableObject {
     }
 
     /// A stream ended. Release the OS activity token on the 1→0 transition.
-    private func streamingDidEnd() {
+    private func streamingDidEnd(id: String) {
+        streamingSessionIds.remove(id)
         defer { isAnyStreaming = activity.count > 0 }
         guard activity.end() else { return }
         if let token = activityToken {

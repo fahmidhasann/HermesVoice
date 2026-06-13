@@ -116,6 +116,7 @@ struct HistoryView: View {
                             HistoryRow(
                                 entry: entry,
                                 isSelected: index == clampedSelection(in: entries),
+                                isStreaming: viewModel.streamingSessionIds.contains(entry.id),
                                 onOpen: { viewModel.openConversation(id: entry.id) },
                                 onDelete: { viewModel.deleteConversation(id: entry.id) }
                             )
@@ -180,11 +181,13 @@ struct HistoryView: View {
 private struct HistoryRow: View {
     let entry: OverlayViewModel.HistoryEntry
     let isSelected: Bool
+    let isStreaming: Bool
     let onOpen: () -> Void
     let onDelete: () -> Void
 
     @State private var isHovered = false
     @State private var showDeleteConfirm = false
+    @State private var pulsing = false
 
     var body: some View {
         HStack(alignment: .top, spacing: Theme.Spacing.md) {
@@ -204,9 +207,13 @@ private struct HistoryRow: View {
             Spacer(minLength: Theme.Spacing.sm)
 
             VStack(alignment: .trailing, spacing: Theme.Spacing.xxs) {
-                Text(ConversationStore.relativeTime(from: entry.meta.lastActiveAt))
-                    .font(.system(size: 10))
-                    .foregroundColor(Theme.Colors.textSecondary.opacity(0.7))
+                if isStreaming {
+                    streamingDot
+                } else {
+                    Text(ConversationStore.relativeTime(from: entry.meta.lastActiveAt))
+                        .font(.system(size: 10))
+                        .foregroundColor(Theme.Colors.textSecondary.opacity(0.7))
+                }
                 Text("\(entry.meta.messageCount) msg")
                     .font(.system(size: 9.5))
                     .foregroundColor(Theme.Colors.textSecondary.opacity(0.5))
@@ -254,6 +261,35 @@ private struct HistoryRow: View {
                 isHovered = hovering
             }
         }
+        .onAppear { if isStreaming { startPulse() } }
+        .onChange(of: isStreaming) { _, streaming in
+            if streaming { startPulse() } else { pulsing = false }
+        }
+    }
+
+    private var streamingDot: some View {
+        HStack(spacing: 3) {
+            ForEach(0..<3, id: \.self) { i in
+                Circle()
+                    .fill(Theme.Colors.accent)
+                    .frame(width: 4, height: 4)
+                    .opacity(pulsing ? 0.25 : 1.0)
+                    .animation(
+                        Theme.Motion.ifMotion(
+                            .easeInOut(duration: 0.5)
+                            .repeatForever(autoreverses: true)
+                            .delay(Double(i) * 0.15)
+                        ),
+                        value: pulsing
+                    )
+            }
+        }
+        .frame(height: 10)
+    }
+
+    private func startPulse() {
+        pulsing = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { pulsing = true }
     }
 
     /// Selected rows take a soft amber gradient wash + hairline; hovered rows a

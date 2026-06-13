@@ -8,7 +8,17 @@ struct OverlayView: View {
     @State private var streamingContentLength: Int = 0
     @State private var isDropTargeted = false
     @State private var micHovering = false
+    // True while the conversation is scrolled to (or near) the bottom. Autoscroll
+    // follows the stream only while this holds; once the user scrolls up to read,
+    // it suspends so programmatic scrollTo doesn't fight the manual scroll. The
+    // value comes from `PinnedToBottomTracker`, which observes the scroll's own
+    // geometry outside the content layout pass (see that type for why).
+    @State private var isPinnedToBottom = true
     @FocusState private var inputFocused: Bool
+
+    /// Identity of the zero-height view at the very bottom of the thread; the
+    /// autoscroll target.
+    private let chatBottomAnchor = "chatBottomAnchor"
 
     init(viewModel: OverlayViewModel) {
         self.viewModel = viewModel
@@ -295,29 +305,47 @@ struct OverlayView: View {
                     if viewModel.isRecording && !viewModel.transcribedText.isEmpty {
                         transcriptionPreview
                     }
+
+                    // Zero-height autoscroll target. Deliberately a plain anchor and
+                    // NOT backed by a GeometryReader: measuring a marker's position
+                    // in a named coordinate space from inside the LazyVStack and
+                    // writing the result to @State during the layout pass made the
+                    // scroll/stack layout re-measure without converging, pegging the
+                    // main thread (~76% CPU) until force-quit. Pinned state now comes
+                    // from `PinnedToBottomTracker` below, outside the layout pass.
+                    Color.clear
+                        .frame(height: 1)
+                        .id(chatBottomAnchor)
                 }
                 .animation(Theme.Motion.ifMotion(Theme.Motion.content), value: viewModel.activeTools)
                 .padding(.horizontal, Theme.Spacing.lg)
                 .padding(.vertical, Theme.Spacing.md)
             }
-            // Scroll to new messages
+            // Observe pinned-to-bottom from the scroll's own geometry (macOS 15+),
+            // outside the content layout pass, so toggling the state can never feed
+            // back into layout. macOS 14 has no such hook and simply always follows.
+            .modifier(PinnedToBottomTracker(isPinned: $isPinnedToBottom))
+            // A new message (incl. a fresh streaming placeholder) restarts the
+            // streamed-length tracker; without this, autoscroll for the next
+            // response stays gated behind the longest previous one. A new turn
+            // re-pins and follows to the bottom.
             .onChange(of: viewModel.chatMessages.count) { _, _ in
-                // A new message (incl. a fresh streaming placeholder) restarts
-                // the streamed-length tracker; without this, autoscroll for the
-                // next response stays gated behind the longest previous one.
                 streamingContentLength = viewModel.chatMessages.last?.content.count ?? 0
-                if let last = viewModel.chatMessages.last {
+                isPinnedToBottom = true
+                if viewModel.chatMessages.last != nil {
                     withAnimation(Theme.Motion.ifMotion(Theme.Motion.content)) {
-                        proxy.scrollTo(last.id, anchor: .bottom)
+                        proxy.scrollTo(chatBottomAnchor, anchor: .bottom)
                     }
                 }
             }
-            // Scroll during streaming by tracking content length
+            // Follow the stream by tracking content length — but only while pinned,
+            // so a user reading scrollback isn't yanked back to the bottom.
             .onChange(of: viewModel.chatMessages.last?.content.count ?? 0) { _, newCount in
+                guard isPinnedToBottom else { return }
                 guard let last = viewModel.chatMessages.last, last.isStreaming else { return }
                 if newCount > streamingContentLength {
                     streamingContentLength = newCount
-                    proxy.scrollTo(last.id, anchor: .bottom)
+                    proxy.scrollTo(chatBottomAnchor, anchor: .bottom)
                 }
             }
             // Switching to a (possibly mid-stream) background session resets the
@@ -325,8 +353,9 @@ struct OverlayView: View {
             // instead of being swallowed by the previous session's length (§4.1).
             .onChange(of: viewModel.conversationId) { _, _ in
                 streamingContentLength = viewModel.chatMessages.last?.content.count ?? 0
-                if let last = viewModel.chatMessages.last {
-                    proxy.scrollTo(last.id, anchor: .bottom)
+                isPinnedToBottom = true
+                if viewModel.chatMessages.last != nil {
+                    proxy.scrollTo(chatBottomAnchor, anchor: .bottom)
                 }
             }
         }
@@ -544,11 +573,23 @@ struct OverlayView: View {
             .padding(.horizontal, Theme.Spacing.lg)
             .padding(.vertical, Theme.Spacing.sm2)
             .focused($inputFocused)
-            // Return sends; Shift/Option+Return falls through to insert a newline.
-            // (`.onSubmit` is unreliable for an axis: .vertical field on macOS.)
-            .onKeyPress(.return) {
-                if NSEvent.modifierFlags.contains(.shift) || NSEvent.modifierFlags.contains(.option) {
-                    return .ignored
+            // Return sends; Shift/Option+Return inserts a soft line break.
+            // We insert the break ourselves via the field editor: returning
+            // `.ignored` does NOT reliably fall through to a newline in an
+            // axis: .vertical TextField on macOS — SwiftUI consumes the key and
+            // the caret never advances. (`.onSubmit` is also unreliable here.)
+            //
+            // Read the modifier from the key *event* (`press.modifiers`), NOT
+            // `NSEvent.modifierFlags`: the latter is process-global "what's
+            // physically down now" state that is unreliable for a
+            // `.nonactivatingPanel` whose app isn't active. When it misreports
+            // the held Shift, the bare Return reaches the field editor, whose
+            // NSTextField commit behavior selects the whole field instead of
+            // inserting a newline.
+            .onKeyPress(keys: [.return]) { press in
+                if press.modifiers.contains(.shift) || press.modifiers.contains(.option) {
+                    _ = insertSoftBreak()
+                    return .handled
                 }
                 viewModel.sendMessage()
                 return .handled
@@ -573,6 +614,71 @@ struct OverlayView: View {
             )
             .animation(Theme.Motion.ifMotion(Theme.Motion.toggle), value: inputFocused)
             .accessibilityLabel("Message input")
+    }
+
+    /// Inserts a soft line break at the caret in the active field editor,
+    /// preserving the insertion point and any selection — the standard macOS
+    /// "Shift+Return" behavior in a multi-line field. Returns `false` when no
+    /// field editor can be found.
+    ///
+    /// `NSApp.keyWindow` can be nil for the `.nonactivatingPanel`, so check the
+    /// obvious focused windows first, then scan every window before giving up.
+    private func insertSoftBreak() -> Bool {
+        let windows = [NSApp.keyWindow, NSApp.mainWindow].compactMap { $0 } + NSApp.windows
+        var seen = Set<ObjectIdentifier>()
+
+        for window in windows where seen.insert(ObjectIdentifier(window)).inserted {
+            // While editing, the field editor (an NSTextView) is usually the
+            // first responder directly; but if the responder is the NSTextField
+            // itself, reach its active field editor via `currentEditor()`.
+            if let editor = window.firstResponder as? NSTextView {
+                editor.insertNewlineIgnoringFieldEditor(nil)
+                return true
+            }
+            if let field = window.firstResponder as? NSTextField,
+               let editor = field.currentEditor() as? NSTextView {
+                editor.insertNewlineIgnoringFieldEditor(nil)
+                return true
+            }
+            if let editor = window.fieldEditor(false, for: nil) as? NSTextView {
+                editor.insertNewlineIgnoringFieldEditor(nil)
+                return true
+            }
+        }
+        return false
+    }
+}
+
+// MARK: - Scroll position
+
+/// Reports whether the scroll view is at (or near) its bottom by observing the
+/// scroll's own geometry, rather than measuring a marker placed inside the
+/// content. Crucially this runs *outside* the content layout pass, so toggling
+/// the pinned `@State` it drives can't invalidate layout and re-enter — the
+/// feedback that previously made the stack/scroll layout re-measure without
+/// converging and froze the app mid-stream (~76% CPU until force-quit).
+///
+/// `onScrollGeometryChange` is macOS 15+. On macOS 14 the binding is left at its
+/// default (`true`), i.e. autoscroll always follows the stream.
+private struct PinnedToBottomTracker: ViewModifier {
+    @Binding var isPinned: Bool
+
+    /// Distance from the bottom (pt) that still counts as "pinned" — generous
+    /// enough that one streamed flush can't spuriously unpin, small enough that a
+    /// deliberate scroll-up does.
+    private static let threshold: CGFloat = 120
+
+    func body(content: Content) -> some View {
+        if #available(macOS 15.0, *) {
+            content.onScrollGeometryChange(for: Bool.self) { geometry in
+                // Remaining scrollable distance below what's visible.
+                geometry.contentSize.height - geometry.visibleRect.maxY <= Self.threshold
+            } action: { _, pinned in
+                if isPinned != pinned { isPinned = pinned }
+            }
+        } else {
+            content
+        }
     }
 }
 
