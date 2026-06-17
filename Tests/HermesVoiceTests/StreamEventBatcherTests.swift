@@ -36,5 +36,17 @@ enum StreamEventBatcherTests {
             checkEqual(batcher.push(.tool(tool), at: t0.addingTimeInterval(0.04)),
                        [.text("b"), .tool(tool)])
         },
+        TestCase(name: "approval events preserve ordering after pending text") {
+            var batcher = StreamEventBatcher(flushInterval: 0.1)
+            let t0 = Date(timeIntervalSince1970: 100)
+            let approval = RunApprovalRequest(runId: "run_1",
+                                              command: "python3 x.py",
+                                              description: "script execution")
+
+            checkEqual(batcher.push(.text("a"), at: t0), [.text("a")])
+            checkEqual(batcher.push(.text("b"), at: t0.addingTimeInterval(0.03)), [])
+            checkEqual(batcher.push(.approval(approval), at: t0.addingTimeInterval(0.04)),
+                       [.text("b"), .approval(approval)])
+        },
     ]
 }

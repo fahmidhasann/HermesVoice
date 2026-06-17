@@ -47,6 +47,8 @@ final class ChatSession: ObservableObject {
     @Published var errorMessage: String = ""
     /// Tool steps currently running, surfaced for live "Hermes is using…" rows.
     @Published var activeTools: [ToolActivity] = []
+    /// A blocking approval request waiting on the user.
+    @Published var approvalRequest: RunApprovalRequest?
 
     // MARK: - Collaborators (shared, stateless)
 
@@ -55,6 +57,7 @@ final class ChatSession: ObservableObject {
     private let indexWriter: SessionIndexWriter
 
     private var streamTask: Task<Void, Never>?
+    private var currentRunId: String?
 
     /// Stable id of the assistant message currently being streamed into. The
     /// positional index is invalid across the async boundary and across
@@ -217,6 +220,8 @@ final class ChatSession: ObservableObject {
         chatMessages.append(placeholder)
         streamingMessageId = placeholder.id
         activeTools = []
+        approvalRequest = nil
+        currentRunId = nil
 
         state = .sending
         streamTask?.cancel()
@@ -270,7 +275,13 @@ final class ChatSession: ObservableObject {
                     chatMessages[index].isIncomplete = false
                 }
 
-                let stream = try await apiClient.streamCompletion(messages: messages)
+                let stream = try await apiClient.streamCompletion(
+                    messages: messages,
+                    sessionId: conversationId,
+                    onRunStarted: { [weak self] runId in
+                        self?.currentRunId = runId
+                    }
+                )
                 onConnectionState?(.online)
                 // The raw SSE stream can produce token-rate events. Drain and
                 // batch that stream off the main actor so SwiftUI only sees a
@@ -285,6 +296,21 @@ final class ChatSession: ObservableObject {
                         appendStreamedText(chunk)
                     case .tool(let activity):
                         applyToolActivity(activity)
+                    case .approval(let request):
+                        approvalRequest = request
+                    case .approvalResponded(let runId, _):
+                        if approvalRequest?.runId == runId {
+                            approvalRequest = nil
+                        }
+                    case .completed(let output):
+                        if let output, let index = streamingIndex(),
+                           chatMessages[index].content.isEmpty {
+                            receivedContent = true
+                            appendStreamedText(output)
+                        }
+                    case .failure(let message):
+                        handleStreamFailure(.agent(message), hadContent: receivedContent)
+                        return
                     }
                 }
 
@@ -326,6 +352,8 @@ final class ChatSession: ObservableObject {
     /// it, or drop an empty placeholder if nothing arrived.
     private func finishAssistant() {
         activeTools = []
+        approvalRequest = nil
+        currentRunId = nil
         // The final record goes to `.jsonl` below; the crash-recovery side-file
         // is no longer needed (§4.7).
         store.clearPartial(id: conversationId)
@@ -347,6 +375,8 @@ final class ChatSession: ObservableObject {
 
     private func handleStreamFailure(_ error: HermesAPIError, hadContent: Bool) {
         activeTools = []
+        approvalRequest = nil
+        currentRunId = nil
         // Whatever survived is committed to `.jsonl` below (kept incomplete) or
         // dropped — either way the side-file is now stale (§4.7).
         store.clearPartial(id: conversationId)
@@ -410,9 +440,14 @@ final class ChatSession: ObservableObject {
     /// already arrived (marked incomplete), and returns to idle.
     func cancelStreaming() {
         guard state == .sending || state == .responding else { return }
+        if let currentRunId {
+            Task { [apiClient] in await apiClient.stopRun(runId: currentRunId) }
+        }
         streamTask?.cancel()
         streamTask = nil
         activeTools = []
+        approvalRequest = nil
+        currentRunId = nil
         // The kept partial (if any) is committed to `.jsonl` below; drop the
         // side-file (§4.7).
         store.clearPartial(id: conversationId)
@@ -434,6 +469,9 @@ final class ChatSession: ObservableObject {
     /// (new chat / open another). Phase 2 keeps the old destructive semantics;
     /// Phase 3 stops calling this on hide/switch so sessions live on.
     func teardown() {
+        if let currentRunId {
+            Task { [apiClient] in await apiClient.stopRun(runId: currentRunId) }
+        }
         streamTask?.cancel()
         streamTask = nil
     }
@@ -443,8 +481,27 @@ final class ChatSession: ObservableObject {
     /// returns and after removing the session from the manager (ordering §4.5).
     func markDeleted() {
         isDeleted = true
+        if let currentRunId {
+            Task { [apiClient] in await apiClient.stopRun(runId: currentRunId) }
+        }
         streamTask?.cancel()
         streamTask = nil
+    }
+
+    func resolveApproval(choice: String) {
+        guard let request = approvalRequest else { return }
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                try await apiClient.submitApproval(runId: request.runId, choice: choice)
+                if approvalRequest?.runId == request.runId {
+                    approvalRequest = nil
+                }
+            } catch {
+                errorMessage = (error as? LocalizedError)?.errorDescription
+                    ?? "Could not send approval."
+            }
+        }
     }
 
     /// Flush the in-flight assistant text to the `.partial` side-file, unless

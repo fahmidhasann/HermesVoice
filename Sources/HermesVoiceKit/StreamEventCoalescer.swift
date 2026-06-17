@@ -6,6 +6,14 @@ public enum HermesStreamEvent: Equatable, Sendable {
     case text(String)
     /// A tool-activity update interleaved in the stream.
     case tool(ToolActivity)
+    /// A blocking approval request that needs an explicit user decision.
+    case approval(RunApprovalRequest)
+    /// The server acknowledged an approval decision.
+    case approvalResponded(runId: String, choice: String?)
+    /// The run finished. `output` duplicates streamed text when deltas were sent.
+    case completed(output: String?)
+    /// The run failed or was cancelled.
+    case failure(String)
 }
 
 /// Synchronous batching state for stream events.
@@ -33,6 +41,12 @@ public struct StreamEventBatcher {
             var output: [HermesStreamEvent] = []
             if let flushed = flushText() { output.append(flushed) }
             output.append(.tool(activity))
+            return output
+
+        case .approval, .approvalResponded, .completed, .failure:
+            var output: [HermesStreamEvent] = []
+            if let flushed = flushText() { output.append(flushed) }
+            output.append(event)
             return output
         }
     }

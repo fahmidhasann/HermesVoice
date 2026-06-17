@@ -76,6 +76,8 @@ class OverlayViewModel: ObservableObject {
     @Published var errorMessage: String = ""
     /// Tool steps currently running, surfaced for live "Hermes is using…" rows.
     @Published var activeTools: [ToolActivity] = []
+    /// Blocking approval request surfaced by the run-event API.
+    @Published var approvalRequest: RunApprovalRequest?
 
     // MARK: - Global fields (owned by the facade)
 
@@ -254,6 +256,7 @@ class OverlayViewModel: ObservableObject {
         chatMessages = session.chatMessages
         errorMessage = session.errorMessage
         activeTools = session.activeTools
+        approvalRequest = session.approvalRequest
 
         // 2. Re-subscribe. Explicit `.sink` (NOT `assign(to:&$…)`) so the old
         //    session stops writing into the facade the moment we re-point.
@@ -261,6 +264,7 @@ class OverlayViewModel: ObservableObject {
         session.$chatMessages.sink { [weak self] in self?.chatMessages = $0 }.store(in: &sessionCancellables)
         session.$errorMessage.sink { [weak self] in self?.errorMessage = $0 }.store(in: &sessionCancellables)
         session.$activeTools.sink { [weak self] in self?.activeTools = $0 }.store(in: &sessionCancellables)
+        session.$approvalRequest.sink { [weak self] in self?.approvalRequest = $0 }.store(in: &sessionCancellables)
 
         // Global connection state is reported up from the session's stream.
         session.onConnectionState = { [weak self] in self?.connectionState = $0 }
@@ -515,6 +519,10 @@ class OverlayViewModel: ObservableObject {
     /// Stop an in-flight streamed response on the foreground session.
     func cancelStreaming() {
         foreground.cancelStreaming()
+    }
+
+    func resolveApproval(choice: String) {
+        foreground.resolveApproval(choice: choice)
     }
 
     // MARK: - Lifecycle

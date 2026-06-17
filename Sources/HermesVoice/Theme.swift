@@ -179,6 +179,9 @@ struct Theme {
         static func hint(size: CGFloat = 10.5) -> SwiftUI.Font {
             .system(size: size, weight: .medium, design: .default)
         }
+        static func code(size: CGFloat = 12) -> SwiftUI.Font {
+            .system(size: size, weight: .regular, design: .monospaced)
+        }
     }
 
     // MARK: - Icon sizes

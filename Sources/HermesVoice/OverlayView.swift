@@ -301,6 +301,13 @@ struct OverlayView: View {
                     // response streams; they resolve/collapse as steps complete.
                     toolActivityRows
 
+                    if let approval = viewModel.approvalRequest {
+                        ApprovalRequestRow(approval: approval) { choice in
+                            viewModel.resolveApproval(choice: choice)
+                        }
+                        .transition(.opacity.combined(with: .move(edge: .leading)))
+                    }
+
                     // Live transcription preview while listening
                     if viewModel.isRecording && !viewModel.transcribedText.isEmpty {
                         transcriptionPreview
@@ -318,6 +325,7 @@ struct OverlayView: View {
                         .id(chatBottomAnchor)
                 }
                 .animation(Theme.Motion.ifMotion(Theme.Motion.content), value: viewModel.activeTools)
+                .animation(Theme.Motion.ifMotion(Theme.Motion.content), value: viewModel.approvalRequest)
                 .padding(.horizontal, Theme.Spacing.lg)
                 .padding(.vertical, Theme.Spacing.md)
             }
@@ -989,6 +997,145 @@ struct ToolActivityRow: View {
         .animation(Theme.Motion.ifMotion(Theme.Motion.state), value: tool.status)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(tool.status == .completed ? "\(label) done" : "Hermes is using \(label)")
+    }
+}
+
+struct ApprovalRequestRow: View {
+    let approval: RunApprovalRequest
+    let onChoice: (String) -> Void
+
+    private var commandPreview: String {
+        let trimmed = approval.command.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed.count > 420 else { return trimmed }
+        return String(trimmed.prefix(420)) + "..."
+    }
+
+    private var visibleChoices: [String] {
+        approval.choices.filter { approval.allowPermanent || $0 != "always" }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            HStack(spacing: Theme.Spacing.sm) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(Theme.Icon.font(Theme.Icon.sm, weight: .semibold))
+                    .foregroundColor(Theme.Colors.warning)
+                    .frame(width: 16, height: 16)
+
+                Text(approval.description)
+                    .font(Theme.Font.messageEmphasized(size: 12))
+                    .foregroundColor(Theme.Colors.textPrimary)
+                    .lineLimit(2)
+
+                Spacer(minLength: Theme.Spacing.sm)
+            }
+
+            if !commandPreview.isEmpty {
+                Text(commandPreview)
+                    .font(Theme.Font.code(size: 11.5))
+                    .foregroundColor(Theme.Colors.textSecondary)
+                    .lineLimit(3)
+                    .truncationMode(.middle)
+                    .padding(.horizontal, Theme.Spacing.sm)
+                    .padding(.vertical, Theme.Spacing.xs2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        RoundedRectangle(cornerRadius: Theme.Radius.chip, style: .continuous)
+                            .fill(Theme.Colors.textPrimary.opacity(0.05))
+                    )
+            }
+
+            HStack(spacing: Theme.Spacing.xs2) {
+                ForEach(visibleChoices, id: \.self) { choice in
+                    Button(action: { onChoice(choice) }) {
+                        Label(choiceLabel(choice), systemImage: choiceIcon(choice))
+                    }
+                    .buttonStyle(ApprovalChoiceButtonStyle(tone: choiceTone(choice)))
+                    .help(choiceHelp(choice))
+                    .accessibilityLabel(choiceLabel(choice))
+                }
+            }
+        }
+        .padding(.horizontal, Theme.Spacing.md)
+        .padding(.vertical, Theme.Spacing.sm)
+        .background(
+            RoundedRectangle(cornerRadius: Theme.Radius.chip, style: .continuous)
+                .fill(Theme.Colors.warning.opacity(0.10))
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Radius.chip, style: .continuous)
+                        .strokeBorder(Theme.Colors.warning.opacity(0.24), lineWidth: 0.5)
+                )
+        )
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Approval required")
+    }
+
+    private func choiceLabel(_ choice: String) -> String {
+        switch choice {
+        case "once": return "Allow Once"
+        case "session": return "Session"
+        case "always": return "Always"
+        case "deny": return "Deny"
+        default: return choice.capitalized
+        }
+    }
+
+    private func choiceIcon(_ choice: String) -> String {
+        switch choice {
+        case "deny": return "xmark"
+        case "always": return "checkmark.seal"
+        default: return "checkmark"
+        }
+    }
+
+    private func choiceHelp(_ choice: String) -> String {
+        switch choice {
+        case "once": return "Approve this execution"
+        case "session": return "Approve matching executions for this session"
+        case "always": return "Approve matching executions permanently"
+        case "deny": return "Deny this execution"
+        default: return choiceLabel(choice)
+        }
+    }
+
+    private func choiceTone(_ choice: String) -> ApprovalChoiceButtonStyle.Tone {
+        choice == "deny" ? .destructive : .accent
+    }
+}
+
+struct ApprovalChoiceButtonStyle: ButtonStyle {
+    enum Tone {
+        case accent
+        case destructive
+    }
+
+    @State private var isHovered = false
+    let tone: Tone
+
+    private var foreground: Color {
+        tone == .destructive ? Theme.Colors.error : Theme.Colors.accent
+    }
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(Theme.Font.button(size: 11.5))
+            .labelStyle(.titleAndIcon)
+            .foregroundColor(foreground)
+            .lineLimit(1)
+            .padding(.horizontal, Theme.Spacing.sm2)
+            .padding(.vertical, Theme.Spacing.xs2)
+            .background(
+                RoundedRectangle(cornerRadius: Theme.Radius.chip, style: .continuous)
+                    .fill(foreground.opacity(configuration.isPressed ? 0.18 : (isHovered ? 0.13 : 0.09)))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Theme.Radius.chip, style: .continuous)
+                            .strokeBorder(foreground.opacity(isHovered ? 0.28 : 0.18), lineWidth: 0.5)
+                    )
+            )
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+            .animation(Theme.Motion.ifMotion(Theme.Motion.hover), value: isHovered)
+            .animation(Theme.Motion.ifMotion(Theme.Motion.press), value: configuration.isPressed)
+            .onHover { isHovered = $0 }
     }
 }
 

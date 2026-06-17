@@ -131,5 +131,44 @@ enum SSEParserTests {
             let decoded = try? JSONDecoder().decode(ToolActivity.self, from: Data(json.utf8))
             check(decoded == nil, "unknown status is not a valid case")
         },
+
+        // MARK: - Hermes run-event parser
+
+        TestCase(name: "run parser handles message delta") {
+            var parser = HermesRunEventParser()
+            let line = #"data: {"event":"message.delta","run_id":"run_1","delta":"Hello"}"#
+            checkEqual(parser.parse(line: line), .text("Hello"))
+        },
+        TestCase(name: "run parser maps tool lifecycle") {
+            var parser = HermesRunEventParser()
+            let started = #"data: {"event":"tool.started","run_id":"run_1","tool":"terminal","preview":"terminal ls"}"#
+            let completed = #"data: {"event":"tool.completed","run_id":"run_1","tool":"terminal"}"#
+
+            checkEqual(parser.parse(line: started),
+                       .tool(ToolActivity(tool: "terminal", label: "terminal ls", status: .running)))
+            checkEqual(parser.parse(line: completed),
+                       .tool(ToolActivity(tool: "terminal", status: .completed)))
+        },
+        TestCase(name: "run parser handles approval request and response") {
+            var parser = HermesRunEventParser()
+            let request = #"data: {"event":"approval.request","run_id":"run_1","command":"python3 x.py","description":"script execution","choices":["once","deny"],"allow_permanent":false}"#
+            let expected = RunApprovalRequest(runId: "run_1",
+                                              command: "python3 x.py",
+                                              description: "script execution",
+                                              choices: ["once", "deny"],
+                                              allowPermanent: false)
+            checkEqual(parser.parse(line: request), .approval(expected))
+
+            let response = #"data: {"event":"approval.responded","run_id":"run_1","choice":"once"}"#
+            checkEqual(parser.parse(line: response), .approvalResponded(runId: "run_1", choice: "once"))
+        },
+        TestCase(name: "run parser handles terminal run events") {
+            var parser = HermesRunEventParser()
+            let completed = #"data: {"event":"run.completed","run_id":"run_1","output":"Done"}"#
+            let failed = #"data: {"event":"run.failed","run_id":"run_1","error":"Nope"}"#
+
+            checkEqual(parser.parse(line: completed), .completed(output: "Done"))
+            checkEqual(parser.parse(line: failed), .failure("Nope"))
+        },
     ]
 }
