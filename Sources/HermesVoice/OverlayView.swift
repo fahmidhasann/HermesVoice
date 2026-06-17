@@ -327,15 +327,13 @@ struct OverlayView: View {
             .modifier(PinnedToBottomTracker(isPinned: $isPinnedToBottom))
             // A new message (incl. a fresh streaming placeholder) restarts the
             // streamed-length tracker; without this, autoscroll for the next
-            // response stays gated behind the longest previous one. A new turn
-            // re-pins and follows to the bottom.
+            // response stays gated behind the longest previous one. The scroll
+            // itself is deferred so it runs after SwiftUI has committed the
+            // message insertion, instead of during the same layout transaction.
             .onChange(of: viewModel.chatMessages.count) { _, _ in
                 streamingContentLength = viewModel.chatMessages.last?.content.count ?? 0
-                isPinnedToBottom = true
                 if viewModel.chatMessages.last != nil {
-                    withAnimation(Theme.Motion.ifMotion(Theme.Motion.content)) {
-                        proxy.scrollTo(chatBottomAnchor, anchor: .bottom)
-                    }
+                    scrollToBottom(proxy, animated: true)
                 }
             }
             // Follow the stream by tracking content length — but only while pinned,
@@ -353,10 +351,21 @@ struct OverlayView: View {
             // instead of being swallowed by the previous session's length (§4.1).
             .onChange(of: viewModel.conversationId) { _, _ in
                 streamingContentLength = viewModel.chatMessages.last?.content.count ?? 0
-                isPinnedToBottom = true
                 if viewModel.chatMessages.last != nil {
+                    scrollToBottom(proxy, animated: false)
+                }
+            }
+        }
+    }
+
+    private func scrollToBottom(_ proxy: ScrollViewProxy, animated: Bool) {
+        DispatchQueue.main.async {
+            if animated {
+                withAnimation(Theme.Motion.ifMotion(Theme.Motion.content)) {
                     proxy.scrollTo(chatBottomAnchor, anchor: .bottom)
                 }
+            } else {
+                proxy.scrollTo(chatBottomAnchor, anchor: .bottom)
             }
         }
     }

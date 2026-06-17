@@ -12,6 +12,7 @@ let allCases =
     VoiceFlowTests.cases +
     ActivityRefCounterTests.cases +
     PartialReconcilerTests.cases +
-    EvictionPolicyTests.cases
+    EvictionPolicyTests.cases +
+    StreamEventBatcherTests.cases
 
 runAllTests(allCases)

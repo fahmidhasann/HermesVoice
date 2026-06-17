@@ -1,14 +1,6 @@
 import Foundation
 import HermesVoiceKit
 
-/// One element of a streamed Hermes response.
-enum HermesStreamEvent {
-    /// A content delta to append to the assistant message.
-    case text(String)
-    /// A tool-activity update interleaved in the stream.
-    case tool(ToolActivity)
-}
-
 /// One message in an outgoing request. When `imageDataURLs` is empty the content
 /// is serialized as a plain string; otherwise it becomes an OpenAI-style
 /// multimodal `content` array of text + `image_url` parts (the shape the Hermes
