@@ -287,26 +287,44 @@ struct OverlayView: View {
         .padding(.vertical, Theme.Spacing.xxxl)
     }
 
+    private var visibleChatMessages: [ChatMessage] {
+        viewModel.chatMessages.filter { message in
+            !(message.role == .assistant
+              && message.isStreaming
+              && message.content.isEmpty
+              && message.imageDataURLs.isEmpty)
+        }
+    }
+
+    private var responseIsActive: Bool {
+        switch viewModel.state {
+        case .sending, .responding:
+            return true
+        default:
+            return viewModel.chatMessages.last?.isStreaming == true
+                || viewModel.approvalRequest != nil
+                || !viewModel.activeTools.isEmpty
+        }
+    }
+
     private var chatThreadView: some View {
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(spacing: Theme.Spacing.sm) {
-                    ForEach(viewModel.chatMessages) { message in
+                    ForEach(visibleChatMessages) { message in
                         MessageBubble(message: message)
                             .equatable()
                             .id(message.id)
                     }
 
-                    // Live tool-activity rows ("Hermes is using…") shown while a
-                    // response streams; they resolve/collapse as steps complete.
-                    toolActivityRows
-
-                    if let approval = viewModel.approvalRequest {
-                        ApprovalRequestRow(approval: approval) { choice in
-                            viewModel.resolveApproval(choice: choice)
-                        }
-                        .transition(.opacity.combined(with: .move(edge: .leading)))
+                    AgentActivityLane(state: viewModel.state,
+                                      isResponseActive: responseIsActive,
+                                      activeTools: viewModel.activeTools,
+                                      approvalRequest: viewModel.approvalRequest,
+                                      errorMessage: viewModel.errorMessage) { choice in
+                        viewModel.resolveApproval(choice: choice)
                     }
+                    .id("agentActivityLane")
 
                     // Live transcription preview while listening
                     if viewModel.isRecording && !viewModel.transcribedText.isEmpty {
@@ -324,8 +342,8 @@ struct OverlayView: View {
                         .frame(height: 1)
                         .id(chatBottomAnchor)
                 }
-                .animation(Theme.Motion.ifMotion(Theme.Motion.content), value: viewModel.activeTools)
-                .animation(Theme.Motion.ifMotion(Theme.Motion.content), value: viewModel.approvalRequest)
+                .animation(Theme.Motion.ifMotion(Theme.Motion.activityLane), value: viewModel.activeTools)
+                .animation(Theme.Motion.ifMotion(Theme.Motion.activityLane), value: viewModel.approvalRequest)
                 .padding(.horizontal, Theme.Spacing.lg)
                 .padding(.vertical, Theme.Spacing.md)
             }
@@ -375,17 +393,6 @@ struct OverlayView: View {
             } else {
                 proxy.scrollTo(chatBottomAnchor, anchor: .bottom)
             }
-        }
-    }
-
-    @ViewBuilder
-    private var toolActivityRows: some View {
-        // Value identity (not positional \.offset) so removing one row doesn't
-        // churn the identity of every row after it. Rows can't be equal:
-        // the session dedupes on toolCallId (or tool name when id-less).
-        ForEach(viewModel.activeTools, id: \.self) { tool in
-            ToolActivityRow(tool: tool)
-                .transition(.opacity.combined(with: .move(edge: .leading)))
         }
     }
 
@@ -917,9 +924,9 @@ struct MessageBubble: View, Equatable {
     }
 }
 
-// MARK: - Tool Activity Row
+// MARK: - Agent Activity Lane
 
-private struct ToolRunningDot: View {
+private struct ActivityPulseDot: View {
     @State private var pulsing = false
 
     var body: some View {
@@ -934,104 +941,322 @@ private struct ToolRunningDot: View {
     }
 }
 
-/// Ephemeral "Hermes is using …" row rendered while a tool step is running.
-/// These are not persisted in the transcript — they vanish when the step
-/// completes (the view model removes completed activities).
-struct ToolActivityRow: View {
-    let tool: ToolActivity
+private struct ApprovalSelection: Equatable {
+    let runId: String
+    let choice: String
+}
 
-    private var label: String {
-        if let label = tool.label, !label.isEmpty { return label }
-        return tool.tool
+private struct AgentActivityPresentation: Equatable {
+    enum Kind: Equatable {
+        case waiting
+        case toolRunning
+        case toolCompleted
+        case approvalRequest
+        case approvalPending
+        case approvalResolved
     }
 
-    var body: some View {
-        HStack(spacing: Theme.Spacing.sm) {
-            if tool.status == .completed {
-                Image(systemName: "checkmark")
-                    .font(Theme.Icon.font(Theme.Icon.xs, weight: .bold))
-                    .foregroundColor(Theme.Colors.success)
-                    .frame(width: 16, height: 16)
-            } else {
-                Text(tool.emoji ?? "🔧")
-                    .font(Theme.Icon.font(Theme.Icon.sm))
-            }
+    enum Tone: Equatable {
+        case accent
+        case success
+        case warning
+    }
 
-            Group {
-                if tool.status == .completed {
-                    (Text(label).foregroundColor(Theme.Colors.textPrimary)
-                     + Text(" · done").foregroundColor(Theme.Colors.textSecondary))
-                } else {
-                    (Text("Hermes is using ").foregroundColor(Theme.Colors.textSecondary)
-                     + Text(label).foregroundColor(Theme.Colors.textPrimary)
-                     + Text("…").foregroundColor(Theme.Colors.textSecondary))
-                }
-            }
-            .font(Theme.Font.message(size: 12))
-            .lineLimit(1)
-            .truncationMode(.middle)
+    let id: String
+    let kind: Kind
+    let tone: Tone
+    let title: String
+    let detail: String?
+    let symbolName: String?
+    let emoji: String?
+    let activeCount: Int
+    let approval: RunApprovalRequest?
+    let pendingChoice: String?
 
-            if tool.status == .running {
-                ToolRunningDot()
-            }
+    var showsPulse: Bool {
+        kind == .waiting || kind == .toolRunning || kind == .approvalPending
+    }
 
-            Spacer(minLength: 24)
+    var extraCount: Int {
+        max(activeCount - 1, 0)
+    }
+
+    var accessibilityLabel: String {
+        if let detail, !detail.isEmpty {
+            return "\(title), \(detail)"
         }
-        .padding(.horizontal, Theme.Spacing.md)
-        .padding(.vertical, Theme.Spacing.xs2)
-        .background(
-            RoundedRectangle(cornerRadius: Theme.Radius.chip, style: .continuous)
-                .fill(tool.status == .completed
-                    ? Theme.Colors.success.opacity(0.09)
-                    : Theme.Colors.accentSoft)
-                .overlay(
-                    RoundedRectangle(cornerRadius: Theme.Radius.chip, style: .continuous)
-                        .strokeBorder(
-                            tool.status == .completed
-                                ? Theme.Colors.success.opacity(0.22)
-                                : Theme.Colors.accent.opacity(0.15),
-                            lineWidth: 0.5
-                        )
-                )
-        )
-        .animation(Theme.Motion.ifMotion(Theme.Motion.state), value: tool.status)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(tool.status == .completed ? "\(label) done" : "Hermes is using \(label)")
+        return title
     }
 }
 
-struct ApprovalRequestRow: View {
-    let approval: RunApprovalRequest
+private struct AgentActivityTransitionModifier: ViewModifier {
+    let opacity: Double
+    let offset: CGFloat
+    let scale: CGFloat
+    let blur: CGFloat
+
+    func body(content: Content) -> some View {
+        content
+            .opacity(opacity)
+            .offset(y: offset)
+            .scaleEffect(scale, anchor: .topLeading)
+            .blur(radius: Theme.Motion.reduceMotion ? 0 : blur)
+    }
+}
+
+private extension AnyTransition {
+    static var agentActivity: AnyTransition {
+        .modifier(
+            active: AgentActivityTransitionModifier(opacity: 0,
+                                                    offset: Theme.Motion.activityLift,
+                                                    scale: Theme.Motion.activityScale,
+                                                    blur: Theme.Motion.activityBlurRadius),
+            identity: AgentActivityTransitionModifier(opacity: 1,
+                                                      offset: 0,
+                                                      scale: 1,
+                                                      blur: 0)
+        )
+    }
+
+    static var agentActivitySwap: AnyTransition {
+        .modifier(
+            active: AgentActivityTransitionModifier(opacity: 0,
+                                                    offset: Theme.Spacing.xs,
+                                                    scale: Theme.Motion.activityScale,
+                                                    blur: Theme.Motion.activityBlurRadius),
+            identity: AgentActivityTransitionModifier(opacity: 1,
+                                                      offset: 0,
+                                                      scale: 1,
+                                                      blur: 0)
+        )
+    }
+}
+
+/// One stable surface for transient agent state. Tool progress, approval, and
+/// generic waiting copy all swap inside this lane instead of inserting separate
+/// rows that churn the chat layout.
+private struct AgentActivityLane: View {
+    let state: OverlayState
+    let isResponseActive: Bool
+    let activeTools: [ToolActivity]
+    let approvalRequest: RunApprovalRequest?
+    let errorMessage: String
     let onChoice: (String) -> Void
 
-    private var commandPreview: String {
-        let trimmed = approval.command.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard trimmed.count > 420 else { return trimmed }
-        return String(trimmed.prefix(420)) + "..."
-    }
+    @State private var waitingPhraseIndex = 0
+    @State private var pendingApproval: ApprovalSelection?
+    @State private var resolvedApproval: ApprovalSelection?
+    @State private var clearResolvedTask: Task<Void, Never>?
 
-    private var visibleChoices: [String] {
-        approval.choices.filter { approval.allowPermanent || $0 != "always" }
-    }
+    private static let waitingPhrases = [
+        "Thinking…",
+        "Working through it…",
+        "Preparing a response…"
+    ]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-            HStack(spacing: Theme.Spacing.sm) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .font(Theme.Icon.font(Theme.Icon.sm, weight: .semibold))
-                    .foregroundColor(Theme.Colors.warning)
-                    .frame(width: 16, height: 16)
+        Group {
+            if let presentation {
+                laneContent(presentation)
+                    .transition(.agentActivity)
+            }
+        }
+        .animation(Theme.Motion.ifMotion(Theme.Motion.activityLane), value: presentation?.id)
+        .task(id: presentation?.kind == .waiting) {
+            guard presentation?.kind == .waiting, !Theme.Motion.reduceMotion else { return }
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: Theme.Motion.activityWaitingPhraseInterval)
+                if Task.isCancelled { return }
+                await MainActor.run {
+                    withAnimation(Theme.Motion.ifMotion(Theme.Motion.activitySwap)) {
+                        waitingPhraseIndex = (waitingPhraseIndex + 1) % Self.waitingPhrases.count
+                    }
+                }
+            }
+        }
+        .onChange(of: approvalRequest) { oldValue, newValue in
+            handleApprovalChange(oldValue: oldValue, newValue: newValue)
+        }
+        .onChange(of: errorMessage) { _, newValue in
+            guard !newValue.isEmpty, pendingApproval != nil else { return }
+            withAnimation(Theme.Motion.ifMotion(Theme.Motion.activityLane)) {
+                pendingApproval = nil
+            }
+        }
+        .onDisappear {
+            clearResolvedTask?.cancel()
+        }
+    }
 
-                Text(approval.description)
-                    .font(Theme.Font.messageEmphasized(size: 12))
-                    .foregroundColor(Theme.Colors.textPrimary)
-                    .lineLimit(2)
+    private var presentation: AgentActivityPresentation? {
+        if let approvalRequest {
+            if let pendingApproval, pendingApproval.runId == approvalRequest.runId {
+                return AgentActivityPresentation(
+                    id: "approval-pending-\(approvalRequest.runId)-\(pendingApproval.choice)",
+                    kind: .approvalPending,
+                    tone: .warning,
+                    title: "Sending approval…",
+                    detail: choiceResultTitle(pendingApproval.choice),
+                    symbolName: "clock",
+                    emoji: nil,
+                    activeCount: 1,
+                    approval: approvalRequest,
+                    pendingChoice: pendingApproval.choice
+                )
+            }
+
+            return AgentActivityPresentation(
+                id: "approval-request-\(approvalRequest.runId)",
+                kind: .approvalRequest,
+                tone: .warning,
+                title: approvalRequest.description,
+                detail: "Approval required",
+                symbolName: "exclamationmark.triangle.fill",
+                emoji: nil,
+                activeCount: 1,
+                approval: approvalRequest,
+                pendingChoice: nil
+            )
+        }
+
+        if let resolvedApproval {
+            return AgentActivityPresentation(
+                id: "approval-resolved-\(resolvedApproval.runId)-\(resolvedApproval.choice)",
+                kind: .approvalResolved,
+                tone: resolvedApproval.choice == "deny" ? .warning : .success,
+                title: choiceResultTitle(resolvedApproval.choice),
+                detail: "Approval answered",
+                symbolName: resolvedApproval.choice == "deny" ? "xmark" : "checkmark",
+                emoji: nil,
+                activeCount: 1,
+                approval: nil,
+                pendingChoice: nil
+            )
+        }
+
+        if let running = activeTools.last(where: { $0.status == .running }) {
+            let label = toolLabel(running)
+            return AgentActivityPresentation(
+                id: "tool-running-\(toolIdentity(running))-\(activeTools.count)",
+                kind: .toolRunning,
+                tone: .accent,
+                title: "Hermes is using \(label)…",
+                detail: nil,
+                symbolName: running.emoji == nil ? "wrench.and.screwdriver" : nil,
+                emoji: running.emoji,
+                activeCount: activeTools.count,
+                approval: nil,
+                pendingChoice: nil
+            )
+        }
+
+        if let completed = activeTools.last(where: { $0.status == .completed }) {
+            let label = toolLabel(completed)
+            return AgentActivityPresentation(
+                id: "tool-completed-\(toolIdentity(completed))-\(activeTools.count)",
+                kind: .toolCompleted,
+                tone: .success,
+                title: "\(label) done",
+                detail: nil,
+                symbolName: "checkmark",
+                emoji: nil,
+                activeCount: activeTools.count,
+                approval: nil,
+                pendingChoice: nil
+            )
+        }
+
+        guard isResponseActive else { return nil }
+        let phrase = Self.waitingPhrases[waitingPhraseIndex]
+        return AgentActivityPresentation(
+            id: "waiting-\(waitingPhraseIndex)-\(state)",
+            kind: .waiting,
+            tone: .accent,
+            title: phrase,
+            detail: nil,
+            symbolName: "sparkles",
+            emoji: nil,
+            activeCount: 1,
+            approval: nil,
+            pendingChoice: nil
+        )
+    }
+
+    @ViewBuilder
+    private func laneContent(_ presentation: AgentActivityPresentation) -> some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            HStack(alignment: .center, spacing: Theme.Spacing.sm) {
+                activityIcon(presentation)
+
+                VStack(alignment: .leading, spacing: Theme.Spacing.xxs) {
+                    Text(presentation.title)
+                        .font(Theme.Font.messageEmphasized(size: 12))
+                        .foregroundColor(Theme.Colors.textPrimary)
+                        .lineLimit(2)
+
+                    if let detail = presentation.detail {
+                        Text(detail)
+                            .font(Theme.Font.caption(size: 10))
+                            .foregroundColor(Theme.Colors.textSecondary)
+                            .lineLimit(1)
+                    }
+                }
+                .id("activity-copy-\(presentation.id)")
+                .transition(.agentActivitySwap)
+
+                if presentation.extraCount > 0 {
+                    Text("+\(presentation.extraCount)")
+                        .font(Theme.Font.caption(size: 9.5))
+                        .foregroundColor(Theme.Colors.textSecondary)
+                        .padding(.horizontal, Theme.Spacing.xs)
+                        .padding(.vertical, Theme.Spacing.xxs)
+                        .background(
+                            Capsule(style: .continuous)
+                                .fill(Theme.Colors.textPrimary.opacity(0.06))
+                        )
+                        .accessibilityHidden(true)
+                }
+
+                if presentation.showsPulse {
+                    ActivityPulseDot()
+                }
 
                 Spacer(minLength: Theme.Spacing.sm)
             }
 
-            if !commandPreview.isEmpty {
-                Text(commandPreview)
+            if let approval = presentation.approval {
+                approvalDetails(approval, pendingChoice: presentation.pendingChoice)
+                    .transition(.agentActivity)
+            }
+        }
+        .padding(.horizontal, Theme.Spacing.md)
+        .padding(.vertical, Theme.Spacing.sm)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(laneBackground(presentation))
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(presentation.accessibilityLabel)
+    }
+
+    @ViewBuilder
+    private func activityIcon(_ presentation: AgentActivityPresentation) -> some View {
+        if let emoji = presentation.emoji {
+            Text(emoji)
+                .font(Theme.Icon.font(Theme.Icon.sm))
+                .frame(width: Theme.Spacing.lg, height: Theme.Spacing.lg)
+        } else if let symbolName = presentation.symbolName {
+            Image(systemName: symbolName)
+                .font(Theme.Icon.font(Theme.Icon.sm, weight: .semibold))
+                .foregroundColor(toneColor(presentation.tone))
+                .frame(width: Theme.Spacing.lg, height: Theme.Spacing.lg)
+        }
+    }
+
+    @ViewBuilder
+    private func approvalDetails(_ approval: RunApprovalRequest, pendingChoice: String?) -> some View {
+        let preview = commandPreview(for: approval)
+        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            if !preview.isEmpty {
+                Text(preview)
                     .font(Theme.Font.code(size: 11.5))
                     .foregroundColor(Theme.Colors.textSecondary)
                     .lineLimit(3)
@@ -1045,29 +1270,126 @@ struct ApprovalRequestRow: View {
                     )
             }
 
-            HStack(spacing: Theme.Spacing.xs2) {
-                ForEach(visibleChoices, id: \.self) { choice in
-                    Button(action: { onChoice(choice) }) {
-                        Label(choiceLabel(choice), systemImage: choiceIcon(choice))
+            if pendingChoice != nil {
+                HStack(spacing: Theme.Spacing.xs2) {
+                    ActivityPulseDot()
+                    Text("Submitting decision…")
+                        .font(Theme.Font.message(size: 12))
+                        .foregroundColor(Theme.Colors.textSecondary)
+                    Spacer(minLength: Theme.Spacing.sm)
+                }
+                .transition(.agentActivitySwap)
+            } else {
+                HStack(spacing: Theme.Spacing.xs2) {
+                    ForEach(visibleChoices(for: approval), id: \.self) { choice in
+                        Button(action: { choose(choice, for: approval) }) {
+                            Label(choiceLabel(choice), systemImage: choiceIcon(choice))
+                        }
+                        .buttonStyle(ApprovalChoiceButtonStyle(tone: choiceTone(choice)))
+                        .help(choiceHelp(choice))
+                        .accessibilityLabel(choiceLabel(choice))
                     }
-                    .buttonStyle(ApprovalChoiceButtonStyle(tone: choiceTone(choice)))
-                    .help(choiceHelp(choice))
-                    .accessibilityLabel(choiceLabel(choice))
+                }
+                .transition(.agentActivitySwap)
+            }
+        }
+    }
+
+    private func laneBackground(_ presentation: AgentActivityPresentation) -> some View {
+        let shape = RoundedRectangle(cornerRadius: Theme.Radius.chip, style: .continuous)
+        return shape
+            .fill(surfaceFill(presentation.tone))
+            .overlay(shape.strokeBorder(surfaceStroke(presentation.tone), lineWidth: 0.5))
+            .shadow(color: Theme.Elevation.restColor,
+                    radius: Theme.Elevation.restRadius,
+                    x: 0,
+                    y: Theme.Elevation.restY)
+    }
+
+    private func choose(_ choice: String, for approval: RunApprovalRequest) {
+        let selection = ApprovalSelection(runId: approval.runId, choice: choice)
+        withAnimation(Theme.Motion.ifMotion(Theme.Motion.activityLane)) {
+            pendingApproval = selection
+        }
+        onChoice(choice)
+    }
+
+    private func handleApprovalChange(oldValue: RunApprovalRequest?, newValue: RunApprovalRequest?) {
+        if let newValue {
+            if pendingApproval?.runId != newValue.runId {
+                pendingApproval = nil
+            }
+            if resolvedApproval?.runId != newValue.runId {
+                resolvedApproval = nil
+            }
+            return
+        }
+
+        guard let oldValue,
+              let pendingApproval,
+              pendingApproval.runId == oldValue.runId else { return }
+
+        withAnimation(Theme.Motion.ifMotion(Theme.Motion.activityLane)) {
+            self.pendingApproval = nil
+            resolvedApproval = pendingApproval
+        }
+        scheduleResolvedClear(for: pendingApproval)
+    }
+
+    private func scheduleResolvedClear(for selection: ApprovalSelection) {
+        clearResolvedTask?.cancel()
+        clearResolvedTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: Theme.Motion.activityResolutionHold)
+            if Task.isCancelled { return }
+            withAnimation(Theme.Motion.ifMotion(Theme.Motion.activityLane)) {
+                if resolvedApproval == selection {
+                    resolvedApproval = nil
                 }
             }
         }
-        .padding(.horizontal, Theme.Spacing.md)
-        .padding(.vertical, Theme.Spacing.sm)
-        .background(
-            RoundedRectangle(cornerRadius: Theme.Radius.chip, style: .continuous)
-                .fill(Theme.Colors.warning.opacity(0.10))
-                .overlay(
-                    RoundedRectangle(cornerRadius: Theme.Radius.chip, style: .continuous)
-                        .strokeBorder(Theme.Colors.warning.opacity(0.24), lineWidth: 0.5)
-                )
-        )
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel("Approval required")
+    }
+
+    private func toolLabel(_ tool: ToolActivity) -> String {
+        if let label = tool.label, !label.isEmpty { return label }
+        return tool.tool
+    }
+
+    private func toolIdentity(_ tool: ToolActivity) -> String {
+        tool.toolCallId ?? tool.tool
+    }
+
+    private func visibleChoices(for approval: RunApprovalRequest) -> [String] {
+        approval.choices.filter { approval.allowPermanent || $0 != "always" }
+    }
+
+    private func commandPreview(for approval: RunApprovalRequest) -> String {
+        let trimmed = approval.command.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed.count > 420 else { return trimmed }
+        return String(trimmed.prefix(420)) + "..."
+    }
+
+    private func toneColor(_ tone: AgentActivityPresentation.Tone) -> Color {
+        switch tone {
+        case .accent: return Theme.Colors.accent
+        case .success: return Theme.Colors.success
+        case .warning: return Theme.Colors.warning
+        }
+    }
+
+    private func surfaceFill(_ tone: AgentActivityPresentation.Tone) -> Color {
+        switch tone {
+        case .accent: return Theme.Colors.accentSoft
+        case .success: return Theme.Colors.success.opacity(0.09)
+        case .warning: return Theme.Colors.warning.opacity(0.10)
+        }
+    }
+
+    private func surfaceStroke(_ tone: AgentActivityPresentation.Tone) -> Color {
+        switch tone {
+        case .accent: return Theme.Colors.accent.opacity(0.15)
+        case .success: return Theme.Colors.success.opacity(0.22)
+        case .warning: return Theme.Colors.warning.opacity(0.24)
+        }
     }
 
     private func choiceLabel(_ choice: String) -> String {
@@ -1077,6 +1399,16 @@ struct ApprovalRequestRow: View {
         case "always": return "Always"
         case "deny": return "Deny"
         default: return choice.capitalized
+        }
+    }
+
+    private func choiceResultTitle(_ choice: String) -> String {
+        switch choice {
+        case "once": return "Allowed once"
+        case "session": return "Allowed for session"
+        case "always": return "Always allowed"
+        case "deny": return "Denied"
+        default: return choiceLabel(choice)
         }
     }
 

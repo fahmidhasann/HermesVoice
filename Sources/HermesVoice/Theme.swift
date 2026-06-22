@@ -270,8 +270,16 @@ struct Theme {
         static let toggle  = SwiftUI.Animation.easeOut(duration: 0.16)    // binary toggle (active, focus ring, disabled)
         static let content = SwiftUI.Animation.easeOut(duration: 0.20)    // content arrival / autoscroll / swap
         static let state   = SwiftUI.Animation.easeInOut(duration: 0.24)  // multi-state status pill / input-state shifts
+        static let activityLane = SwiftUI.Animation.spring(response: 0.38, dampingFraction: 0.88)
+        static let activitySwap = SwiftUI.Animation.easeInOut(duration: 0.28)
         /// Slow ambient pulse (listening dot, future breathing). Already repeating.
         static let breathe = SwiftUI.Animation.easeInOut(duration: 1.2).repeatForever(autoreverses: true)
+
+        static let activityLift: CGFloat = 6
+        static let activityScale: CGFloat = 0.985
+        static let activityBlurRadius: CGFloat = 4
+        static let activityWaitingPhraseInterval: UInt64 = 2_400_000_000
+        static let activityResolutionHold: UInt64 = 1_200_000_000
 
         /// Returns `.never` when the user has disabled motion (accessibility),
         /// preserving the requested animation otherwise. Use like:
