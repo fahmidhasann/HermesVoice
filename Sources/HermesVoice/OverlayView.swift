@@ -353,12 +353,15 @@ struct OverlayView: View {
             .modifier(PinnedToBottomTracker(isPinned: $isPinnedToBottom))
             // A new message (incl. a fresh streaming placeholder) restarts the
             // streamed-length tracker; without this, autoscroll for the next
-            // response stays gated behind the longest previous one. The scroll
-            // itself is deferred so it runs after SwiftUI has committed the
-            // message insertion, instead of during the same layout transaction.
+            // response stays gated behind the longest previous one. Only scroll
+            // when the user was already near the bottom; forcing scrollTo from
+            // scrollback can make SwiftUI relayout the lazy transcript without
+            // converging. The scroll itself is deferred so it runs after SwiftUI
+            // has committed the message insertion, instead of during the same
+            // layout transaction.
             .onChange(of: viewModel.chatMessages.count) { _, _ in
                 streamingContentLength = viewModel.chatMessages.last?.content.count ?? 0
-                if viewModel.chatMessages.last != nil {
+                if isPinnedToBottom, viewModel.chatMessages.last != nil {
                     scrollToBottom(proxy, animated: true)
                 }
             }
@@ -369,7 +372,7 @@ struct OverlayView: View {
                 guard let last = viewModel.chatMessages.last, last.isStreaming else { return }
                 if newCount > streamingContentLength {
                     streamingContentLength = newCount
-                    proxy.scrollTo(chatBottomAnchor, anchor: .bottom)
+                    scrollToBottom(proxy, animated: false)
                 }
             }
             // Switching to a (possibly mid-stream) background session resets the
